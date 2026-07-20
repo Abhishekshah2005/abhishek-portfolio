@@ -8,6 +8,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useIsomorphicLayoutEffect } from '@/hooks/useIsomorphicLayoutEffect';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useSceneContent } from '@/providers/SceneProvider';
+import { useChapter } from '@/story';
 import { cn } from '@/lib';
 import { MagneticButton } from './MagneticButton';
 
@@ -35,8 +36,8 @@ export function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const wordRefs = useRef<Array<HTMLDivElement | null>>([]);
   const lockupRef = useRef<HTMLDivElement>(null);
-  const railRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
+  useChapter(sectionRef, 0, 'Arrival');
 
   useIsomorphicLayoutEffect(() => {
     const section = sectionRef.current;
@@ -69,8 +70,7 @@ export function Hero() {
         .from('[data-eyebrow]', { autoAlpha: 0, y: 10, duration: 0.6, stagger: 0.1 })
         .from(chars[0], { yPercent: 120, autoAlpha: 0, duration: 0.9, stagger: 0.03 }, 0.1)
         .from('[data-value]', { autoAlpha: 0, y: 18, duration: 0.8 }, '-=0.5')
-        .from('[data-cta]', { autoAlpha: 0, y: 14, duration: 0.7, stagger: 0.1 }, '-=0.5')
-        .from('[data-cue]', { autoAlpha: 0, duration: 0.6 }, '-=0.4');
+        .from('[data-cta]', { autoAlpha: 0, y: 14, duration: 0.7, stagger: 0.1 }, '-=0.5');
 
       // Scrubbed morph across the pinned section. Explicit fromTo +
       // immediateRender:false so words never flash out of sequence.
@@ -90,16 +90,6 @@ export function Hero() {
           0.86,
         );
 
-      // Progress rail.
-      ScrollTrigger.create({
-        trigger: section,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: true,
-        onUpdate: (self) => {
-          if (railRef.current) railRef.current.style.transform = `scaleY(${self.progress})`;
-        },
-      });
     }, section);
 
     return () => {
@@ -182,13 +172,6 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Scroll progress rail */}
-        <div
-          data-cue
-          className="absolute right-8 top-1/2 hidden h-28 w-px -translate-y-1/2 overflow-hidden bg-line md:block"
-        >
-          <div ref={railRef} className="h-full w-full origin-top scale-y-0 bg-flux" />
-        </div>
       </div>
     </section>
   );

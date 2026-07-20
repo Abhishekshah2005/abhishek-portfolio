@@ -1,15 +1,21 @@
-import { SiteHeader, Hero } from '@/sections/home';
+import { SiteHeader, Hero, Combination } from '@/sections/home';
+import { StoryProvider, ChapterIndicator, ProgressRail } from '@/story';
 
 /**
- * Home — the premium first impression for Abhishek Shah (Finance × Technology ×
- * AI). Header + hero for now; further sections (Services, Work, About, Contact)
- * are built and polished one at a time on top of this.
+ * Home — one continuous, directed film for Abhishek Shah (Finance × Technology ×
+ * AI). The Scroll Storytelling engine (StoryProvider) tracks chapters while each
+ * scene owns its scrubbed timeline and transforms into the next. Scenes 00
+ * (Arrival) → 01 (The Combination) are live; later scenes plug into the same
+ * engine.
  */
 export default function HomePage() {
   return (
-    <>
+    <StoryProvider>
+      <ProgressRail />
       <SiteHeader />
+      <ChapterIndicator />
       <Hero />
-    </>
+      <Combination />
+    </StoryProvider>
   );
 }

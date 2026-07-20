@@ -224,6 +224,8 @@ export function IntelligenceField() {
       }
       pushZ.current += (progress.current * 2.2 - pushZ.current) * 0.05;
       groupRef.current.position.z = pushZ.current;
+      // Converge/contract as the story advances (the network collapses inward).
+      groupRef.current.scale.setScalar(1 - progress.current * 0.18);
     }
 
     // Advance pulses.
