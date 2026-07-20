@@ -1,0 +1,13 @@
+# pnpm settings (pnpm 10+ reads project settings from here, not package.json).
+#
+# sharp/unrs-resolver ship prebuilt native binaries via optionalDependencies,
+# so their postinstall build scripts are intentionally NOT run (false). sharp is
+# only needed for next/image optimization at runtime (next start) — not for
+# lint, typecheck, or the static build. Flip to true if runtime image
+# optimization is required in production.
+allowBuilds:
+  sharp: false
+  unrs-resolver: false
+onlyBuiltDependencies:
+  - '@tailwindcss/oxide'
+  - esbuild

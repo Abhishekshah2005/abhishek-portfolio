@@ -1,0 +1,319 @@
+@import 'tailwindcss';
+
+/* ============================================================================
+   ATLAS DESIGN TOKENS — single source of truth (Tailwind v4 CSS-first @theme).
+   Every utility (bg-*, text-*, rounded-*, shadow-*, ease-*, blur-*) is generated
+   from these tokens. Components must consume tokens only — never raw hex/px/ms.
+   Programmatic mirror for TS/Three lives in src/design/tokens.ts.
+   ============================================================================ */
+@theme {
+  /* — Core palette ——————————————————————————————————————————————— */
+  --color-void: #05050a;
+  --color-obsidian: #0b0d14;
+  --color-graphite: #14161f;
+  --color-slate: #1b1e2a; /* elevated surface */
+  --color-fog: #8a93a6;
+  --color-fog-dim: #5a6172;
+  --color-signal: #f4f4f8; /* signal-white */
+
+  /* — Accents ————————————————————————————————————————————————————— */
+  --color-flux: #5b8cff; /* primary accent A */
+  --color-flux-2: #00e5c4; /* primary accent B (gradient partner) */
+  --color-ember: #ff6a3d; /* reactive accent — act/reward, rationed */
+  --color-rare: #a16bff; /* secrets only */
+  --color-gold: #ffc24b; /* one legendary */
+  --color-danger: #ff3b4e;
+
+  /* — Lines / borders / focus ———————————————————————————————————— */
+  --color-line-subtle: color-mix(in oklab, #f4f4f8 8%, transparent);
+  --color-line: color-mix(in oklab, #f4f4f8 12%, transparent);
+  --color-line-strong: color-mix(in oklab, #f4f4f8 20%, transparent);
+  --color-focus: #5b8cff;
+
+  /* — Typography families ———————————————————————————————————————— */
+  --font-display: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
+
+  /* — Fluid type scale (clamp: min → preferred → max) ———————————— */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1.4;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.5;
+  --text-base: 1rem;
+  --text-base--line-height: 1.6;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.5;
+  --text-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  --text-xl--line-height: 1.3;
+  --text-2xl: clamp(1.75rem, 1.4rem + 1.75vw, 2.5rem);
+  --text-2xl--line-height: 1.15;
+  --text-3xl: clamp(2.5rem, 1.8rem + 3.5vw, 3.75rem);
+  --text-3xl--line-height: 1.05;
+  --text-4xl: clamp(3.25rem, 2rem + 6vw, 5.5rem);
+  --text-4xl--line-height: 1;
+  --text-display: clamp(3rem, 1rem + 8vw, 9rem);
+  --text-display--line-height: 0.95;
+  --text-display--letter-spacing: -0.02em;
+
+  /* — Radius ————————————————————————————————————————————————————— */
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+  --radius-3xl: 2.75rem;
+
+  /* — Elevation shadows ————————————————————————————————————————— */
+  --shadow-elev-1: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --shadow-elev-2: 0 4px 16px -2px rgb(0 0 0 / 0.5);
+  --shadow-elev-3: 0 12px 40px -8px rgb(0 0 0 / 0.6);
+  --shadow-elev-4: 0 24px 80px -16px rgb(0 0 0 / 0.7);
+
+  /* — Glows (accent-tinted) ————————————————————————————————————— */
+  --shadow-glow-flux: 0 0 24px -4px color-mix(in oklab, #5b8cff 60%, transparent);
+  --shadow-glow-ember: 0 0 24px -4px color-mix(in oklab, #ff6a3d 60%, transparent);
+  --shadow-glow-rare: 0 0 24px -4px color-mix(in oklab, #a16bff 60%, transparent);
+
+  /* — Blur ——————————————————————————————————————————————————————— */
+  --blur-glass: 16px;
+  --blur-heavy: 40px;
+
+  /* — Easing (shared with GSAP string map in src/design/motion.ts) ——— */
+  --ease-signal: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-glide: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-rise: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-snap: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-play: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ----------------------------------------------------------------------------
+   Non-utility design vars: semantic aliases, motion durations, depth (z),
+   opacity, and glow raw values consumed via var() in components/JS.
+   ---------------------------------------------------------------------------- */
+:root {
+  /* Semantic surface hierarchy */
+  --bg-base: var(--color-void);
+  --bg-surface: var(--color-obsidian);
+  --bg-elevated: var(--color-graphite);
+  --bg-overlay: color-mix(in oklab, var(--color-void) 78%, transparent);
+  --surface-glass: color-mix(in oklab, var(--color-graphite) 60%, transparent);
+
+  /* Semantic text */
+  --text-primary: var(--color-signal);
+  --text-secondary: var(--color-fog);
+  --text-muted: var(--color-fog-dim);
+
+  /* Motion durations */
+  --dur-instant: 80ms;
+  --dur-fast: 140ms;
+  --dur-ui: 240ms;
+  --dur-slow: 400ms;
+  --dur-reveal: 700ms;
+  --dur-cinematic: 1400ms;
+  --dur-epic: 3000ms;
+
+  /* Depth / z-index system */
+  --z-canvas: 0;
+  --z-content: 10;
+  --z-nav: 30;
+  --z-hud: 40;
+  --z-cursor: 50;
+  --z-overlay: 60;
+  --z-toast: 70;
+
+  /* Opacity scale */
+  --opacity-disabled: 0.4;
+  --opacity-muted: 0.6;
+  --opacity-hover: 0.85;
+
+  /* Safe-area insets (notches / rounded corners) — read by useSafeArea. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
+  color-scheme: dark;
+}
+
+/* Light-mode token overrides land here when ENABLE_LIGHT flips (ThemeProvider
+   stamps data-theme on <html>). Dark is the only active theme today. */
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+/* ----------------------------------------------------------------------------
+   Base layer — sits on top of Tailwind preflight.
+   ---------------------------------------------------------------------------- */
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100dvh;
+    background: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-flux) 30%, transparent);
+    color: var(--color-signal);
+  }
+
+  /* Unified in-brand focus ring (accessibility). */
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-xs);
+  }
+
+  canvas {
+    display: block;
+    touch-action: none;
+  }
+
+  /* On fine pointers the custom reticle is the cursor — hide the native one. */
+  @media (pointer: fine) {
+    body {
+      cursor: none;
+    }
+  }
+
+  /* Lenis smooth-scroll integration hooks. */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+}
+
+/* Named animations exposed as `animate-*` utilities. */
+@theme {
+  --animate-fade-in: atlas-fade-in var(--dur-ui) ease-out both;
+  --animate-scale-in: atlas-scale-in var(--dur-ui) var(--ease-signal) both;
+}
+
+@keyframes atlas-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes atlas-scale-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes atlas-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+@keyframes atlas-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Boot sequence effects */
+@keyframes atlas-scanlines {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 6px;
+  }
+}
+
+@keyframes atlas-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes atlas-drift {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: var(--drift-opacity, 0.5);
+  }
+  90% {
+    opacity: var(--drift-opacity, 0.5);
+  }
+  100% {
+    transform: translateY(-120px) scale(0.4);
+    opacity: 0;
+  }
+}
+
+@keyframes atlas-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  93% {
+    opacity: 0.4;
+  }
+  94% {
+    opacity: 1;
+  }
+  97% {
+    opacity: 0.7;
+  }
+}
+
+/* Respect reduced motion at the platform level. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
