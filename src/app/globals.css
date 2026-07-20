@@ -172,6 +172,13 @@
     display: block;
   }
 
+  /* On fine pointers the custom cursor is the cursor — hide the native one. */
+  @media (pointer: fine) {
+    body {
+      cursor: none;
+    }
+  }
+
   /* Dark feature sections: scope the semantic vars so components invert. */
   .section-dark {
     background: var(--dark-bg);

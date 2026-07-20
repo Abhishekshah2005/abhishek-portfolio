@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { ExperienceProvider } from '@/providers';
+import { PremiumCursor } from '@/cursor';
 import { SceneLayer } from './layers/SceneLayer';
 import { OverlayRoot } from './layers/OverlayRoot';
 import { PerfMonitor } from './PerfMonitor';
@@ -31,8 +32,9 @@ export function ExperienceShell({ children, debug }: ExperienceShellProps) {
         {children}
       </main>
 
-      {/* Global overlays + dev perf monitor. */}
+      {/* Global overlays, premium cursor + dev perf monitor. */}
       <OverlayRoot />
+      <PremiumCursor />
       <PerfMonitor />
     </ExperienceProvider>
   );

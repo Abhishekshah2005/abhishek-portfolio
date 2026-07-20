@@ -50,9 +50,10 @@ export function SiteHeader() {
             <a
               key={n.href}
               href={n.href}
-              className="text-sm text-fog transition-colors duration-200 hover:text-signal"
+              className="group relative text-sm text-fog transition-colors duration-200 hover:text-signal"
             >
               {n.label}
+              <span className="absolute -bottom-1.5 left-0 h-px w-full origin-left scale-x-0 bg-flux transition-transform duration-300 ease-signal group-hover:scale-x-100" />
             </a>
           ))}
         </nav>
