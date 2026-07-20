@@ -1,10 +1,15 @@
-import { HeroWorld } from '@/sections/hero';
+import { SiteHeader, Hero } from '@/sections/home';
 
 /**
- * Home route — mounts the Hero World (the opening level). The global shell
- * (engine, canvas stage, boot, overlays, cursor) is provided by the layout;
- * this renders the level content that dissolves into view after boot.
+ * Home — the premium first impression for Abhishek Shah (Finance × Technology ×
+ * AI). Header + hero for now; further sections (Services, Work, About, Contact)
+ * are built and polished one at a time on top of this.
  */
 export default function HomePage() {
-  return <HeroWorld />;
+  return (
+    <>
+      <SiteHeader />
+      <Hero />
+    </>
+  );
 }

@@ -1,41 +1,42 @@
 @import 'tailwindcss';
 
 /* ============================================================================
-   ATLAS DESIGN TOKENS — single source of truth (Tailwind v4 CSS-first @theme).
-   Every utility (bg-*, text-*, rounded-*, shadow-*, ease-*, blur-*) is generated
-   from these tokens. Components must consume tokens only — never raw hex/px/ms.
-   Programmatic mirror for TS/Three lives in src/design/tokens.ts.
+   ABHISHEK SHAH — DESIGN TOKENS (Tailwind v4 CSS-first @theme).
+   Premium light base + deep-indigo accent. Single source of truth: every
+   utility (bg-*, text-*, border-*, shadow-*, ease-*, blur-*) derives from here.
+   The neutral ramp reads LIGHT→DARK by value (names kept for component
+   compatibility): void = lightest paper … signal = darkest ink.
    ============================================================================ */
 @theme {
-  /* — Core palette ——————————————————————————————————————————————— */
-  --color-void: #05050a;
-  --color-obsidian: #0b0d14;
-  --color-graphite: #14161f;
-  --color-slate: #1b1e2a; /* elevated surface */
-  --color-fog: #8a93a6;
-  --color-fog-dim: #5a6172;
-  --color-signal: #f4f4f8; /* signal-white */
+  /* — Neutral ramp (paper → ink) ——————————————————————————————————— */
+  --color-void: #fbfaf8; /* page background (warm paper) */
+  --color-obsidian: #ffffff; /* raised surface / cards */
+  --color-graphite: #f4f2ed; /* subtle fill */
+  --color-slate: #ece8e0; /* deeper fill / wells */
+  --color-fog: #6b6862; /* secondary text (warm stone) */
+  --color-fog-dim: #9a958c; /* muted text */
+  --color-signal: #14131a; /* primary text (near-black ink) */
 
-  /* — Accents ————————————————————————————————————————————————————— */
-  --color-flux: #5b8cff; /* primary accent A */
-  --color-flux-2: #00e5c4; /* primary accent B (gradient partner) */
-  --color-ember: #ff6a3d; /* reactive accent — act/reward, rationed */
-  --color-rare: #a16bff; /* secrets only */
-  --color-gold: #ffc24b; /* one legendary */
-  --color-danger: #ff3b4e;
+  /* — Accent (single) : deep indigo / cobalt ————————————————————————— */
+  --color-flux: #4338ca; /* THE accent */
+  --color-flux-2: #6366f1; /* brighter accent (gradients / hover) */
+  --color-ember: #4338ca; /* alias → accent (single-accent system) */
+  --color-rare: #4338ca; /* alias → accent (unused) */
+  --color-gold: #4338ca; /* alias → accent (unused) */
+  --color-danger: #dc2626;
 
-  /* — Lines / borders / focus ———————————————————————————————————— */
-  --color-line-subtle: color-mix(in oklab, #f4f4f8 8%, transparent);
-  --color-line: color-mix(in oklab, #f4f4f8 12%, transparent);
-  --color-line-strong: color-mix(in oklab, #f4f4f8 20%, transparent);
-  --color-focus: #5b8cff;
+  /* — Lines / borders / focus (ink-based for a light surface) ————————— */
+  --color-line-subtle: color-mix(in oklab, #14131a 6%, transparent);
+  --color-line: color-mix(in oklab, #14131a 10%, transparent);
+  --color-line-strong: color-mix(in oklab, #14131a 16%, transparent);
+  --color-focus: #4338ca;
 
-  /* — Typography families ———————————————————————————————————————— */
+  /* — Typography families (self-hosted Geist) ———————————————————————— */
   --font-display: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
 
-  /* — Fluid type scale (clamp: min → preferred → max) ———————————— */
+  /* — Fluid type scale (clamp: min → preferred → max) ———————————————— */
   --text-2xs: 0.6875rem;
   --text-2xs--line-height: 1.4;
   --text-xs: 0.75rem;
@@ -45,20 +46,20 @@
   --text-base: 1rem;
   --text-base--line-height: 1.6;
   --text-lg: 1.125rem;
-  --text-lg--line-height: 1.5;
+  --text-lg--line-height: 1.55;
   --text-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
   --text-xl--line-height: 1.3;
   --text-2xl: clamp(1.75rem, 1.4rem + 1.75vw, 2.5rem);
   --text-2xl--line-height: 1.15;
   --text-3xl: clamp(2.5rem, 1.8rem + 3.5vw, 3.75rem);
   --text-3xl--line-height: 1.05;
-  --text-4xl: clamp(3.25rem, 2rem + 6vw, 5.5rem);
+  --text-4xl: clamp(3rem, 2rem + 5vw, 5rem);
   --text-4xl--line-height: 1;
-  --text-display: clamp(3rem, 1rem + 8vw, 9rem);
-  --text-display--line-height: 0.95;
-  --text-display--letter-spacing: -0.02em;
+  --text-display: clamp(2.75rem, 1.2rem + 7vw, 7.5rem);
+  --text-display--line-height: 0.98;
+  --text-display--letter-spacing: -0.03em;
 
-  /* — Radius ————————————————————————————————————————————————————— */
+  /* — Radius ————————————————————————————————————————————————————————— */
   --radius-xs: 0.25rem;
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
@@ -67,22 +68,22 @@
   --radius-2xl: 2rem;
   --radius-3xl: 2.75rem;
 
-  /* — Elevation shadows ————————————————————————————————————————— */
-  --shadow-elev-1: 0 1px 2px 0 rgb(0 0 0 / 0.4);
-  --shadow-elev-2: 0 4px 16px -2px rgb(0 0 0 / 0.5);
-  --shadow-elev-3: 0 12px 40px -8px rgb(0 0 0 / 0.6);
-  --shadow-elev-4: 0 24px 80px -16px rgb(0 0 0 / 0.7);
+  /* — Elevation shadows (soft, tuned for a light surface) ———————————— */
+  --shadow-elev-1: 0 1px 2px 0 rgb(20 19 26 / 0.05);
+  --shadow-elev-2: 0 8px 24px -10px rgb(20 19 26 / 0.12);
+  --shadow-elev-3: 0 20px 48px -18px rgb(20 19 26 / 0.16);
+  --shadow-elev-4: 0 36px 90px -30px rgb(20 19 26 / 0.22);
 
-  /* — Glows (accent-tinted) ————————————————————————————————————— */
-  --shadow-glow-flux: 0 0 24px -4px color-mix(in oklab, #5b8cff 60%, transparent);
-  --shadow-glow-ember: 0 0 24px -4px color-mix(in oklab, #ff6a3d 60%, transparent);
-  --shadow-glow-rare: 0 0 24px -4px color-mix(in oklab, #a16bff 60%, transparent);
+  /* — Glows (accent only, restrained) ——————————————————————————————— */
+  --shadow-glow-flux: 0 10px 34px -10px color-mix(in oklab, #4338ca 55%, transparent);
+  --shadow-glow-ember: 0 10px 34px -10px color-mix(in oklab, #4338ca 55%, transparent);
+  --shadow-glow-rare: 0 10px 34px -10px color-mix(in oklab, #4338ca 55%, transparent);
 
-  /* — Blur ——————————————————————————————————————————————————————— */
-  --blur-glass: 16px;
+  /* — Blur ——————————————————————————————————————————————————————————— */
+  --blur-glass: 14px;
   --blur-heavy: 40px;
 
-  /* — Easing (shared with GSAP string map in src/design/motion.ts) ——— */
+  /* — Easing ————————————————————————————————————————————————————————— */
   --ease-signal: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-glide: cubic-bezier(0.65, 0, 0.35, 1);
   --ease-rise: cubic-bezier(0.22, 1, 0.36, 1);
@@ -91,23 +92,26 @@
 }
 
 /* ----------------------------------------------------------------------------
-   Non-utility design vars: semantic aliases, motion durations, depth (z),
-   opacity, and glow raw values consumed via var() in components/JS.
+   Semantic aliases + motion/depth/opacity vars (consumed via var()).
    ---------------------------------------------------------------------------- */
 :root {
-  /* Semantic surface hierarchy */
   --bg-base: var(--color-void);
   --bg-surface: var(--color-obsidian);
   --bg-elevated: var(--color-graphite);
-  --bg-overlay: color-mix(in oklab, var(--color-void) 78%, transparent);
-  --surface-glass: color-mix(in oklab, var(--color-graphite) 60%, transparent);
+  --bg-overlay: color-mix(in oklab, #14131a 45%, transparent);
+  --surface-glass: color-mix(in oklab, #ffffff 70%, transparent);
 
-  /* Semantic text */
   --text-primary: var(--color-signal);
   --text-secondary: var(--color-fog);
   --text-muted: var(--color-fog-dim);
 
-  /* Motion durations */
+  /* Dark feature-section palette (opt-in via .section-dark) */
+  --dark-bg: #0b0b10;
+  --dark-surface: #15151d;
+  --dark-text: #f4f2ee;
+  --dark-muted: #9a958c;
+  --dark-line: color-mix(in oklab, #ffffff 12%, transparent);
+
   --dur-instant: 80ms;
   --dur-fast: 140ms;
   --dur-ui: 240ms;
@@ -116,7 +120,6 @@
   --dur-cinematic: 1400ms;
   --dur-epic: 3000ms;
 
-  /* Depth / z-index system */
   --z-canvas: 0;
   --z-content: 10;
   --z-nav: 30;
@@ -125,28 +128,20 @@
   --z-overlay: 60;
   --z-toast: 70;
 
-  /* Opacity scale */
   --opacity-disabled: 0.4;
   --opacity-muted: 0.6;
   --opacity-hover: 0.85;
 
-  /* Safe-area insets (notches / rounded corners) — read by useSafeArea. */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
 
-  color-scheme: dark;
-}
-
-/* Light-mode token overrides land here when ENABLE_LIGHT flips (ThemeProvider
-   stamps data-theme on <html>). Dark is the only active theme today. */
-:root[data-theme='light'] {
   color-scheme: light;
 }
 
 /* ----------------------------------------------------------------------------
-   Base layer — sits on top of Tailwind preflight.
+   Base layer — on top of Tailwind preflight.
    ---------------------------------------------------------------------------- */
 @layer base {
   html {
@@ -163,11 +158,10 @@
   }
 
   ::selection {
-    background: color-mix(in oklab, var(--color-flux) 30%, transparent);
+    background: color-mix(in oklab, var(--color-flux) 20%, transparent);
     color: var(--color-signal);
   }
 
-  /* Unified in-brand focus ring (accessibility). */
   :focus-visible {
     outline: 2px solid var(--color-focus);
     outline-offset: 2px;
@@ -176,14 +170,21 @@
 
   canvas {
     display: block;
-    touch-action: none;
   }
 
-  /* On fine pointers the custom reticle is the cursor — hide the native one. */
-  @media (pointer: fine) {
-    body {
-      cursor: none;
-    }
+  /* Dark feature sections: scope the semantic vars so components invert. */
+  .section-dark {
+    background: var(--dark-bg);
+    color: var(--dark-text);
+    --bg-base: var(--dark-bg);
+    --bg-surface: var(--dark-surface);
+    --surface-glass: color-mix(in oklab, #ffffff 8%, transparent);
+    --text-primary: var(--dark-text);
+    --text-secondary: var(--dark-muted);
+    --color-signal: var(--dark-text);
+    --color-fog: var(--dark-muted);
+    --color-line: var(--dark-line);
+    color-scheme: dark;
   }
 
   /* Lenis smooth-scroll integration hooks. */
@@ -204,11 +205,11 @@
 
 /* Named animations exposed as `animate-*` utilities. */
 @theme {
-  --animate-fade-in: atlas-fade-in var(--dur-ui) ease-out both;
-  --animate-scale-in: atlas-scale-in var(--dur-ui) var(--ease-signal) both;
+  --animate-fade-in: fade-in var(--dur-ui) ease-out both;
+  --animate-scale-in: scale-in var(--dur-ui) var(--ease-signal) both;
 }
 
-@keyframes atlas-fade-in {
+@keyframes fade-in {
   from {
     opacity: 0;
   }
@@ -217,7 +218,7 @@
   }
 }
 
-@keyframes atlas-scale-in {
+@keyframes scale-in {
   from {
     opacity: 0;
     transform: translateY(8px) scale(0.98);
@@ -240,69 +241,12 @@
 @keyframes atlas-pulse {
   0%,
   100% {
-    opacity: 0.3;
-    transform: scale(0.8);
+    opacity: 0.35;
+    transform: scale(0.85);
   }
   50% {
     opacity: 1;
     transform: scale(1);
-  }
-}
-
-/* Boot sequence effects */
-@keyframes atlas-scanlines {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: 0 6px;
-  }
-}
-
-@keyframes atlas-caret {
-  0%,
-  49% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes atlas-drift {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 0;
-  }
-  10% {
-    opacity: var(--drift-opacity, 0.5);
-  }
-  90% {
-    opacity: var(--drift-opacity, 0.5);
-  }
-  100% {
-    transform: translateY(-120px) scale(0.4);
-    opacity: 0;
-  }
-}
-
-@keyframes atlas-flicker {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  92% {
-    opacity: 1;
-  }
-  93% {
-    opacity: 0.4;
-  }
-  94% {
-    opacity: 1;
-  }
-  97% {
-    opacity: 0.7;
   }
 }
 

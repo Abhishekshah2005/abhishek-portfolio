@@ -8,19 +8,20 @@
  */
 
 export const COLORS = {
-  void: '#05050A',
-  obsidian: '#0B0D14',
-  graphite: '#14161F',
-  slate: '#1B1E2A',
-  fog: '#8A93A6',
-  fogDim: '#5A6172',
-  signal: '#F4F4F8',
-  flux: '#5B8CFF',
-  flux2: '#00E5C4',
-  ember: '#FF6A3D',
-  rare: '#A16BFF',
-  gold: '#FFC24B',
-  danger: '#FF3B4E',
+  void: '#FBFAF8', // page paper
+  obsidian: '#FFFFFF', // surface
+  graphite: '#F4F2ED', // subtle fill
+  slate: '#ECE8E0', // deeper fill
+  fog: '#6B6862', // secondary text
+  fogDim: '#9A958C', // muted
+  signal: '#14131A', // ink
+  flux: '#4338CA', // accent (deep indigo)
+  flux2: '#6366F1', // brighter accent
+  ember: '#4338CA', // alias → accent
+  rare: '#4338CA', // alias → accent
+  gold: '#4338CA', // alias → accent
+  danger: '#DC2626',
+  dark: '#0B0B10', // dark feature-section base
 } as const;
 
 export type ColorToken = keyof typeof COLORS;
@@ -84,8 +85,8 @@ export type Breakpoint = keyof typeof BREAKPOINTS;
  * palette so post-processing bloom reads correctly).
  */
 export const EMISSIVE = {
-  flux: '#7BA4FF',
-  flux2: '#3BF2D6',
-  ember: '#FF8258',
-  rare: '#B98CFF',
+  flux: '#5B4FE0',
+  flux2: '#8B8CF7',
+  ember: '#5B4FE0',
+  rare: '#8B8CF7',
 } as const;

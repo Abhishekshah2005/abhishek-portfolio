@@ -1,10 +1,7 @@
 export { ExperienceShell } from './ExperienceShell';
 export type { ExperienceShellProps } from './ExperienceShell';
 
-// Cinematic boot sequence (the active loading experience)
-export * from './boot';
-
-// Simpler preloader (kept for reuse; the shell uses BootSequence)
+// Optional premium preloader (available; not mounted by default for fast load).
 export { Preloader } from './Preloader';
 export type { PreloaderProps } from './Preloader';
 export { PageTransition } from './PageTransition';
