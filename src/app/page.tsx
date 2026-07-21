@@ -1,10 +1,11 @@
+import { Home } from '@/sections/home';
+
+/**
+ * Home — Abhishek Shah. One continuous cinematic traverse through ten chapters
+ * (Finance × Technology × AI), held over a persistent world with a glowing
+ * horizon, a live HUD, and headline reveals — built to convince business owners
+ * he can build, automate and scale their business.
+ */
 export default function HomePage() {
-  return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4">
-      <h1 className="font-display text-4xl font-light tracking-tight text-signal">
-        Abhishek <span className="italic text-flux">Shah</span>
-      </h1>
-      <p className="font-mono text-2xs uppercase tracking-[0.3em] text-fog">Rebuilding</p>
-    </div>
-  );
+  return <Home />;
 }
