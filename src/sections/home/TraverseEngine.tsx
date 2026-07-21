@@ -9,6 +9,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { useTick } from '@/hooks/useTick';
 import { useScrollFrame } from '@/hooks/useScroll';
+import { useEngineOptional } from '@/hooks/useEngine';
 import { ChapterPanel } from './ChapterPanel';
 import { CHAPTERS } from './content';
 import { useTraverse } from './traverse';
@@ -28,12 +29,24 @@ export function TraverseEngine() {
   const reduced = useReducedMotion();
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const { setActive } = useTraverse();
+  const engine = useEngineOptional();
   const horizontal = isDesktop && !reduced;
 
   // Motion-blur state (desktop only), eased toward scroll velocity.
   const blur = useRef({ v: 0, cur: 0 });
+  // Debounced Lenis-native snap: settle on the nearest chapter when scrolling
+  // pauses (ScrollTrigger's own snap fights Lenis, so we drive Lenis directly).
+  const snapTimer = useRef(0);
   useScrollFrame((p) => {
     blur.current.v = Math.min(9, Math.abs(p.velocity) * 0.12);
+    if (!horizontal || !engine) return;
+    window.clearTimeout(snapTimer.current);
+    snapTimer.current = window.setTimeout(() => {
+      const N = CHAPTERS.length;
+      const idx = Math.round(p.progress * (N - 1));
+      const target = (idx / (N - 1)) * p.limit;
+      if (Math.abs(target - p.scroll) > 6) engine.scroll.scrollTo(target, { duration: 0.6 });
+    }, 150);
   });
   useTick(() => {
     if (!horizontal) return;
@@ -72,7 +85,7 @@ export function TraverseEngine() {
       });
 
       const panels = gsap.utils.toArray<HTMLElement>('[data-panel]', track);
-      panels.forEach((panel) => {
+      panels.forEach((panel, i) => {
         const h = panel.querySelector<HTMLElement>('[data-headline]');
         let split: SplitText | null = null;
         if (h) {
@@ -82,23 +95,30 @@ export function TraverseEngine() {
         const reveals = panel.querySelectorAll<HTMLElement>('[data-reveal]');
         gsap.set(reveals, { y: 42, autoAlpha: 0 });
 
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: panel,
-            containerAnimation: scrub,
-            start: 'left 68%',
-            end: 'left 24%',
-            toggleActions: 'play none none reverse',
-          },
-        });
-        if (split) {
-          tl.to(split.lines, { yPercent: 0, duration: 1, ease: 'expo.out', stagger: 0.12 }, 0);
+        const build = (tl: gsap.core.Timeline) => {
+          if (split) {
+            tl.to(split.lines, { yPercent: 0, duration: 1, ease: 'expo.out', stagger: 0.12 }, 0);
+          }
+          tl.to(reveals, { y: 0, autoAlpha: 1, duration: 0.9, ease: 'expo.out', stagger: 0.08 }, 0.12);
+        };
+
+        if (i === 0) {
+          // Panel 0 is centre-stage at load — play its reveal directly (a
+          // containerAnimation trigger only fires once the track scrolls).
+          build(gsap.timeline({ delay: 0.35 }));
+        } else {
+          build(
+            gsap.timeline({
+              scrollTrigger: {
+                trigger: panel,
+                containerAnimation: scrub,
+                start: 'left 68%',
+                end: 'left 24%',
+                toggleActions: 'play none none reverse',
+              },
+            }),
+          );
         }
-        tl.to(
-          reveals,
-          { y: 0, autoAlpha: 1, duration: 0.9, ease: 'expo.out', stagger: 0.08 },
-          0.12,
-        );
       });
 
       ScrollTrigger.refresh();
