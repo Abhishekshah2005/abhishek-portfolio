@@ -8,31 +8,32 @@
    compatibility): void = lightest paper … signal = darkest ink.
    ============================================================================ */
 @theme {
-  /* — Neutral ramp (paper → ink) ——————————————————————————————————— */
-  --color-void: #fbfaf8; /* page background (warm paper) */
-  --color-obsidian: #ffffff; /* raised surface / cards */
-  --color-graphite: #f4f2ed; /* subtle fill */
-  --color-slate: #ece8e0; /* deeper fill / wells */
-  --color-fog: #6b6862; /* secondary text (warm stone) */
-  --color-fog-dim: #9a958c; /* muted text */
-  --color-signal: #14131a; /* primary text (near-black ink) */
+  /* — Neutral ramp (warm paper → ink) — "The Ledger" editorial palette —— */
+  --color-void: #f7f5f0; /* page background (warm paper) */
+  --color-obsidian: #fcfbf8; /* raised surface */
+  --color-graphite: #efece5; /* subtle fill */
+  --color-slate: #e4e0d7; /* deeper fill / wells */
+  --color-fog: #6a655c; /* secondary text (warm stone) */
+  --color-fog-dim: #9d988c; /* muted text */
+  --color-signal: #1a1714; /* primary text (warm ink) */
 
-  /* — Accent (single) : deep indigo / cobalt ————————————————————————— */
-  --color-flux: #4338ca; /* THE accent */
-  --color-flux-2: #6366f1; /* brighter accent (gradients / hover) */
-  --color-ember: #4338ca; /* alias → accent (single-accent system) */
-  --color-rare: #4338ca; /* alias → accent (unused) */
-  --color-gold: #4338ca; /* alias → accent (unused) */
-  --color-danger: #dc2626;
+  /* — Accent (single) : ink navy ————————————————————————————————————— */
+  --color-flux: #22314f; /* THE accent — used sparingly */
+  --color-flux-2: #35486b; /* lighter navy (hover) */
+  --color-ember: #22314f; /* alias → accent (single-accent system) */
+  --color-rare: #22314f; /* alias → accent */
+  --color-gold: #22314f; /* alias → accent */
+  --color-danger: #a33a2f;
 
-  /* — Lines / borders / focus (ink-based for a light surface) ————————— */
-  --color-line-subtle: color-mix(in oklab, #14131a 6%, transparent);
-  --color-line: color-mix(in oklab, #14131a 10%, transparent);
-  --color-line-strong: color-mix(in oklab, #14131a 16%, transparent);
-  --color-focus: #4338ca;
+  /* — Lines / borders / focus (ink-based hairlines) —————————————————— */
+  --color-line-subtle: color-mix(in oklab, #1a1714 7%, transparent);
+  --color-line: color-mix(in oklab, #1a1714 12%, transparent);
+  --color-line-strong: color-mix(in oklab, #1a1714 20%, transparent);
+  --color-focus: #22314f;
 
-  /* — Typography families (self-hosted Geist) ———————————————————————— */
-  --font-display: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  /* — Typography families (self-hosted: Fraunces serif + Geist) ————————— */
+  --font-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --font-serif: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
 
@@ -56,8 +57,8 @@
   --text-4xl: clamp(3rem, 2rem + 5vw, 5rem);
   --text-4xl--line-height: 1;
   --text-display: clamp(2.75rem, 1.2rem + 7vw, 7.5rem);
-  --text-display--line-height: 0.98;
-  --text-display--letter-spacing: -0.03em;
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: -0.015em;
 
   /* — Radius ————————————————————————————————————————————————————————— */
   --radius-xs: 0.25rem;
@@ -170,13 +171,6 @@
 
   canvas {
     display: block;
-  }
-
-  /* On fine pointers the custom cursor is the cursor — hide the native one. */
-  @media (pointer: fine) {
-    body {
-      cursor: none;
-    }
   }
 
   /* Dark feature sections: scope the semantic vars so components invert. */

@@ -1,29 +1,19 @@
 'use client';
 
-import { Suspense, useRef } from 'react';
-import dynamic from 'next/dynamic';
+import { useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useIsomorphicLayoutEffect } from '@/hooks/useIsomorphicLayoutEffect';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { useSceneContent } from '@/providers/SceneProvider';
 import { MagneticButton } from './MagneticButton';
 
-// The object is lazy + client-only (Three stays out of the server render).
-const HeroObjectLazy = dynamic(() => import('@/three/scenes').then((m) => m.HeroObject), { ssr: false });
-
 /**
- * The Hero — the object is the hero, not the words. A black cinematic stage
- * (rendered by the canvas), one restrained sentence, immense negative space. The
- * first scroll changes perspective: the object rotates and swells while the
- * words recede. Premium before animated.
+ * Opening composition — "The Ledger". Trust-first, editorial, typography as the
+ * hero: a warm-paper spread with a serif statement of practice, an offset
+ * standfirst, one restrained consultation link, and a folio. Motion is quiet and
+ * purposeful — hairlines draw, lines mask up. No headline-shouting, no graphics.
  */
 export function Hero() {
-  useSceneContent(
-    <Suspense fallback={null}>
-      <HeroObjectLazy />
-    </Suspense>,
-  );
   const sectionRef = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
 
@@ -34,62 +24,83 @@ export function Hero() {
     const ctx = gsap.context(() => {
       gsap
         .timeline({ defaults: { ease: 'expo.out' } })
-        .from('[data-line]', { yPercent: 120, duration: 1.1, stagger: 0.14 }, 0.25)
-        .from('[data-fade]', { autoAlpha: 0, y: 14, duration: 0.9, stagger: 0.12 }, '-=0.55');
+        .from('[data-rule]', { scaleX: 0, transformOrigin: 'left center', duration: 1, stagger: 0.12 })
+        .from('[data-kicker]', { autoAlpha: 0, y: 10, duration: 0.6 }, '-=0.6')
+        .from('[data-line]', { yPercent: 115, duration: 1.15, stagger: 0.12 }, '-=0.35')
+        .from('[data-stand]', { autoAlpha: 0, y: 16, duration: 0.9 }, '-=0.65')
+        .from('[data-cta]', { autoAlpha: 0, y: 12, duration: 0.7 }, '-=0.6')
+        .from('[data-folio]', { autoAlpha: 0, y: 8, duration: 0.6 }, '-=0.5');
 
-      gsap.to('[data-hero-copy]', {
-        autoAlpha: 0,
+      // First scroll: the composition drifts up a touch (fuller transform comes
+      // once the next composition is in place).
+      gsap.to('[data-inner]', {
         y: -48,
         ease: 'none',
-        scrollTrigger: { trigger: el, start: 'top top', end: '45% top', scrub: true },
+        scrollTrigger: { trigger: el, start: 'top top', end: 'bottom top', scrub: true },
       });
     }, el);
     return () => ctx.revert();
   }, [reduced]);
 
   return (
-    <section ref={sectionRef} id="top" className="relative h-[160vh]">
-      <div className="sticky top-0 flex h-screen w-full flex-col justify-end overflow-hidden">
-        {/* Cinematic vignette (darkens the frame edges over the object). */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{ background: 'radial-gradient(125% 95% at 50% 32%, transparent 52%, rgba(0,0,0,0.55) 100%)' }}
-        />
-
-        <div data-hero-copy className="relative z-10 mx-auto w-full max-w-[1200px] px-6 pb-[15vh] md:px-10">
-          <h1 className="max-w-2xl font-display text-[1.9rem] font-medium leading-[1.16] tracking-tight text-[#F4F1EA] md:text-5xl">
-            <span className="block overflow-hidden pb-[0.06em]">
-              <span data-line className="block">
-                The rigour of finance.
+    <section ref={sectionRef} id="top" className="relative min-h-[100svh] w-full">
+      <div
+        data-inner
+        className="mx-auto flex min-h-[100svh] max-w-[1240px] flex-col justify-end px-6 pb-14 pt-32 md:px-10 md:pb-16"
+      >
+        <div className="grid grid-cols-1 gap-x-10 gap-y-12 md:grid-cols-12 md:items-end">
+          {/* Statement */}
+          <div className="md:col-span-8">
+            <div className="mb-8 flex items-center gap-4">
+              <span data-rule className="block h-px w-14 bg-signal" />
+              <span data-kicker className="font-mono text-2xs uppercase tracking-[0.28em] text-fog">
+                For founders &amp; finance leaders
               </span>
-            </span>
-            <span className="block overflow-hidden pb-[0.06em]">
-              <span data-line className="block text-white/55">
-                The craft of technology.
+            </div>
+            <h1 className="font-display text-[clamp(2.4rem,6.4vw,5.5rem)] font-medium leading-[1.02] tracking-[-0.015em] text-signal">
+              <span className="block overflow-hidden pb-[0.06em]">
+                <span data-line className="block">
+                  I look after the numbers —
+                </span>
               </span>
-            </span>
-          </h1>
+              <span className="block overflow-hidden pb-[0.06em]">
+                <span data-line className="block">
+                  and build what makes them grow.
+                </span>
+              </span>
+            </h1>
+          </div>
 
-          <div data-fade className="mt-9">
-            <MagneticButton
-              href="#contact"
-              intent="ghost"
-              size="md"
-              className="!px-0 text-[#F4F1EA] hover:text-white hover:!bg-transparent"
-            >
-              Start a conversation&nbsp;→
-            </MagneticButton>
+          {/* Standfirst + consultation */}
+          <div className="md:col-span-4 md:pb-2">
+            <p data-stand className="max-w-sm text-base leading-relaxed text-fog md:text-lg">
+              Accounting, audit and CFO strategy across the UK, UAE and India — paired with the AI,
+              automation, software and systems that turn financial clarity into growth.
+            </p>
+            <div data-cta className="mt-8">
+              <MagneticButton
+                href="#contact"
+                intent="ghost"
+                size="md"
+                className="!px-0 font-mono text-2xs uppercase tracking-[0.24em] text-signal hover:text-flux hover:!bg-transparent"
+              >
+                Request a consultation&nbsp;&rarr;
+              </MagneticButton>
+            </div>
           </div>
         </div>
 
-        {/* Scroll hint */}
+        {/* Folio */}
         <div
-          data-fade
-          className="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 text-white/40"
+          data-folio
+          className="mt-16 flex items-center justify-between border-t border-line pt-5 font-mono text-2xs uppercase tracking-[0.24em] text-fog-dim"
         >
-          <span className="font-mono text-2xs uppercase tracking-[0.3em]">Scroll</span>
-          <span className="h-8 w-px bg-white/20" />
+          <span>Finance &times; Technology</span>
+          <span className="hidden md:inline">Abhishek&nbsp;Shah</span>
+          <span aria-hidden className="flex items-center gap-2">
+            Scroll
+            <span data-rule className="block h-px w-8 bg-current" />
+          </span>
         </div>
       </div>
     </section>

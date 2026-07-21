@@ -37,14 +37,13 @@ export function SceneLayer({ children, followScroll = false, interactive = false
     <div
       aria-hidden
       className={cn(
-        // Dark cinematic stage from first paint (before the canvas mounts), so
-        // light hero type is readable immediately over it.
-        'fixed inset-0 z-[var(--z-canvas)] bg-[#0a0a0c]',
+        'fixed inset-0 z-[var(--z-canvas)]',
         interactive ? 'pointer-events-auto' : 'pointer-events-none',
         className,
       )}
     >
-      {engine ? (
+      {/* Only mount the WebGL canvas when a scene is actually present. */}
+      {engine && (activeScene || children) ? (
         <EngineCanvas followScroll={followScroll} className="size-full">
           {activeScene}
           {children}
