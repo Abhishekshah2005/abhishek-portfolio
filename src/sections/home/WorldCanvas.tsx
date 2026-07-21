@@ -118,54 +118,123 @@ export function WorldCanvas() {
       const prog = scroll.current.progress;
       const horizonY = h * (HORIZON - prog * 0.05);
 
-      // — Sky: deep vertical gradient, warming toward the horizon —
+      const m = mood.current;
+      const g = glow.current * m.i;
+      const cx = w * (0.5 + (pointer.current.x - 0.5) * 0.04);
+      const H = HORIZON - prog * 0.05;
+
+      // — Sky: deep indigo night, warming to purple toward the horizon —
       const sky = ctx.createLinearGradient(0, 0, 0, h);
-      sky.addColorStop(0, '#070709');
-      sky.addColorStop(0.45, '#0a0a0f');
-      sky.addColorStop(Math.min(0.98, HORIZON - prog * 0.05 - 0.02), '#141019');
-      sky.addColorStop(HORIZON - prog * 0.05, '#241826');
-      sky.addColorStop(Math.min(1, HORIZON - prog * 0.05 + 0.02), '#0c0a0f');
-      sky.addColorStop(1, '#070708');
+      sky.addColorStop(0, '#080814');
+      sky.addColorStop(0.34, '#0d0c1e');
+      sky.addColorStop(Math.max(0.02, H - 0.05), '#1b1433');
+      sky.addColorStop(H, '#2a1e3a');
+      sky.addColorStop(Math.min(0.999, H + 0.015), '#0c0a12');
+      sky.addColorStop(1, '#070610');
       ctx.fillStyle = sky;
       ctx.fillRect(0, 0, w, h);
 
       // — Horizon bloom: wide warm glow centered on the line (mood-tinted) —
-      const m = mood.current;
-      const g = glow.current * m.i;
-      const cx = w * (0.5 + (pointer.current.x - 0.5) * 0.04);
-      const grad = ctx.createRadialGradient(cx, horizonY, 0, cx, horizonY, w * 0.75);
-      grad.addColorStop(0, `rgba(${m.inr | 0},${m.ing | 0},${m.inb | 0},${0.22 * g})`);
-      grad.addColorStop(0.18, `rgba(${m.our | 0},${m.oug | 0},${m.oub | 0},${0.14 * g})`);
-      grad.addColorStop(0.5, `rgba(120,60,60,${0.05 * g})`);
+      const grad = ctx.createRadialGradient(cx, horizonY, 0, cx, horizonY, w * 0.78);
+      grad.addColorStop(0, `rgba(${m.inr | 0},${m.ing | 0},${m.inb | 0},${0.26 * g})`);
+      grad.addColorStop(0.18, `rgba(${m.our | 0},${m.oug | 0},${m.oub | 0},${0.16 * g})`);
+      grad.addColorStop(0.5, `rgba(120,60,70,${0.05 * g})`);
       grad.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.save();
       ctx.globalCompositeOperation = 'screen';
       ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.ellipse(cx, horizonY, w * 0.75, h * 0.42, 0, 0, Math.PI * 2);
+      ctx.ellipse(cx, horizonY, w * 0.78, h * 0.4, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
 
-      // — Depth dust: parallax by scroll + pointer, subtle twinkle —
-      const px = (pointer.current.x - 0.5);
-      const py = (pointer.current.y - 0.5);
+      // — Stars/dust: confined to the sky above the horizon —
+      const px = pointer.current.x - 0.5;
+      const py = pointer.current.y - 0.5;
       ctx.save();
       ctx.globalCompositeOperation = 'lighter';
       for (const d of dust.current) {
         const depth = 0.3 + d.z * 0.7;
-        const driftY = ((d.y - prog * (0.15 + d.z * 0.5)) % 1 + 1) % 1;
+        const driftY = (((d.y * 0.8 - prog * (0.1 + d.z * 0.4)) % 1) + 1) % 1;
         const x = d.x * w + px * 40 * depth;
-        const y = driftY * h + py * 24 * depth;
+        const y = driftY * horizonY + py * 22 * depth;
         const tw = reduced ? 1 : 0.65 + 0.35 * Math.sin(time * 0.0012 + d.p);
-        // fade dust near/under the horizon so the glow reads clean
-        const vertFade = y > horizonY ? Math.max(0, 1 - (y - horizonY) / (h * 0.3)) : 1;
-        ctx.globalAlpha = d.a * tw * vertFade;
+        const vertFade = Math.max(0, 1 - y / horizonY);
+        ctx.globalAlpha = d.a * tw * (0.35 + vertFade * 0.65);
         ctx.fillStyle = d.z > 0.6 ? '#fff4e0' : '#cfd6e6';
         ctx.beginPath();
         ctx.arc(x, y, d.r, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.restore();
+
+      // — The road: perspective trapezoid receding to the vanishing point —
+      const vpx = cx;
+      const vpy = horizonY;
+      const half = w * 0.36;
+      ctx.beginPath();
+      ctx.moveTo(vpx - 1.5, vpy);
+      ctx.lineTo(vpx - half, h);
+      ctx.lineTo(vpx + half, h);
+      ctx.lineTo(vpx + 1.5, vpy);
+      ctx.closePath();
+      const road = ctx.createLinearGradient(0, vpy, 0, h);
+      road.addColorStop(0, 'rgba(42,40,54,0)');
+      road.addColorStop(0.12, 'rgba(32,30,42,0.6)');
+      road.addColorStop(1, 'rgba(18,17,26,0.92)');
+      ctx.fillStyle = road;
+      ctx.fill();
+      // warm reflection where the road meets the glow (path still set)
+      ctx.save();
+      ctx.globalCompositeOperation = 'screen';
+      const refl = ctx.createLinearGradient(0, vpy, 0, vpy + h * 0.18);
+      refl.addColorStop(0, `rgba(${m.our | 0},${m.oug | 0},${m.oub | 0},${0.18 * g})`);
+      refl.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = refl;
+      ctx.fill();
+      ctx.restore();
+
+      // — Center-line dashes (perspective-spaced) —
+      ctx.fillStyle = `rgba(${m.inr | 0},${m.ing | 0},${m.inb | 0},1)`;
+      const dashes = 8;
+      for (let i = 0; i < dashes; i++) {
+        const t = (i / dashes) * (i / dashes); // bunch toward horizon
+        const y = vpy + (h - vpy) * (0.06 + t * 0.94);
+        const s = (y - vpy) / (h - vpy);
+        const dw = 1 + s * 5;
+        const dh = 3 + s * 20;
+        ctx.globalAlpha = (0.12 + s * 0.22) * (reduced ? 1 : 1);
+        ctx.fillRect(vpx - dw / 2, y - dh, dw, dh);
+      }
+      ctx.globalAlpha = 1;
+
+      // — The lone figure, standing on the road, facing the horizon —
+      const figH = Math.max(26, h * 0.062);
+      const fx = vpx + px * 6;
+      const fy = vpy + h * 0.016;
+      ctx.save();
+      ctx.globalCompositeOperation = 'screen';
+      const halo = ctx.createRadialGradient(fx, fy - figH * 0.5, 0, fx, fy - figH * 0.5, figH);
+      halo.addColorStop(0, `rgba(${m.our | 0},${m.oug | 0},${m.oub | 0},${0.28 * g})`);
+      halo.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = halo;
+      ctx.beginPath();
+      ctx.arc(fx, fy - figH * 0.5, figH, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      ctx.fillStyle = 'rgba(5,5,9,0.97)';
+      ctx.beginPath(); // head
+      ctx.arc(fx, fy - figH * 0.84, figH * 0.12, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath(); // torso (tapered)
+      ctx.moveTo(fx - figH * 0.14, fy - figH * 0.68);
+      ctx.lineTo(fx + figH * 0.14, fy - figH * 0.68);
+      ctx.lineTo(fx + figH * 0.09, fy - figH * 0.3);
+      ctx.lineTo(fx - figH * 0.09, fy - figH * 0.3);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillRect(fx - figH * 0.085, fy - figH * 0.32, figH * 0.062, figH * 0.32); // left leg
+      ctx.fillRect(fx + figH * 0.023, fy - figH * 0.32, figH * 0.062, figH * 0.32); // right leg
     };
 
     // expose render for the ticker
