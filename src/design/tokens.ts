@@ -8,20 +8,22 @@
  */
 
 export const COLORS = {
-  void: '#F7F5F0', // warm paper
-  obsidian: '#FCFBF8', // surface
-  graphite: '#EFECE5', // subtle fill
-  slate: '#E4E0D7', // deeper fill
-  fog: '#6A655C', // secondary text
-  fogDim: '#9D988C', // muted
-  signal: '#1A1714', // warm ink
-  flux: '#1F6B4B', // accent (deep signal green)
-  flux2: '#2A855C', // lighter green
-  ember: '#1F6B4B', // alias → accent
-  rare: '#1F6B4B', // alias → accent
-  gold: '#1F6B4B', // alias → accent
-  danger: '#A33A2F',
-  dark: '#111013', // dark feature-section base
+  void: '#08080A', // deepest cinematic charcoal (page bg)
+  obsidian: '#0E0E12', // raised surface
+  graphite: '#14141A', // subtle fill
+  slate: '#1C1C24', // deeper fill / wells
+  fog: '#8E8A82', // secondary text (warm stone)
+  fogDim: '#5C5952', // muted
+  signal: '#F3F0E9', // primary text (warm off-white)
+  flux: '#E4B063', // accent (warm gold)
+  flux2: '#F3D08A', // bright gold (glow core)
+  ember: '#E4B063', // alias → accent
+  rare: '#E4B063', // alias → accent
+  gold: '#E4B063', // alias → accent
+  danger: '#C2603F', // warm terracotta
+  glowWarm: '#F0B45E', // horizon glow core
+  glowWarm2: '#E07A4E', // horizon glow coral edge
+  light: '#F4F1EA', // optional bright-chapter base
 } as const;
 
 export type ColorToken = keyof typeof COLORS;
@@ -85,8 +87,8 @@ export type Breakpoint = keyof typeof BREAKPOINTS;
  * palette so post-processing bloom reads correctly).
  */
 export const EMISSIVE = {
-  flux: '#5B4FE0',
-  flux2: '#8B8CF7',
-  ember: '#5B4FE0',
-  rare: '#8B8CF7',
+  flux: '#FFC873', // hotter gold for bloom
+  flux2: '#FFE0A6',
+  ember: '#FFB25E',
+  rare: '#FF9A5A', // warm coral for the horizon bloom
 } as const;

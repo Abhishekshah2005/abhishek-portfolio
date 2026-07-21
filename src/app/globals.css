@@ -1,42 +1,44 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/fraunces';
 
 /* ============================================================================
    ABHISHEK SHAH — DESIGN TOKENS (Tailwind v4 CSS-first @theme).
-   Premium light base + deep-indigo accent. Single source of truth: every
-   utility (bg-*, text-*, border-*, shadow-*, ease-*, blur-*) derives from here.
-   The neutral ramp reads LIGHT→DARK by value (names kept for component
-   compatibility): void = lightest paper … signal = darkest ink.
+   Dark cinematic editorial base + a single warm-gold accent. Single source of
+   truth: every utility (bg-*, text-*, border-*, shadow-*, ease-*, blur-*)
+   derives from here. Token NAMES are stable across re-skins; only VALUES change.
+   The neutral ramp reads DARK→LIGHT by value (names kept for compatibility):
+   void = deepest canvas … signal = warm off-white ink (primary text).
    ============================================================================ */
 @theme {
-  /* — Neutral ramp (warm paper → ink) — "The Ledger" editorial palette —— */
-  --color-void: #f7f5f0; /* page background (warm paper) */
-  --color-obsidian: #fcfbf8; /* raised surface */
-  --color-graphite: #efece5; /* subtle fill */
-  --color-slate: #e4e0d7; /* deeper fill / wells */
-  --color-fog: #6a655c; /* secondary text (warm stone) */
-  --color-fog-dim: #9d988c; /* muted text */
-  --color-signal: #1a1714; /* primary text (warm ink) */
+  /* — Neutral ramp (deep charcoal canvas → warm off-white ink) ——————————— */
+  --color-void: #08080a; /* page background (deepest cinematic charcoal) */
+  --color-obsidian: #0e0e12; /* raised surface */
+  --color-graphite: #14141a; /* subtle fill */
+  --color-slate: #1c1c24; /* deeper fill / wells */
+  --color-fog: #8e8a82; /* secondary text (warm stone) */
+  --color-fog-dim: #5c5952; /* muted text */
+  --color-signal: #f3f0e9; /* primary text (warm off-white) */
 
-  /* — Accent (single) : deep signal green (money / growth) ——————————— */
-  --color-flux: #1f6b4b; /* THE accent — used sparingly */
-  --color-flux-2: #2a855c; /* lighter green (hover) */
-  --color-ember: #1f6b4b; /* alias → accent (single-accent system) */
-  --color-rare: #1f6b4b; /* alias → accent */
-  --color-gold: #1f6b4b; /* alias → accent */
-  --color-danger: #a33a2f;
+  /* — Accent (single) : warm gold / amber (glows on the dark canvas) ————— */
+  --color-flux: #e4b063; /* THE accent — used sparingly */
+  --color-flux-2: #f3d08a; /* bright gold (hover / glow core) */
+  --color-ember: #e4b063; /* alias → accent (single-accent system) */
+  --color-rare: #e4b063; /* alias → accent */
+  --color-gold: #e4b063; /* alias → accent */
+  --color-danger: #c2603f; /* warm terracotta (errors only) */
 
-  /* — Lines / borders / focus (ink-based hairlines) —————————————————— */
-  --color-line-subtle: color-mix(in oklab, #1a1714 7%, transparent);
-  --color-line: color-mix(in oklab, #1a1714 12%, transparent);
-  --color-line-strong: color-mix(in oklab, #1a1714 22%, transparent);
-  --color-focus: #1f6b4b;
+  /* — Lines / borders / focus (light hairlines on dark) ————————————————— */
+  --color-line-subtle: color-mix(in oklab, #ffffff 6%, transparent);
+  --color-line: color-mix(in oklab, #ffffff 10%, transparent);
+  --color-line-strong: color-mix(in oklab, #ffffff 17%, transparent);
+  --color-focus: #e4b063;
 
-  /* — Typography families (grotesk-led; Geist self-hosted) ——————————— */
-  --font-display: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  /* — Typography families (editorial serif display + grotesk + mono) ————— */
+  --font-display: 'Fraunces Variable', ui-serif, Georgia, 'Times New Roman', serif;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
 
-  /* — Fluid type scale (clamp: min → preferred → max) ———————————————— */
+  /* — Fluid type scale (clamp: min → preferred → max) ———————————————————— */
   --text-2xs: 0.6875rem;
   --text-2xs--line-height: 1.4;
   --text-xs: 0.75rem;
@@ -57,9 +59,9 @@
   --text-4xl--line-height: 1;
   --text-display: clamp(2.75rem, 1.2rem + 7vw, 7.5rem);
   --text-display--line-height: 1;
-  --text-display--letter-spacing: -0.03em;
+  --text-display--letter-spacing: -0.02em;
 
-  /* — Radius ————————————————————————————————————————————————————————— */
+  /* — Radius ————————————————————————————————————————————————————————————— */
   --radius-xs: 0.25rem;
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
@@ -68,26 +70,27 @@
   --radius-2xl: 2rem;
   --radius-3xl: 2.75rem;
 
-  /* — Elevation shadows (soft, tuned for a light surface) ———————————— */
-  --shadow-elev-1: 0 1px 2px 0 rgb(20 19 26 / 0.05);
-  --shadow-elev-2: 0 8px 24px -10px rgb(20 19 26 / 0.12);
-  --shadow-elev-3: 0 20px 48px -18px rgb(20 19 26 / 0.16);
-  --shadow-elev-4: 0 36px 90px -30px rgb(20 19 26 / 0.22);
+  /* — Elevation shadows (deep, tuned for the dark cinematic surface) —————— */
+  --shadow-elev-1: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+  --shadow-elev-2: 0 10px 30px -12px rgb(0 0 0 / 0.65);
+  --shadow-elev-3: 0 26px 60px -20px rgb(0 0 0 / 0.7);
+  --shadow-elev-4: 0 50px 110px -34px rgb(0 0 0 / 0.78);
 
-  /* — Glows (accent only, restrained) ——————————————————————————————— */
-  --shadow-glow-flux: 0 10px 34px -10px color-mix(in oklab, #4338ca 55%, transparent);
-  --shadow-glow-ember: 0 10px 34px -10px color-mix(in oklab, #4338ca 55%, transparent);
-  --shadow-glow-rare: 0 10px 34px -10px color-mix(in oklab, #4338ca 55%, transparent);
+  /* — Glows (gold accent only, restrained) ——————————————————————————————— */
+  --shadow-glow-flux: 0 0 44px -8px color-mix(in oklab, #e4b063 60%, transparent);
+  --shadow-glow-ember: 0 0 44px -8px color-mix(in oklab, #e4b063 60%, transparent);
+  --shadow-glow-rare: 0 0 44px -8px color-mix(in oklab, #e4b063 60%, transparent);
 
-  /* — Blur ——————————————————————————————————————————————————————————— */
-  --blur-glass: 14px;
-  --blur-heavy: 40px;
+  /* — Blur ——————————————————————————————————————————————————————————————— */
+  --blur-glass: 16px;
+  --blur-heavy: 44px;
 
-  /* — Easing ————————————————————————————————————————————————————————— */
+  /* — Easing (cinematic; expo-led like the reference) ———————————————————— */
   --ease-signal: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-glide: cubic-bezier(0.65, 0, 0.35, 1);
   --ease-rise: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-snap: cubic-bezier(0.19, 1, 0.22, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-play: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
@@ -98,19 +101,26 @@
   --bg-base: var(--color-void);
   --bg-surface: var(--color-obsidian);
   --bg-elevated: var(--color-graphite);
-  --bg-overlay: color-mix(in oklab, #14131a 45%, transparent);
-  --surface-glass: color-mix(in oklab, #ffffff 70%, transparent);
+  --bg-overlay: color-mix(in oklab, #000000 60%, transparent);
+  --surface-glass: color-mix(in oklab, #ffffff 6%, transparent);
+  --surface-glass-strong: color-mix(in oklab, #ffffff 10%, transparent);
 
   --text-primary: var(--color-signal);
   --text-secondary: var(--color-fog);
   --text-muted: var(--color-fog-dim);
 
-  /* Dark feature-section palette (opt-in via .section-dark) */
-  --dark-bg: #0b0b10;
-  --dark-surface: #15151d;
-  --dark-text: #f4f2ee;
-  --dark-muted: #9a958c;
-  --dark-line: color-mix(in oklab, #ffffff 12%, transparent);
+  /* The single warm accent + its warm horizon glow (used by the anchor line). */
+  --accent: var(--color-flux);
+  --accent-bright: var(--color-flux-2);
+  --glow-warm: #f0b45e;
+  --glow-warm-2: #e07a4e; /* deep coral edge of the horizon gradient */
+
+  /* Optional bright-chapter palette (opt-in via .section-light). */
+  --light-bg: #f4f1ea;
+  --light-surface: #ffffff;
+  --light-text: #16130f;
+  --light-muted: #6a655c;
+  --light-line: color-mix(in oklab, #16130f 12%, transparent);
 
   --dur-instant: 80ms;
   --dur-fast: 140ms;
@@ -137,7 +147,7 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
 
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 /* ----------------------------------------------------------------------------
@@ -158,7 +168,7 @@
   }
 
   ::selection {
-    background: color-mix(in oklab, var(--color-flux) 20%, transparent);
+    background: color-mix(in oklab, var(--color-flux) 26%, transparent);
     color: var(--color-signal);
   }
 
@@ -172,19 +182,19 @@
     display: block;
   }
 
-  /* Dark feature sections: scope the semantic vars so components invert. */
-  .section-dark {
-    background: var(--dark-bg);
-    color: var(--dark-text);
-    --bg-base: var(--dark-bg);
-    --bg-surface: var(--dark-surface);
-    --surface-glass: color-mix(in oklab, #ffffff 8%, transparent);
-    --text-primary: var(--dark-text);
-    --text-secondary: var(--dark-muted);
-    --color-signal: var(--dark-text);
-    --color-fog: var(--dark-muted);
-    --color-line: var(--dark-line);
-    color-scheme: dark;
+  /* Optional bright chapters: scope the semantic vars so components invert. */
+  .section-light {
+    background: var(--light-bg);
+    color: var(--light-text);
+    --bg-base: var(--light-bg);
+    --bg-surface: var(--light-surface);
+    --surface-glass: color-mix(in oklab, #16130f 5%, transparent);
+    --text-primary: var(--light-text);
+    --text-secondary: var(--light-muted);
+    --color-signal: var(--light-text);
+    --color-fog: var(--light-muted);
+    --color-line: var(--light-line);
+    color-scheme: light;
   }
 
   /* Lenis smooth-scroll integration hooks. */
@@ -200,6 +210,20 @@
   }
   .lenis.lenis-stopped {
     overflow: hidden;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   Cinematic helpers (used by the persistent world + editorial type).
+   ---------------------------------------------------------------------------- */
+@layer utilities {
+  /* Warm glow on accent headline words. */
+  .text-glow-accent {
+    text-shadow: 0 0 28px color-mix(in oklab, var(--color-flux) 45%, transparent);
+  }
+  /* Fine film grain overlay (apply to a fixed full-bleed element). */
+  .grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
   }
 }
 
@@ -226,27 +250,6 @@
   to {
     opacity: 1;
     transform: none;
-  }
-}
-
-@keyframes atlas-bar {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(400%);
-  }
-}
-
-@keyframes atlas-pulse {
-  0%,
-  100% {
-    opacity: 0.35;
-    transform: scale(0.85);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1);
   }
 }
 

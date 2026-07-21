@@ -1,17 +1,10 @@
-import { SiteHeader, Statement, ProblemIndex, Invitation } from '@/sections/home';
-
-/**
- * Home — "The Index: Problems, Solved." The page leads with the business
- * problems Abhishek solves (tagged Finance / Software / AI, each opening to a
- * solution + proof), so a visitor recognises their own pain, then converts.
- */
 export default function HomePage() {
   return (
-    <>
-      <SiteHeader />
-      <Statement />
-      <ProblemIndex />
-      <Invitation />
-    </>
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4">
+      <h1 className="font-display text-4xl font-light tracking-tight text-signal">
+        Abhishek <span className="italic text-flux">Shah</span>
+      </h1>
+      <p className="font-mono text-2xs uppercase tracking-[0.3em] text-fog">Rebuilding</p>
+    </div>
   );
 }
