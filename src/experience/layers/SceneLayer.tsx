@@ -37,7 +37,9 @@ export function SceneLayer({ children, followScroll = false, interactive = false
     <div
       aria-hidden
       className={cn(
-        'fixed inset-0 z-[var(--z-canvas)]',
+        // Dark cinematic stage from first paint (before the canvas mounts), so
+        // light hero type is readable immediately over it.
+        'fixed inset-0 z-[var(--z-canvas)] bg-[#0a0a0c]',
         interactive ? 'pointer-events-auto' : 'pointer-events-none',
         className,
       )}
