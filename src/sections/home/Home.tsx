@@ -1,5 +1,6 @@
 'use client';
 
+import { PremiumCursor } from '@/cursor';
 import { TraverseProvider } from './traverse';
 import { WorldCanvas } from './WorldCanvas';
 import { AnchorLine } from './AnchorLine';
@@ -29,6 +30,7 @@ export function Home() {
       </div>
 
       <Hud />
+      <PremiumCursor />
     </TraverseProvider>
   );
 }

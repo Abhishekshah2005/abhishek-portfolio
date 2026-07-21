@@ -34,19 +34,31 @@ export function TraverseEngine() {
 
   // Motion-blur state (desktop only), eased toward scroll velocity.
   const blur = useRef({ v: 0, cur: 0 });
-  // Debounced Lenis-native snap: settle on the nearest chapter when scrolling
-  // pauses (ScrollTrigger's own snap fights Lenis, so we drive Lenis directly).
+  // Debounced Lenis-native snap: settle on a chapter when scrolling pauses
+  // (ScrollTrigger's own snap fights Lenis, so we drive Lenis directly). The
+  // snap is DIRECTIONAL — a modest push in a direction advances one chapter
+  // rather than pulling back to the nearest — so it never feels sticky.
   const snapTimer = useRef(0);
+  const dir = useRef(1); // last non-zero scroll direction
   useScrollFrame((p) => {
     blur.current.v = Math.min(9, Math.abs(p.velocity) * 0.12);
+    if (p.direction !== 0) dir.current = p.direction;
     if (!horizontal || !engine) return;
+    // Only schedule a snap once motion has essentially stopped — otherwise the
+    // debounce would fire between wheel ticks and yank back mid-gesture.
     window.clearTimeout(snapTimer.current);
+    if (Math.abs(p.velocity) > 0.06) return;
     snapTimer.current = window.setTimeout(() => {
       const N = CHAPTERS.length;
-      const idx = Math.round(p.progress * (N - 1));
+      const exact = p.progress * (N - 1);
+      const base = Math.floor(exact + 1e-4);
+      const frac = exact - base;
+      // Forward: cross ~12% of the gap to advance. Backward: symmetric.
+      let idx = dir.current > 0 ? (frac > 0.12 ? base + 1 : base) : frac < 0.88 ? base : base + 1;
+      idx = Math.max(0, Math.min(N - 1, idx));
       const target = (idx / (N - 1)) * p.limit;
-      if (Math.abs(target - p.scroll) > 6) engine.scroll.scrollTo(target, { duration: 0.6 });
-    }, 150);
+      if (Math.abs(target - p.scroll) > 6) engine.scroll.scrollTo(target, { duration: 0.7 });
+    }, 90);
   });
   useTick(() => {
     if (!horizontal) return;

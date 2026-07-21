@@ -83,7 +83,8 @@ export function ChapterPanel({ chapter }: { chapter: Chapter }) {
                 <article
                   key={p.title}
                   data-reveal
-                  className="group flex flex-col gap-3 rounded-xl border border-line bg-[var(--surface-glass)] p-5 backdrop-blur-[var(--blur-glass)] transition-colors duration-300 hover:border-flux/40"
+                  data-cursor="card"
+                  className="group flex flex-col gap-3 rounded-xl border border-line bg-[var(--surface-glass)] p-5 backdrop-blur-[var(--blur-glass)] transition-[transform,border-color,background-color] duration-300 hover:-translate-y-1 hover:border-flux/40 hover:bg-[var(--surface-glass-strong)]"
                 >
                   <span className="font-mono text-2xs uppercase tracking-[0.18em] text-flux">
                     {p.tag}

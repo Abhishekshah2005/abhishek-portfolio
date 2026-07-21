@@ -182,6 +182,18 @@
     display: block;
   }
 
+  /* Custom cursor takes over on fine pointers (touch keeps native). */
+  @media (pointer: fine) {
+    body {
+      cursor: none;
+    }
+    input,
+    textarea,
+    [contenteditable] {
+      cursor: auto;
+    }
+  }
+
   /* Optional bright chapters: scope the semantic vars so components invert. */
   .section-light {
     background: var(--light-bg);
