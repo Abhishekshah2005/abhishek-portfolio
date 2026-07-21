@@ -3,25 +3,29 @@
 import { useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { SplitText } from 'gsap/SplitText';
 import { useIsomorphicLayoutEffect } from '@/hooks/useIsomorphicLayoutEffect';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { useTick } from '@/hooks/useTick';
 import { useScrollFrame } from '@/hooks/useScroll';
 import { useEngineOptional } from '@/hooks/useEngine';
-import { ChapterPanel } from './ChapterPanel';
+import { PosterCard } from './PosterCard';
+import { ChapterDetail } from './ChapterDetail';
 import { CHAPTERS } from './content';
 import { useTraverse } from './traverse';
 
+const CARD_W = 260;
+const SCROLL_FACTOR = 3.4; // scroll length per card (pacing)
+
 /**
- * The traverse engine — the reference's "continuous horizontal journey".
+ * The traverse engine — the reference's sliding poster carousel.
  *
  * Desktop: one pinned section; vertical scroll scrubs a horizontal track of
- * full-viewport chapter panels over the held world. Each panel's headline
- * mask-reveals (SplitText lines) as it reaches centre; fast travel adds
- * velocity-driven motion blur. Mobile / reduced-motion: panels stack vertically
- * with the same reveal language and no pin.
+ * poster cards over the held world. The card at centre fades and scales away so
+ * the CenterStage headline reads through it (the card "opens"); neighbours flank
+ * it. Directional velocity-gated snap settles on each card; fast travel adds
+ * motion blur. Mobile / reduced-motion: chapters stack vertically as centred
+ * detail blocks.
  */
 export function TraverseEngine() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -32,20 +36,14 @@ export function TraverseEngine() {
   const engine = useEngineOptional();
   const horizontal = isDesktop && !reduced;
 
-  // Motion-blur state (desktop only), eased toward scroll velocity.
   const blur = useRef({ v: 0, cur: 0 });
-  // Debounced Lenis-native snap: settle on a chapter when scrolling pauses
-  // (ScrollTrigger's own snap fights Lenis, so we drive Lenis directly). The
-  // snap is DIRECTIONAL — a modest push in a direction advances one chapter
-  // rather than pulling back to the nearest — so it never feels sticky.
   const snapTimer = useRef(0);
-  const dir = useRef(1); // last non-zero scroll direction
+  const dir = useRef(1);
+
   useScrollFrame((p) => {
     blur.current.v = Math.min(9, Math.abs(p.velocity) * 0.12);
     if (p.direction !== 0) dir.current = p.direction;
     if (!horizontal || !engine) return;
-    // Only schedule a snap once motion has essentially stopped — otherwise the
-    // debounce would fire between wheel ticks and yank back mid-gesture.
     window.clearTimeout(snapTimer.current);
     if (Math.abs(p.velocity) > 0.06) return;
     snapTimer.current = window.setTimeout(() => {
@@ -53,93 +51,71 @@ export function TraverseEngine() {
       const exact = p.progress * (N - 1);
       const base = Math.floor(exact + 1e-4);
       const frac = exact - base;
-      // Forward: cross ~12% of the gap to advance. Backward: symmetric.
       let idx = dir.current > 0 ? (frac > 0.12 ? base + 1 : base) : frac < 0.88 ? base : base + 1;
       idx = Math.max(0, Math.min(N - 1, idx));
       const target = (idx / (N - 1)) * p.limit;
       if (Math.abs(target - p.scroll) > 6) engine.scroll.scrollTo(target, { duration: 0.7 });
     }, 90);
   });
+
+  // Per-frame: motion blur, card fade/scale by distance to centre, and the
+  // CenterStage gate (visible only when a card is centred).
   useTick(() => {
     if (!horizontal) return;
-    const el = trackRef.current;
-    if (!el) return;
+    const track = trackRef.current;
+    if (!track) return;
     const b = blur.current;
     b.cur += (b.v - b.cur) * 0.18;
-    b.v *= 0.82; // decay so it settles to 0 when the scroll stops
-    el.style.filter = b.cur > 0.12 ? `blur(${b.cur.toFixed(2)}px)` : '';
+    b.v *= 0.82;
+    track.style.filter = b.cur > 0.12 ? `blur(${b.cur.toFixed(2)}px)` : '';
+
+    const w = window.innerWidth;
+    const cx = w / 2;
+    let nearOp = 1;
+    let minD = Infinity;
+    const cards = track.querySelectorAll<HTMLElement>('[data-card]');
+    cards.forEach((card) => {
+      const r = card.getBoundingClientRect();
+      const d = Math.abs(r.left + r.width / 2 - cx);
+      const t = Math.min(1, d / (w * 0.42));
+      const op = t * t * (3 - 2 * t);
+      card.style.opacity = String(op);
+      card.style.transform = `scale(${(0.84 + 0.16 * op).toFixed(3)})`;
+      if (d < minD) {
+        minD = d;
+        nearOp = op;
+      }
+    });
+    const cs = document.querySelector<HTMLElement>('[data-centerstage]');
+    if (cs) cs.style.opacity = String(1 - nearOp);
   });
 
-  // Desktop: pinned horizontal scrub + per-panel reveals.
+  // Desktop: pinned horizontal scrub.
   useIsomorphicLayoutEffect(() => {
     if (!horizontal) return;
     const root = rootRef.current;
     const track = trackRef.current;
     if (!root || !track) return;
-    gsap.registerPlugin(ScrollTrigger, SplitText);
+    gsap.registerPlugin(ScrollTrigger);
     const N = CHAPTERS.length;
 
     const ctx = gsap.context(() => {
       const distance = () => track.scrollWidth - window.innerWidth;
-
-      const scrub = gsap.to(track, {
+      gsap.to(track, {
         x: () => -distance(),
         ease: 'none',
         scrollTrigger: {
           trigger: root,
           start: 'top top',
-          end: () => `+=${distance()}`,
+          end: () => `+=${distance() * SCROLL_FACTOR}`,
           pin: true,
           scrub: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => setActive(Math.round(self.progress * (N - 1))),
         },
       });
-
-      const panels = gsap.utils.toArray<HTMLElement>('[data-panel]', track);
-      panels.forEach((panel, i) => {
-        const h = panel.querySelector<HTMLElement>('[data-headline]');
-        let split: SplitText | null = null;
-        if (h) {
-          split = new SplitText(h, { type: 'lines', mask: 'lines', linesClass: 'split-line' });
-          gsap.set(split.lines, { yPercent: 115 });
-        }
-        const reveals = panel.querySelectorAll<HTMLElement>('[data-reveal]');
-        gsap.set(reveals, { y: 42, autoAlpha: 0 });
-
-        const build = (tl: gsap.core.Timeline) => {
-          if (split) {
-            tl.to(split.lines, { yPercent: 0, duration: 1, ease: 'expo.out', stagger: 0.12 }, 0);
-          }
-          tl.to(reveals, { y: 0, autoAlpha: 1, duration: 0.9, ease: 'expo.out', stagger: 0.08 }, 0.12);
-        };
-
-        if (i === 0) {
-          // Panel 0 is centre-stage at load — play its reveal directly (a
-          // containerAnimation trigger only fires once the track scrolls).
-          build(gsap.timeline({ delay: 0.35 }));
-        } else {
-          build(
-            gsap.timeline({
-              scrollTrigger: {
-                trigger: panel,
-                containerAnimation: scrub,
-                start: 'left 68%',
-                end: 'left 24%',
-                toggleActions: 'play none none reverse',
-              },
-            }),
-          );
-        }
-      });
-
-      ScrollTrigger.refresh();
     }, root);
 
-    // Robustly re-measure once layout + fonts settle. SplitText and the pin
-    // distance depend on final metrics; measuring too early can leave the scrub
-    // pinned at x=0 with content hidden. rAF covers immediate layout;
-    // fonts.ready + load cover the Fraunces swap and late assets.
     const refresh = () => ScrollTrigger.refresh();
     const raf = requestAnimationFrame(() => requestAnimationFrame(refresh));
     document.fonts?.ready?.then(refresh).catch(() => {});
@@ -149,17 +125,18 @@ export function TraverseEngine() {
       cancelAnimationFrame(raf);
       window.removeEventListener('load', refresh);
       ctx.revert();
+      track.style.filter = '';
     };
   }, [horizontal, setActive]);
 
-  // Vertical fallback: track which panel is centred (drives the HUD) + reveals.
+  // Vertical fallback: track which chapter is centred + reveal on scroll.
   useIsomorphicLayoutEffect(() => {
     if (horizontal) return;
     const root = rootRef.current;
     if (!root) return;
     gsap.registerPlugin(ScrollTrigger);
     const ctx = gsap.context(() => {
-      const panels = gsap.utils.toArray<HTMLElement>('[data-panel]', root);
+      const panels = gsap.utils.toArray<HTMLElement>('[data-vpanel]', root);
       panels.forEach((panel, i) => {
         ScrollTrigger.create({
           trigger: panel,
@@ -168,13 +145,13 @@ export function TraverseEngine() {
           onToggle: (self) => self.isActive && setActive(i),
         });
         if (!reduced) {
-          gsap.from(panel.querySelectorAll('[data-reveal], [data-headline]'), {
-            y: 30,
+          gsap.from(panel.querySelectorAll('[data-d]'), {
+            y: 28,
             autoAlpha: 0,
-            duration: 0.8,
+            duration: 0.7,
             ease: 'expo.out',
-            stagger: 0.07,
-            scrollTrigger: { trigger: panel, start: 'top 75%' },
+            stagger: 0.06,
+            scrollTrigger: { trigger: panel, start: 'top 72%' },
           });
         }
       });
@@ -182,16 +159,35 @@ export function TraverseEngine() {
     return () => ctx.revert();
   }, [horizontal, reduced, setActive]);
 
+  if (!horizontal) {
+    // Mobile / reduced-motion: vertical stack of centred detail blocks.
+    return (
+      <div ref={rootRef} className="relative">
+        {CHAPTERS.map((chapter) => (
+          <section
+            key={chapter.id}
+            data-vpanel
+            className="flex min-h-screen w-full items-center justify-center px-6 py-24"
+          >
+            <ChapterDetail chapter={chapter} />
+          </section>
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <div ref={rootRef} className={horizontal ? 'relative h-screen overflow-hidden' : 'relative'}>
+    <div ref={rootRef} className="relative flex h-screen items-center overflow-hidden">
       <div
         ref={trackRef}
-        className={
-          horizontal ? 'flex h-screen w-max flex-nowrap will-change-transform' : 'flex flex-col'
-        }
+        className="flex items-center gap-6 will-change-transform"
+        style={{
+          paddingLeft: `calc(50vw - ${CARD_W / 2}px)`,
+          paddingRight: `calc(50vw - ${CARD_W / 2}px)`,
+        }}
       >
-        {CHAPTERS.map((chapter) => (
-          <ChapterPanel key={chapter.id} chapter={chapter} />
+        {CHAPTERS.map((chapter, i) => (
+          <PosterCard key={chapter.id} chapter={chapter} index={i} />
         ))}
       </div>
     </div>

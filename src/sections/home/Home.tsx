@@ -6,6 +6,7 @@ import { WorldCanvas } from './WorldCanvas';
 import { AnchorLine } from './AnchorLine';
 import { Hud } from './Hud';
 import { TraverseEngine } from './TraverseEngine';
+import { CenterStage } from './CenterStage';
 
 /**
  * The homepage — one continuous cinematic traverse. A persistent world and
@@ -29,6 +30,7 @@ export function Home() {
         <TraverseEngine />
       </div>
 
+      <CenterStage />
       <Hud />
       <PremiumCursor />
     </TraverseProvider>
