@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useScrollFrame } from '@/hooks/useScroll';
+import { cn } from '@/lib';
 import { CHAPTERS, CONTACT_EMAIL } from './content';
 import { useTraverse } from './traverse';
 
@@ -95,6 +96,19 @@ export function Hud() {
         <span className="hidden font-mono text-2xs uppercase tracking-[0.24em] text-fog-dim md:inline">
           Scroll to traverse
         </span>
+      </div>
+
+      {/* — Chapter tracker (centre) — the reference's centre motif — */}
+      <div className="absolute inset-x-0 bottom-8 hidden items-center justify-center gap-1.5 md:flex">
+        {CHAPTERS.map((c, i) => (
+          <span
+            key={c.id}
+            className={cn(
+              'h-1 rounded-full transition-all duration-500 ease-out',
+              i === active ? 'w-6 bg-flux' : 'w-1 bg-fog/35',
+            )}
+          />
+        ))}
       </div>
 
       {/* — Scroll-progress seam — */}
