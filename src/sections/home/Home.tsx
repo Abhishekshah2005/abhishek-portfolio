@@ -2,28 +2,26 @@
 
 import { PremiumCursor } from '@/cursor';
 import { TraverseProvider } from './traverse';
-import { WorldCanvas } from './WorldCanvas';
-import { AnchorLine } from './AnchorLine';
+import { WorldScene } from './WorldScene';
 import { Hud } from './Hud';
 import { TraverseEngine } from './TraverseEngine';
 import { CenterStage } from './CenterStage';
 
 /**
- * The homepage — one continuous cinematic traverse. A persistent world and
- * glowing horizon are held behind every chapter; the HUD lives above; the
- * chapters choreograph across the middle. Everything shares the active-chapter
- * context so the interface morphs as you move.
+ * The homepage — one continuous cinematic traverse. A persistent cinematic 3D
+ * world (glowing sun, reflective floor, lone figure) is held behind every
+ * chapter; the HUD lives above; poster cards choreograph across the middle and
+ * open into centered headlines. Everything shares the active-chapter context.
  */
 export function Home() {
   return (
     <TraverseProvider>
-      <WorldCanvas />
-      <AnchorLine />
+      <WorldScene />
 
       {/* Fine film grain over the world (behind the content). */}
       <div
         aria-hidden
-        className="grain pointer-events-none fixed inset-0 z-[6] opacity-[0.04] mix-blend-soft-light"
+        className="grain pointer-events-none fixed inset-0 z-[6] opacity-[0.05] mix-blend-soft-light"
       />
 
       <div className="relative z-[var(--z-content)]">
