@@ -12,6 +12,31 @@ export interface Problem {
 
 export const GROUPS = ['See clearly', 'Run leaner', 'Scale confidently'] as const;
 
+/**
+ * The "Diagnose" lenses — the signature moment. A visitor picks where it hurts
+ * and the Index filters to the problems Abhishek solves in that discipline.
+ * `disciplines: null` means "Everything" (the reset).
+ */
+export type LensId = 'all' | 'finance' | 'software' | 'ai';
+
+export interface Lens {
+  id: LensId;
+  label: string;
+  disciplines: readonly Discipline[] | null;
+}
+
+export const LENSES: readonly Lens[] = [
+  { id: 'all', label: 'Everything', disciplines: null },
+  { id: 'finance', label: 'Finance & cash', disciplines: ['Finance'] },
+  { id: 'software', label: 'Software & systems', disciplines: ['Software'] },
+  { id: 'ai', label: 'AI & automation', disciplines: ['AI'] },
+];
+
+/** Does a problem fall under the given lens? */
+export function matchesLens(problem: Problem, lens: Lens): boolean {
+  return lens.disciplines === null || problem.disciplines.some((d) => lens.disciplines!.includes(d));
+}
+
 export const PROBLEMS: Problem[] = [
   {
     id: 'cash',

@@ -6,7 +6,15 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useIsomorphicLayoutEffect } from '@/hooks/useIsomorphicLayoutEffect';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { cn } from '@/lib';
-import { PROBLEMS, GROUPS, type Discipline, type Problem } from './problems';
+import {
+  PROBLEMS,
+  GROUPS,
+  LENSES,
+  matchesLens,
+  type Discipline,
+  type LensId,
+  type Problem,
+} from './problems';
 
 function Tag({ label }: { label: Discipline }) {
   const accent = label !== 'Business';
@@ -85,17 +93,57 @@ function Row({
 }
 
 /**
- * THE INDEX — the homepage. A confident, scannable index of the business
- * problems Abhishek solves, grouped and tagged by discipline (Finance /
- * Software / AI), each opening to its solution + a proof figure. Problem-first,
- * so a visitor recognises their own pain immediately. Accordion via animated
- * height (siblings flow naturally); rows reveal on scroll; reduced-motion safe.
+ * THE INDEX — the homepage. It opens with "Diagnose": the visitor picks where
+ * it hurts (Finance / Software / AI) and the Index filters to the problems
+ * Abhishek solves there — the signature, useful moment. Below, a scannable index
+ * grouped by outcome, each row opening to its solution + proof.
+ *
+ * Three independent motion layers, each on its own element so they never fight:
+ *   - filter    → outer [data-rowwrap] / [data-grouphead] collapse & expand
+ *   - reveal    → inner [data-row] slides in on first scroll
+ *   - accordion → the solution panel height
  */
 export function ProblemIndex() {
   const rootRef = useRef<HTMLElement>(null);
   const panels = useRef<Record<string, HTMLDivElement | null>>({});
+  const rowWraps = useRef<Record<string, HTMLDivElement | null>>({});
+  const groupHeads = useRef<Record<string, HTMLDivElement | null>>({});
+  const didFilter = useRef(false);
+  const [lens, setLens] = useState<LensId>('all');
   const [openId, setOpenId] = useState<string | null>(null);
   const reduced = useReducedMotion();
+
+  const activeLens = LENSES.find((l) => l.id === lens) ?? LENSES[0];
+  const matchCount = PROBLEMS.filter((p) => matchesLens(p, activeLens)).length;
+
+  // Diagnose filter — collapse the rows (and empty group headers) that don't
+  // match the chosen lens; expand the ones that do. Skips the first run so the
+  // scroll reveal owns the entrance.
+  useIsomorphicLayoutEffect(() => {
+    const animate = didFilter.current;
+    didFilter.current = true;
+
+    const apply = (el: HTMLElement | null, show: boolean) => {
+      if (!el) return;
+      const to = { height: show ? 'auto' : 0, autoAlpha: show ? 1 : 0 };
+      if (!animate || reduced) gsap.set(el, to);
+      else gsap.to(el, { ...to, duration: 0.5, ease: 'power3.inOut', overwrite: true });
+    };
+
+    // Close the open row if the lens filters it away.
+    if (openId) {
+      const openProblem = PROBLEMS.find((p) => p.id === openId);
+      if (openProblem && !matchesLens(openProblem, activeLens)) setOpenId(null);
+    }
+
+    GROUPS.forEach((group) => {
+      const groupProblems = PROBLEMS.filter((p) => p.group === group);
+      const anyMatch = groupProblems.some((p) => matchesLens(p, activeLens));
+      apply(groupHeads.current[group], anyMatch);
+      groupProblems.forEach((p) => apply(rowWraps.current[p.id], matchesLens(p, activeLens)));
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lens, reduced]);
 
   // Drive the accordion: the open panel expands, all others collapse.
   useIsomorphicLayoutEffect(() => {
@@ -116,19 +164,27 @@ export function ProblemIndex() {
     });
   }, [openId, reduced]);
 
-  // Rows reveal as the index scrolls into view.
+  // The diagnose header and rows reveal as the index scrolls into view.
   useIsomorphicLayoutEffect(() => {
     const el = rootRef.current;
     if (!el || reduced) return;
     gsap.registerPlugin(ScrollTrigger);
     const ctx = gsap.context(() => {
+      gsap.from('[data-diagnose]', {
+        autoAlpha: 0,
+        y: 16,
+        duration: 0.8,
+        ease: 'expo.out',
+        stagger: 0.1,
+        scrollTrigger: { trigger: el, start: 'top 82%' },
+      });
       gsap.from('[data-row]', {
         autoAlpha: 0,
         y: 20,
         duration: 0.7,
         ease: 'expo.out',
         stagger: 0.06,
-        scrollTrigger: { trigger: el, start: 'top 78%' },
+        scrollTrigger: { trigger: '[data-index-list]', start: 'top 80%' },
       });
     }, el);
     return () => ctx.revert();
@@ -139,37 +195,94 @@ export function ProblemIndex() {
   return (
     <section ref={rootRef} className="px-6 pt-28 md:px-10 md:pt-40">
       <div className="mx-auto max-w-[1240px]">
-        <div className="mb-4 flex items-end justify-between">
-          <span className="font-mono text-2xs uppercase tracking-[0.28em] text-fog">
-            The problems I solve
+        {/* Diagnose — the signature moment */}
+        <div className="mb-4 max-w-[42ch]">
+          <span data-diagnose className="font-mono text-2xs uppercase tracking-[0.28em] text-fog">
+            Start here
           </span>
-          <span className="font-mono text-2xs tabular-nums text-fog-dim">
-            {String(PROBLEMS.length).padStart(2, '0')} — solved
-          </span>
+          <h2
+            data-diagnose
+            className="mt-3 font-display text-[clamp(1.5rem,3.2vw,2.4rem)] font-medium leading-[1.1] tracking-[-0.02em] text-signal"
+          >
+            What’s slowing your business down?
+          </h2>
         </div>
 
-        {GROUPS.map((group) => (
-          <div key={group} className="mt-14 first:mt-0">
-            <h2 className="mb-1 font-mono text-2xs uppercase tracking-[0.28em] text-flux">{group}</h2>
-            <div>
+        <div data-diagnose className="flex flex-wrap items-center gap-2">
+          {LENSES.map((l) => {
+            const active = l.id === lens;
+            return (
+              <button
+                key={l.id}
+                type="button"
+                onClick={() => setLens(l.id)}
+                aria-pressed={active}
+                className={cn(
+                  'rounded-full border px-4 py-2 font-mono text-2xs uppercase tracking-[0.16em] transition-colors duration-300',
+                  active
+                    ? 'border-flux bg-flux text-void'
+                    : 'border-line text-fog hover:border-fog hover:text-signal',
+                )}
+              >
+                {l.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <p
+          data-diagnose
+          aria-live="polite"
+          className="mt-5 flex items-center gap-3 font-mono text-2xs uppercase tracking-[0.2em] text-fog-dim"
+        >
+          <span className="tabular-nums text-flux">{String(matchCount).padStart(2, '0')}</span>
+          <span>{lens === 'all' ? 'problems I solve — pick where it hurts' : `ways I help with ${activeLens.label.toLowerCase()}`}</span>
+        </p>
+
+        {/* The Index */}
+        <div data-index-list className="mt-14">
+          {GROUPS.map((group, gi) => (
+            <div key={group}>
+              <div
+                ref={(el) => {
+                  groupHeads.current[group] = el;
+                }}
+                className="overflow-hidden"
+              >
+                <h3
+                  className={cn(
+                    'mb-1 font-mono text-2xs uppercase tracking-[0.28em] text-flux',
+                    gi > 0 && 'pt-14',
+                  )}
+                >
+                  {group}
+                </h3>
+              </div>
               {PROBLEMS.filter((p) => p.group === group).map((problem) => {
                 const index = counter++;
                 return (
-                  <Row
+                  <div
                     key={problem.id}
-                    problem={problem}
-                    index={index}
-                    open={openId === problem.id}
-                    onToggle={() => setOpenId((o) => (o === problem.id ? null : problem.id))}
-                    panelRef={(el) => {
-                      panels.current[problem.id] = el;
+                    ref={(el) => {
+                      rowWraps.current[problem.id] = el;
                     }}
-                  />
+                    className="overflow-hidden"
+                  >
+                    <Row
+                      problem={problem}
+                      index={index}
+                      open={openId === problem.id}
+                      onToggle={() => setOpenId((o) => (o === problem.id ? null : problem.id))}
+                      panelRef={(el) => {
+                        panels.current[problem.id] = el;
+                      }}
+                    />
+                  </div>
                 );
               })}
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );
