@@ -71,7 +71,7 @@ export function Hud() {
 
       {/* — Bottom bar — */}
       <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 px-[6vw] pb-7 md:px-[7vw]">
-        <div className="h-9 overflow-hidden">
+        <div className="hidden h-9 overflow-hidden md:block">
           <AnimatePresence mode="wait">
             <motion.div
               key={chapter.id}

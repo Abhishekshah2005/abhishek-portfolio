@@ -6,9 +6,29 @@ import { useTick } from '@/hooks/useTick';
 import { useScrollFrame } from '@/hooks/useScroll';
 import { usePerformance } from '@/hooks/usePerformance';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useTraverse } from './traverse';
 
 /** The horizon sits here (fraction of viewport height). Shared with AnchorLine. */
 export const HORIZON = 0.62;
+
+/**
+ * Per-chapter horizon mood — subtle warmth/intensity shifts as you traverse
+ * (inner glow rgb, outer coral rgb, intensity). All within one warm family so
+ * it reads cohesive, never a rainbow. Index matches CHAPTERS order.
+ */
+const MOODS: [number, number, number][][] = [
+  [[240, 180, 94], [224, 122, 78]], // 01 arrival — gold
+  [[232, 168, 96], [200, 106, 80]], // 02 operator
+  [[216, 154, 88], [184, 94, 72]], //  03 problems — muted (tension)
+  [[230, 179, 106], [201, 122, 85]], // 04 finance — cool gold (trust)
+  [[242, 190, 110], [224, 128, 80]], // 05 tech — brighter
+  [[238, 178, 98], [218, 122, 78]], //  06 proof
+  [[232, 172, 96], [206, 116, 78]], //  07 services
+  [[236, 176, 100], [216, 120, 78]], // 08 process
+  [[234, 174, 98], [208, 114, 76]], //  09 standard
+  [[248, 198, 122], [238, 136, 88]], // 10 contact — warmest (inviting)
+];
+const MOOD_INTENSITY = [1, 0.92, 0.85, 0.96, 1.06, 1, 0.96, 1, 0.92, 1.22];
 
 interface Dust {
   x: number; // 0..1 across width
@@ -30,12 +50,15 @@ export function WorldCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { tier } = usePerformance();
   const reduced = useReducedMotion();
+  const { active } = useTraverse();
 
   const dust = useRef<Dust[]>([]);
   const size = useRef({ w: 0, h: 0, dpr: 1 });
   const scroll = useRef({ progress: 0, velocity: 0 });
   const pointer = useRef({ x: 0.5, y: 0.5, tx: 0.5, ty: 0.5 });
   const glow = useRef(0.55); // eased bloom intensity
+  // Eased horizon mood (inner rgb, outer rgb, intensity) — lerps per chapter.
+  const mood = useRef({ inr: 240, ing: 180, inb: 94, our: 224, oug: 122, oub: 78, i: 1 });
   const renderRef = useRef<((time: number) => void) | null>(null);
 
   useScrollFrame((p) => {
@@ -106,12 +129,13 @@ export function WorldCanvas() {
       ctx.fillStyle = sky;
       ctx.fillRect(0, 0, w, h);
 
-      // — Horizon bloom: wide warm glow centered on the line —
-      const g = glow.current;
+      // — Horizon bloom: wide warm glow centered on the line (mood-tinted) —
+      const m = mood.current;
+      const g = glow.current * m.i;
       const cx = w * (0.5 + (pointer.current.x - 0.5) * 0.04);
       const grad = ctx.createRadialGradient(cx, horizonY, 0, cx, horizonY, w * 0.75);
-      grad.addColorStop(0, `rgba(240,180,94,${0.22 * g})`);
-      grad.addColorStop(0.18, `rgba(224,122,78,${0.14 * g})`);
+      grad.addColorStop(0, `rgba(${m.inr | 0},${m.ing | 0},${m.inb | 0},${0.22 * g})`);
+      grad.addColorStop(0.18, `rgba(${m.our | 0},${m.oug | 0},${m.oub | 0},${0.14 * g})`);
       grad.addColorStop(0.5, `rgba(120,60,60,${0.05 * g})`);
       grad.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.save();
@@ -164,6 +188,18 @@ export function WorldCanvas() {
     p.y += (p.ty - p.y) * 0.06;
     const targetGlow = 0.5 + Math.min(0.5, Math.abs(scroll.current.velocity) * 0.03);
     glow.current += (targetGlow - glow.current) * 0.08;
+    // ease the horizon mood toward the active chapter's palette
+    const idx = Math.max(0, Math.min(MOODS.length - 1, active));
+    const [inn, out] = MOODS[idx];
+    const m = mood.current;
+    const k = 0.04;
+    m.inr += (inn[0] - m.inr) * k;
+    m.ing += (inn[1] - m.ing) * k;
+    m.inb += (inn[2] - m.inb) * k;
+    m.our += (out[0] - m.our) * k;
+    m.oug += (out[1] - m.oug) * k;
+    m.oub += (out[2] - m.oub) * k;
+    m.i += (MOOD_INTENSITY[idx] - m.i) * k;
     renderRef.current?.(state.timestamp);
   });
 
