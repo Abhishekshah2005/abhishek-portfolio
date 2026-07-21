@@ -136,7 +136,20 @@ export function TraverseEngine() {
       ScrollTrigger.refresh();
     }, root);
 
-    return () => ctx.revert();
+    // Robustly re-measure once layout + fonts settle. SplitText and the pin
+    // distance depend on final metrics; measuring too early can leave the scrub
+    // pinned at x=0 with content hidden. rAF covers immediate layout;
+    // fonts.ready + load cover the Fraunces swap and late assets.
+    const refresh = () => ScrollTrigger.refresh();
+    const raf = requestAnimationFrame(() => requestAnimationFrame(refresh));
+    document.fonts?.ready?.then(refresh).catch(() => {});
+    window.addEventListener('load', refresh);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('load', refresh);
+      ctx.revert();
+    };
   }, [horizontal, setActive]);
 
   // Vertical fallback: track which panel is centred (drives the HUD) + reveals.
