@@ -78,13 +78,13 @@ export function ChapterPanel({ chapter }: { chapter: Chapter }) {
         {variant === 'projects' && (
           <>
             {chapter.body && <Body body={chapter.body} />}
-            <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="group/cards mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {chapter.projects?.map((p) => (
                 <article
                   key={p.title}
                   data-reveal
                   data-cursor="card"
-                  className="group flex flex-col gap-3 rounded-xl border border-line bg-[var(--surface-glass)] p-5 backdrop-blur-[var(--blur-glass)] transition-[transform,border-color,background-color] duration-300 hover:-translate-y-1 hover:border-flux/40 hover:bg-[var(--surface-glass-strong)]"
+                  className="group flex flex-col gap-3 rounded-xl border border-line bg-[var(--surface-glass)] p-5 backdrop-blur-[var(--blur-glass)] transition-[transform,opacity,filter,border-color,background-color] duration-500 ease-out will-change-transform hover:!opacity-100 hover:!blur-0 hover:-translate-y-1.5 hover:border-flux/40 hover:bg-[var(--surface-glass-strong)] group-hover/cards:opacity-40 group-hover/cards:blur-[2px]"
                 >
                   <span className="font-mono text-2xs uppercase tracking-[0.18em] text-flux">
                     {p.tag}
@@ -100,11 +100,15 @@ export function ChapterPanel({ chapter }: { chapter: Chapter }) {
         )}
 
         {variant === 'services' && (
-          <ul data-reveal className="mt-10 grid max-w-3xl grid-cols-1 gap-px overflow-hidden rounded-xl border border-line sm:grid-cols-2">
+          <ul
+            data-reveal
+            className="group/rows mt-10 grid max-w-3xl grid-cols-1 gap-px overflow-hidden rounded-xl border border-line sm:grid-cols-2"
+          >
             {chapter.services?.map((s, i) => (
               <li
                 key={s}
-                className="flex items-center gap-4 bg-[var(--surface-glass)] px-5 py-4 backdrop-blur-[var(--blur-glass)] transition-colors duration-300 hover:bg-[var(--surface-glass-strong)]"
+                data-cursor="row"
+                className="flex items-center gap-4 bg-[var(--surface-glass)] px-5 py-4 backdrop-blur-[var(--blur-glass)] transition-[opacity,background-color] duration-300 hover:!opacity-100 hover:bg-[var(--surface-glass-strong)] group-hover/rows:opacity-50"
               >
                 <span className="font-mono text-2xs tabular-nums text-fog-dim">
                   {String(i + 1).padStart(2, '0')}
