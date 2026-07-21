@@ -17,23 +17,22 @@
   --color-fog-dim: #9d988c; /* muted text */
   --color-signal: #1a1714; /* primary text (warm ink) */
 
-  /* — Accent (single) : ink navy ————————————————————————————————————— */
-  --color-flux: #22314f; /* THE accent — used sparingly */
-  --color-flux-2: #35486b; /* lighter navy (hover) */
-  --color-ember: #22314f; /* alias → accent (single-accent system) */
-  --color-rare: #22314f; /* alias → accent */
-  --color-gold: #22314f; /* alias → accent */
+  /* — Accent (single) : deep signal green (money / growth) ——————————— */
+  --color-flux: #1f6b4b; /* THE accent — used sparingly */
+  --color-flux-2: #2a855c; /* lighter green (hover) */
+  --color-ember: #1f6b4b; /* alias → accent (single-accent system) */
+  --color-rare: #1f6b4b; /* alias → accent */
+  --color-gold: #1f6b4b; /* alias → accent */
   --color-danger: #a33a2f;
 
   /* — Lines / borders / focus (ink-based hairlines) —————————————————— */
   --color-line-subtle: color-mix(in oklab, #1a1714 7%, transparent);
   --color-line: color-mix(in oklab, #1a1714 12%, transparent);
-  --color-line-strong: color-mix(in oklab, #1a1714 20%, transparent);
-  --color-focus: #22314f;
+  --color-line-strong: color-mix(in oklab, #1a1714 22%, transparent);
+  --color-focus: #1f6b4b;
 
-  /* — Typography families (self-hosted: Fraunces serif + Geist) ————————— */
-  --font-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
-  --font-serif: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  /* — Typography families (grotesk-led; Geist self-hosted) ——————————— */
+  --font-display: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
 
@@ -58,7 +57,7 @@
   --text-4xl--line-height: 1;
   --text-display: clamp(2.75rem, 1.2rem + 7vw, 7.5rem);
   --text-display--line-height: 1;
-  --text-display--letter-spacing: -0.015em;
+  --text-display--letter-spacing: -0.03em;
 
   /* — Radius ————————————————————————————————————————————————————————— */
   --radius-xs: 0.25rem;

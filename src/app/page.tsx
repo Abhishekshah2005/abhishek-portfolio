@@ -1,15 +1,17 @@
-import { SiteHeader, Hero } from '@/sections/home';
+import { SiteHeader, Statement, ProblemIndex, Invitation } from '@/sections/home';
 
 /**
- * Home — a cinematic, object-led hero for Abhishek Shah. Deliberately restrained:
- * the lit form is the hero, one sentence carries the message, and the first
- * scroll changes perspective. Further sections build on top later.
+ * Home — "The Index: Problems, Solved." The page leads with the business
+ * problems Abhishek solves (tagged Finance / Software / AI, each opening to a
+ * solution + proof), so a visitor recognises their own pain, then converts.
  */
 export default function HomePage() {
   return (
     <>
       <SiteHeader />
-      <Hero />
+      <Statement />
+      <ProblemIndex />
+      <Invitation />
     </>
   );
 }

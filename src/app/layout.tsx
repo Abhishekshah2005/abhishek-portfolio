@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
-import '@fontsource-variable/fraunces';
 import { ExperienceShell } from '@/experience';
 import { cn } from '@/lib';
 import './globals.css';

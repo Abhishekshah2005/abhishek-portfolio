@@ -15,11 +15,11 @@ export const COLORS = {
   fog: '#6A655C', // secondary text
   fogDim: '#9D988C', // muted
   signal: '#1A1714', // warm ink
-  flux: '#22314F', // accent (ink navy)
-  flux2: '#35486B', // lighter navy
-  ember: '#22314F', // alias → accent
-  rare: '#22314F', // alias → accent
-  gold: '#22314F', // alias → accent
+  flux: '#1F6B4B', // accent (deep signal green)
+  flux2: '#2A855C', // lighter green
+  ember: '#1F6B4B', // alias → accent
+  rare: '#1F6B4B', // alias → accent
+  gold: '#1F6B4B', // alias → accent
   danger: '#A33A2F',
   dark: '#111013', // dark feature-section base
 } as const;
