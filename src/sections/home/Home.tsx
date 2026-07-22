@@ -2,7 +2,7 @@
 
 import { PremiumCursor } from '@/cursor';
 import { TraverseProvider } from './traverse';
-import { WorldScene } from './WorldScene';
+import { WorldCanvas } from './WorldCanvas';
 import { Hud } from './Hud';
 import { TraverseEngine } from './TraverseEngine';
 import { CenterStage } from './CenterStage';
@@ -16,7 +16,7 @@ import { CenterStage } from './CenterStage';
 export function Home() {
   return (
     <TraverseProvider>
-      <WorldScene />
+      <WorldCanvas />
 
       {/* Fine film grain over the world (behind the content). */}
       <div

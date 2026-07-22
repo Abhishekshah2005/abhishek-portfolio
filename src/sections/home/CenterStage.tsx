@@ -28,12 +28,23 @@ export function CenterStage() {
       aria-hidden
       className="pointer-events-none fixed inset-0 z-[15] hidden items-center justify-center px-6 opacity-0 md:flex"
     >
-      <div className="w-full max-w-5xl -translate-y-[6vh]">
-        <AnimatePresence mode="wait">
-          <motion.div key={chapter.id} {...reveal}>
-            <ChapterDetail chapter={chapter} />
-          </motion.div>
-        </AnimatePresence>
+      <div className="relative w-full max-w-5xl -translate-y-[13vh]">
+        {/* soft scrim so the type reads cleanly over the bright horizon */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -inset-x-16 -inset-y-20"
+          style={{
+            background:
+              'radial-gradient(ellipse 52% 58% at 50% 44%, rgba(6,5,14,0.62), rgba(6,5,14,0.28) 55%, transparent 74%)',
+          }}
+        />
+        <div className="relative">
+          <AnimatePresence mode="wait">
+            <motion.div key={chapter.id} {...reveal}>
+              <ChapterDetail chapter={chapter} />
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
