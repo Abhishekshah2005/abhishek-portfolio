@@ -37,12 +37,22 @@ export function Preloader({ onDone }: { onDone: () => void }) {
 
     document.documentElement.classList.add("lenis-stopped");
 
+    const finish = () => {
+      document.documentElement.classList.remove("lenis-stopped");
+      setGone(true);
+      doneRef.current();
+    };
+
+    // The timeline runs on animation frames, which a browser will suspend
+    // entirely (background tab, some low-power modes). Wall-clock time is the
+    // backstop: nothing can leave someone staring at a curtain.
+    const failsafe = window.setTimeout(finish, 5000);
+
     const progress = { value: 0 };
     const tl = gsap.timeline({
       onComplete: () => {
-        document.documentElement.classList.remove("lenis-stopped");
-        setGone(true);
-        doneRef.current();
+        window.clearTimeout(failsafe);
+        finish();
       },
     });
 
@@ -71,6 +81,7 @@ export function Preloader({ onDone }: { onDone: () => void }) {
       );
 
     return () => {
+      window.clearTimeout(failsafe);
       tl.kill();
       document.documentElement.classList.remove("lenis-stopped");
     };
