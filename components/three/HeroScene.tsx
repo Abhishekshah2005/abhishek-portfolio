@@ -6,7 +6,7 @@ import { Environment, Lightformer, MeshTransmissionMaterial } from "@react-three
 import * as THREE from "three";
 import { gsap } from "@/lib/gsap";
 import { pointer, lerp } from "@/lib/pointer";
-import { heroScroll } from "@/lib/scene-store";
+import { heroScroll, heroLayout } from "@/lib/scene-store";
 import { heroLines } from "@/lib/content";
 import { useDeviceTier } from "@/lib/hooks";
 import { bindContextLoss } from "@/lib/webgl";
@@ -55,13 +55,17 @@ function drawHeadline(width: number, height: number): Drawn | null {
   // other, just smaller.
   const rawHeight = sized.reduce((sum, l) => sum + l.lineHeight, 0);
   const maxHeight = canvas.height * 0.72;
+  let widthFactor = 1;
   if (rawHeight > maxHeight) {
-    const k = maxHeight / rawHeight;
+    widthFactor = maxHeight / rawHeight;
     for (const line of sized) {
-      line.size *= k;
-      line.lineHeight *= k;
+      line.size *= widthFactor;
+      line.lineHeight *= widthFactor;
     }
   }
+
+  // Publish the slab's real half-width so the lens knows where the type is.
+  heroLayout.slabHalfWidth = (0.94 * widthFactor) / 2;
 
   const totalHeight = sized.reduce((sum, l) => sum + l.lineHeight, 0);
   // Sits slightly above centre, leaving the lower band clear for the
@@ -250,11 +254,6 @@ function Glass({ tier }: { tier: "low" | "mid" | "high" }) {
   // the same on a laptop and an ultrawide.
   const radius = Math.min(viewport.width, viewport.height) * 0.155;
 
-  // Idle home is off to the right, clear of the supporting copy in the
-  // lower left. The cursor pulls it around from there.
-  const homeX = viewport.width * 0.17;
-  const homeY = viewport.height * 0.02;
-
   useFrame((state, delta) => {
     const mesh = ref.current;
     if (!mesh) return;
@@ -262,6 +261,12 @@ function Glass({ tier }: { tier: "low" | "mid" | "high" }) {
     const t = state.clock.elapsedTime;
     const p = heroScroll.progress;
     const k = 1 - Math.pow(0.001, delta);
+
+    // Rest position sits partway out along the headline, so the lens is
+    // always over letterforms — that's the whole effect. It tracks the
+    // measured slab rather than a fixed offset.
+    const homeX = viewport.width * heroLayout.slabHalfWidth * 0.62;
+    const homeY = viewport.height * 0.02;
 
     const targetX =
       homeX + pointer.ex * viewport.width * 0.17 + Math.sin(t * 0.24) * 0.22;
@@ -271,16 +276,21 @@ function Glass({ tier }: { tier: "low" | "mid" | "high" }) {
     mesh.position.x = lerp(mesh.position.x, targetX, k);
     mesh.position.y = lerp(
       mesh.position.y,
-      targetY - p * viewport.height * 0.32,
+      targetY - p * viewport.height * 0.3,
       k,
     );
-    mesh.position.z = 1.1 + p * 1.4;
 
-    // Never let the lens leave the frame — a half-cropped sphere just
-    // reads as a rendering bug. The visible frame shrinks as the mesh moves
-    // toward the camera, so the bounds have to be taken at *its* depth,
-    // not at z = 0.
-    const growth = 1 + p * 0.85;
+    // Scrolling nudges the lens *away* from the camera, not toward it.
+    // Moving it closer multiplies its apparent size on top of the scale —
+    // the two compounded to well over a screen height and buried the hero
+    // under a white sphere.
+    mesh.position.z = 1.1 + p * 0.45;
+
+    const growth = 1 + p * 0.22;
+
+    // Never let the lens leave the frame — a half-cropped sphere just reads
+    // as a rendering bug. The visible frame shrinks with depth, so the
+    // bounds are taken at the mesh's own z, not at z = 0.
     const margin = radius * growth * 1.15;
     const depth = Math.max(state.camera.position.z - mesh.position.z, 0.001);
     const shrink = depth / state.camera.position.z;
@@ -292,8 +302,6 @@ function Glass({ tier }: { tier: "low" | "mid" | "high" }) {
     mesh.rotation.x = t * 0.12 + pointer.ey * 0.3;
     mesh.rotation.y = t * 0.16 + pointer.ex * 0.4;
 
-    // Swells and drifts back as you scroll past — the perspective change
-    // that makes the first scroll feel like it did something.
     const scale = growth;
     // Uneven breathing is what separates "liquid" from "billiard ball".
     mesh.scale.set(

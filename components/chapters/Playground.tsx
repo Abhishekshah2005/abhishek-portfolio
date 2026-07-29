@@ -72,7 +72,9 @@ export function Playground() {
           )}
 
           {!reduced && (
-            <p className="pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 font-mono text-[10px] tracking-[0.24em] text-paper/55 uppercase">
+            // Top-right, not bottom-centre: the toys come to rest along the
+            // floor and were sitting straight on top of the label.
+            <p className="pointer-events-none absolute top-5 right-6 font-mono text-[10px] tracking-[0.24em] text-paper/55 uppercase">
               {playground.hint}
             </p>
           )}

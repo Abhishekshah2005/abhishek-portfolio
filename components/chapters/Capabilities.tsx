@@ -82,12 +82,16 @@ export function Capabilities() {
       aria-label="Capabilities"
     >
       {inView && !reduced && (
-        <div aria-hidden className="absolute inset-0 -z-10 opacity-90">
+        <div aria-hidden className="absolute inset-0 -z-10">
           <RevealScene
             key={sceneKey}
             active={inView}
             onContextLost={() => setSceneKey((k) => k + 1)}
           />
+          {/* The light is bright enough to wash out type where it lands.
+              This scrim guarantees a contrast floor no matter where the
+              cursor is, and still lets the glow read through. */}
+          <div className="absolute inset-0 bg-[#0b0a0e]/45" />
         </div>
       )}
 

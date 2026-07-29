@@ -12,6 +12,17 @@ export const heroScroll = {
   revealed: 0,
 };
 
+/**
+ * Where the headline actually landed, as a fraction of viewport width.
+ *
+ * The lens parks itself against these bounds instead of a hard-coded offset:
+ * the type block changes width with the viewport, and a lens sitting on blank
+ * paper is just a grey ball — the refraction only reads over letterforms.
+ */
+export const heroLayout = {
+  slabHalfWidth: 0.3,
+};
+
 export const revealScroll = {
   progress: 0,
 };
