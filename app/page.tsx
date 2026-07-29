@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Preloader } from "@/components/ui/Preloader";
 import { Header } from "@/components/site/Header";
-import { Hero } from "@/components/chapters/Hero";
+import { Journey } from "@/components/chapters/Journey";
 import { About } from "@/components/chapters/About";
 import { Work } from "@/components/chapters/Work";
 import { Playground } from "@/components/chapters/Playground";
@@ -18,7 +18,7 @@ export default function Home() {
       <Preloader onDone={() => setStarted(true)} />
       <Header started={started} />
       <main id="main">
-        <Hero started={started} />
+        <Journey />
         <About />
         <Work />
         <Playground />

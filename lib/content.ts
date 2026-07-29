@@ -28,7 +28,7 @@ export const heroSub =
   "I build the systems that let a business see clearly, run leaner and scale without breaking — accounting and CFO work on one side, software and AI on the other.";
 
 export const chapters = [
-  { id: "hero", index: "01", label: "Index" },
+  { id: "journey", index: "01", label: "Journey" },
   { id: "about", index: "02", label: "Who" },
   { id: "work", index: "03", label: "Work" },
   { id: "playground", index: "04", label: "Play" },
