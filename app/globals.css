@@ -1,0 +1,164 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Design tokens — warm-light premium base, electric accent duo.
+   Every colour used in the app resolves through one of these.
+------------------------------------------------------------------ */
+@theme {
+  /* surfaces */
+  --color-paper: #f2efe9; /* warm bone — the canvas */
+  --color-paper-2: #faf8f4; /* raised surface */
+  --color-paper-3: #e8e3d9; /* sunken / hairline fill */
+  --color-ink: #111014; /* near-black text */
+  --color-ink-2: #56524a; /* muted text */
+  --color-ink-3: #8c8779; /* faint text / meta */
+
+  /* accents */
+  --color-blue: #2b44ff; /* primary — light, glass, links */
+  --color-blue-2: #6f80ff; /* lifted blue */
+  --color-violet: #7b5cff; /* gradient mid */
+  --color-flare: #ff5a2b; /* secondary — energy, hover, play */
+  --color-flare-2: #ffb03a; /* gradient warm end */
+
+  /* type */
+  --font-display: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* motion — one rhythm for the whole site */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+
+  /* layered z-scale */
+  --z-canvas: 0;
+  --z-content: 10;
+  --z-chrome: 40;
+  --z-cursor: 100;
+  --z-preloader: 1000;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --line: color-mix(in oklab, var(--color-ink) 12%, transparent);
+    --line-soft: color-mix(in oklab, var(--color-ink) 7%, transparent);
+  }
+
+  html {
+    /* Lenis drives scrolling; never let the browser fight it. */
+    scroll-behavior: auto;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--color-blue);
+    color: var(--color-paper-2);
+  }
+
+  /* Visible, on-brand focus ring — never removed, only restyled. */
+  :focus-visible {
+    outline: 2px solid var(--color-blue);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 0.92;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer utilities {
+  /* Fluid display sizes — the "massive type" scale. */
+  .text-mega {
+    font-size: clamp(3.5rem, 14vw, 15rem);
+  }
+  .text-major {
+    font-size: clamp(2.5rem, 7.5vw, 7rem);
+  }
+  .text-minor {
+    font-size: clamp(1.75rem, 3.6vw, 3.25rem);
+  }
+
+  .font-stretch-tight {
+    font-stretch: 85%;
+  }
+
+  /* Mask-reveal wrapper: a line of type that slides up out of nothing. */
+  .line-mask {
+    overflow: hidden;
+    display: block;
+    /* padding stops descenders (g, y, p) from being clipped */
+    padding-bottom: 0.12em;
+    margin-bottom: -0.12em;
+  }
+
+  .hairline {
+    border-color: var(--line);
+  }
+
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  }
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------------
+   Reduced motion: the site must still be complete and readable —
+   we remove movement, never content.
+------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Hide the native cursor only where we actually draw our own. */
+@media (pointer: fine) {
+  html.has-custom-cursor,
+  html.has-custom-cursor * {
+    cursor: none;
+  }
+}
