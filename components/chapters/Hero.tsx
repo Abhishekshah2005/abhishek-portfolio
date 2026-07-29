@@ -18,6 +18,8 @@ export function Hero({ started }: { started: boolean }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
   const [sceneReady, setSceneReady] = useState(false);
+  const [near, setNear] = useState(false);
+  const [sceneKey, setSceneKey] = useState(0);
   const reduced = useReducedMotion();
 
   // Reduced motion gets the DOM headline instead of the WebGL one — same
@@ -38,7 +40,19 @@ export function Hero({ started }: { started: boolean }) {
       },
     });
 
-    return () => st.kill();
+    // The hero's transmission buffers are the most expensive thing on the
+    // page. Once it's well off-screen the whole canvas is torn down, which
+    // hands its WebGL context back to the browser for the chapters below.
+    const io = new IntersectionObserver(
+      ([entry]) => setNear(entry.isIntersecting),
+      { rootMargin: "150px" },
+    );
+    io.observe(section);
+
+    return () => {
+      st.kill();
+      io.disconnect();
+    };
   }, []);
 
   // Intro: the supporting copy comes in under the headline reveal.
@@ -73,7 +87,7 @@ export function Hero({ started }: { started: boolean }) {
   // DOM headline reveal — only used when the scene isn't driving the type.
   useEffect(() => {
     const heading = headingRef.current;
-    if (!heading || !started || sceneReady) return;
+    if (!heading || !started || (sceneReady && near)) return;
     if (reduced) return;
 
     let split: SplitText | null = null;
@@ -94,7 +108,7 @@ export function Hero({ started }: { started: boolean }) {
       split?.revert();
       ctx.revert();
     };
-  }, [started, sceneReady, reduced]);
+  }, [started, sceneReady, near, reduced]);
 
   return (
     <section
@@ -104,9 +118,16 @@ export function Hero({ started }: { started: boolean }) {
       aria-label="Introduction"
     >
       <div className="sticky top-0 h-dvh overflow-hidden">
-        {useScene && (
+        {useScene && near && (
           <div className="absolute inset-0 z-0">
-            <HeroScene onReady={() => setSceneReady(true)} />
+            <HeroScene
+              key={sceneKey}
+              onReady={() => setSceneReady(true)}
+              onContextLost={() => {
+                setSceneReady(false);
+                setSceneKey((k) => k + 1);
+              }}
+            />
           </div>
         )}
 
@@ -114,7 +135,7 @@ export function Hero({ started }: { started: boolean }) {
             drawing it, but always present for assistive tech and crawlers. */}
         <div
           className={`pointer-events-none absolute inset-0 z-10 flex items-center justify-center px-4 transition-opacity duration-700 ${
-            sceneReady ? "opacity-0" : "opacity-100"
+            sceneReady && near ? "opacity-0" : "opacity-100"
           }`}
         >
           <h1
@@ -147,7 +168,7 @@ export function Hero({ started }: { started: boolean }) {
           <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
             <p
               data-intro
-              className="invisible max-w-md text-[15px] leading-relaxed text-ink-2 md:text-base"
+              className="invisible max-w-md text-base leading-relaxed text-ink-2"
             >
               {heroSub}
             </p>

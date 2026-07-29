@@ -9,6 +9,7 @@ import { pointer, lerp } from "@/lib/pointer";
 import { heroScroll } from "@/lib/scene-store";
 import { heroLines } from "@/lib/content";
 import { useDeviceTier } from "@/lib/hooks";
+import { bindContextLoss } from "@/lib/webgl";
 
 const PAPER = "#f2efe9";
 const INK = "#111014";
@@ -379,18 +380,24 @@ function Shards({ tier }: { tier: "low" | "mid" | "high" }) {
 }
 
 function Rig() {
-  const { camera } = useThree();
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     // A whisper of parallax on the camera so the whole frame feels held.
+    const cam = state.camera;
     const k = 1 - Math.pow(0.004, delta);
-    camera.position.x = lerp(camera.position.x, pointer.ex * 0.18, k);
-    camera.position.y = lerp(camera.position.y, pointer.ey * 0.12, k);
-    camera.lookAt(0, 0, 0);
+    cam.position.x = lerp(cam.position.x, pointer.ex * 0.18, k);
+    cam.position.y = lerp(cam.position.y, pointer.ey * 0.12, k);
+    cam.lookAt(0, 0, 0);
   });
   return null;
 }
 
-export default function HeroScene({ onReady }: { onReady?: () => void }) {
+export default function HeroScene({
+  onReady,
+  onContextLost,
+}: {
+  onReady?: () => void;
+  onContextLost?: () => void;
+}) {
   const tier = useDeviceTier();
 
   return (
@@ -400,8 +407,9 @@ export default function HeroScene({ onReady }: { onReady?: () => void }) {
       gl={{ antialias: tier !== "low", powerPreference: "high-performance" }}
       // The scene owns its background so the transmissive material has
       // something real to sample.
-      onCreated={({ scene }) => {
+      onCreated={({ scene, gl }) => {
         scene.background = new THREE.Color(PAPER);
+        bindContextLoss(gl.domElement, onContextLost);
         onReady?.();
       }}
     >

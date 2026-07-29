@@ -1,25 +1,32 @@
 "use client";
 
-import { cloneElement, useEffect, useRef, type ReactElement } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { gsap } from "@/lib/gsap";
 import { useFinePointer, useReducedMotion } from "@/lib/hooks";
 
 type Props = {
-  children: ReactElement<{ ref?: React.Ref<HTMLElement> }>;
-  /** How far the element is allowed to be pulled, as a fraction of its size. */
+  children: ReactNode;
+  /** How hard the element is pulled toward the cursor. */
   strength?: number;
   /** Distance in px around the element that counts as "near". */
   radius?: number;
+  className?: string;
 };
 
 /**
- * Pulls its child toward the cursor when the cursor is near, then springs back.
+ * Pulls its child toward the cursor when the cursor is near, then springs
+ * back. The pull is clamped so the element never runs away from the click.
  *
- * The pull is clamped so the element never leaves its own hit box — otherwise
- * you get the classic bug where the button runs away from the click.
+ * Renders its own inline-block wrapper rather than cloning the child, so it
+ * composes with anything and never fights over refs.
  */
-export function Magnetic({ children, strength = 0.32, radius = 120 }: Props) {
-  const ref = useRef<HTMLElement>(null);
+export function Magnetic({
+  children,
+  strength = 0.32,
+  radius = 120,
+  className = "",
+}: Props) {
+  const ref = useRef<HTMLSpanElement>(null);
   const fine = useFinePointer();
   const reduced = useReducedMotion();
 
@@ -52,20 +59,16 @@ export function Magnetic({ children, strength = 0.32, radius = 120 }: Props) {
       yTo(dy * strength);
     };
 
-    const onLeave = () => {
-      xTo(0);
-      yTo(0);
-    };
-
     window.addEventListener("pointermove", onMove, { passive: true });
-    el.addEventListener("pointerleave", onLeave);
-
     return () => {
       window.removeEventListener("pointermove", onMove);
-      el.removeEventListener("pointerleave", onLeave);
       gsap.killTweensOf(el);
     };
   }, [fine, reduced, strength, radius]);
 
-  return cloneElement(children, { ref });
+  return (
+    <span ref={ref} className={`inline-block will-change-transform ${className}`}>
+      {children}
+    </span>
+  );
 }

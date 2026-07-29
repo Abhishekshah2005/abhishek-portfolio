@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gsap } from "@/lib/gsap";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { useSmoothScroll } from "@/components/providers/SmoothScroll";
 import { chapters, person } from "@/lib/content";
 import { Magnetic } from "@/components/ui/Magnetic";
@@ -9,7 +9,19 @@ import { Magnetic } from "@/components/ui/Magnetic";
 export function Header({ started }: { started: boolean }) {
   const ref = useRef<HTMLElement>(null);
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { scrollTo } = useSmoothScroll();
+
+  // Past the hero the bar picks up a glass backing — without it the nav
+  // collides with the oversized type running underneath.
+  useEffect(() => {
+    const st = ScrollTrigger.create({
+      start: 80,
+      end: Number.MAX_SAFE_INTEGER,
+      onToggle: (self) => setScrolled(self.isActive),
+    });
+    return () => st.kill();
+  }, []);
 
   useEffect(() => {
     if (!started || !ref.current) return;
@@ -39,12 +51,16 @@ export function Header({ started }: { started: boolean }) {
   return (
     <header
       ref={ref}
-      className="fixed inset-x-0 top-0 z-40 flex items-center justify-between p-5 md:p-10"
+      className={`fixed inset-x-0 top-0 z-40 flex items-center justify-between transition-[background-color,backdrop-filter,padding,border-color] duration-500 ease-[var(--ease-out-expo)] ${
+        scrolled
+          ? "border-b border-[var(--line-soft)] bg-paper/72 px-5 py-4 backdrop-blur-xl md:px-10 md:py-5"
+          : "border-b border-transparent p-5 md:p-10"
+      }`}
     >
       <button
         data-nav-item
         onClick={() => scrollTo(0)}
-        className="invisible flex items-center gap-3 text-left"
+        className="invisible -my-3 flex min-h-11 items-center gap-3 py-3 text-left"
         aria-label="Back to top"
       >
         <span className="relative flex h-2 w-2">
@@ -83,7 +99,7 @@ export function Header({ started }: { started: boolean }) {
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-label={open ? "Close menu" : "Open menu"}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-ink/15 md:hidden"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/15 md:hidden"
           >
             <span className="flex flex-col gap-1">
               <span
@@ -120,7 +136,7 @@ export function Header({ started }: { started: boolean }) {
         <button
           onClick={() => setOpen(false)}
           aria-label="Close menu"
-          className="absolute top-5 right-5 flex h-10 w-10 items-center justify-center rounded-full border border-ink/15"
+          className="absolute top-5 right-5 flex h-11 w-11 items-center justify-center rounded-full border border-ink/15"
         >
           <span className="text-lg leading-none">×</span>
         </button>

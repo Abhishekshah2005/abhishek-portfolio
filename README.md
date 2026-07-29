@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Abhishek Shah — portfolio
 
-## Getting Started
-
-First, run the development server:
+A single-page, scroll-driven portfolio. Six chapters, each with its own
+signature interaction, so the site keeps introducing something new rather than
+repeating one trick.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+pnpm dev          # http://localhost:3000
+pnpm typecheck && pnpm lint && pnpm build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## The chapters
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| # | Chapter | Signature interaction |
+|---|---------|----------------------|
+| 00 | Preloader | Counter + peeling slat curtain |
+| 01 | Hero | A liquid-glass lens that genuinely refracts the headline |
+| 02 | About | Draggable, throwable skill stickers on a gradient wash |
+| 03 | Work | Cursor-tracked project preview over an oversized index |
+| 04 | Playground | Real rigid-body physics you can grab and throw |
+| 05 | Capabilities | A cursor-carried light source lighting real 3D material |
+| 06 | Contact | Per-character kinetic type + magnetic CTA |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## How it's put together
 
-## Learn More
+**One animation frame.** GSAP's ticker is the only `requestAnimationFrame` loop
+on the page. Lenis' smooth scroll, the pointer easing, the cursor, and the
+per-frame DOM writes all ride on it. Nothing starts its own loop.
 
-To learn more about Next.js, take a look at the following resources:
+**The hero headline lives in WebGL.** A DOM overlay can't be refracted by a
+transmissive material — the glass has to have something in the scene to bend.
+So the headline is drawn to a canvas texture, rendered on a plane, and the lens
+sits in front of it. The reveal (each line masked to its own band, sliding up)
+is done in the fragment shader, which is what lets the glass distort type
+mid-animation. A real `<h1>` stays in the document the whole time for search
+engines, screen readers, and anyone with reduced motion.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**WebGL contexts are rationed.** Browsers will drop a context when a page asks
+for too much, and a dropped context leaves a permanently blank canvas. Each 3D
+chapter mounts only when it's near the viewport and tears down when it isn't —
+including the hero, whose transmission buffers are the most expensive thing
+here. Every scene also listens for `webglcontextlost`, calls `preventDefault`,
+and remounts itself.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Scenes scale to the device.** `useDeviceTier` reads core count, memory, and
+pointer type once; geometry detail, transmission samples, buffer resolution,
+DPR, and physics object count all key off it.
 
-## Deploy on Vercel
+## Accessibility
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Not an afterthought — several things were built differently because of it:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Reduced motion** replaces rather than removes. The hero falls back to the
+  DOM headline, the preloader is skipped entirely, the physics toy is swapped
+  for an explanation, and smooth scrolling hands back to the platform.
+- **Contrast is checked, not eyeballed.** Every text/background pair clears
+  4.5:1, including the low-opacity meta text on dark chapters and the darkest
+  stop of the travelling-light gradient.
+- **Touch targets** are ≥44px throughout.
+- **Focus is visible** everywhere — restyled, never removed.
+- Full keyboard operation, a skip link, sequential headings, and `Escape` to
+  close the mobile menu.
+
+## Stack
+
+Next.js 16 (App Router, static) · React 19 · TypeScript · Tailwind v4 ·
+GSAP 3.15 (ScrollTrigger, SplitText, Draggable, Inertia) · Lenis ·
+React Three Fiber + drei · Rapier physics · Archivo + Space Grotesk,
+self-hosted.
+
+## Content
+
+All copy and data is in [`lib/content.ts`](lib/content.ts). See
+[CONTENT.md](CONTENT.md) for what still needs replacing before launch.

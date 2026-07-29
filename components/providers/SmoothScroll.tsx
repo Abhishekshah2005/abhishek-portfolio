@@ -1,13 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { bindPointer, updatePointer } from "@/lib/pointer";
 import { useReducedMotion } from "@/lib/hooks";
 
 type ScrollCtx = {
-  lenis: Lenis | null;
   /** 0..1 through the whole document */
   progress: () => number;
   /** signed scroll velocity, useful for motion-blur style effects */
@@ -16,7 +15,6 @@ type ScrollCtx = {
 };
 
 const Ctx = createContext<ScrollCtx>({
-  lenis: null,
   progress: () => 0,
   velocity: () => 0,
   scrollTo: () => {},
@@ -27,7 +25,6 @@ export const useSmoothScroll = () => useContext(Ctx);
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
   const stateRef = useRef({ progress: 0, velocity: 0 });
-  const [, force] = useState(0);
   const reduced = useReducedMotion();
 
   useEffect(() => {
@@ -42,7 +39,6 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       prevent: (node) => node.hasAttribute?.("data-lenis-prevent"),
     });
     lenisRef.current = lenis;
-    force((n) => n + 1);
 
     lenis.on("scroll", (e: Lenis) => {
       stateRef.current.progress = e.progress;
@@ -104,25 +100,34 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     };
   }, [reduced]);
 
-  const value: ScrollCtx = {
-    lenis: lenisRef.current,
-    progress: () => stateRef.current.progress,
-    velocity: () => stateRef.current.velocity,
-    scrollTo: (target, offset = 0) => {
+  // Everything reads through callbacks so the context value never has to
+  // change identity when Lenis boots — no re-render, no ref reads in render.
+  const progress = useCallback(() => stateRef.current.progress, []);
+  const velocity = useCallback(() => stateRef.current.velocity, []);
+
+  const scrollTo = useCallback(
+    (target: string | number | HTMLElement, offset = 0) => {
       const lenis = lenisRef.current;
       if (lenis) {
         lenis.scrollTo(target, { offset, duration: 1.4 });
         return;
       }
+      // Reduced motion (or pre-boot): fall back to the platform.
       const el =
         typeof target === "string" ? document.querySelector(target) : target;
       if (el instanceof HTMLElement) {
-        window.scrollTo({ top: el.offsetTop + offset, behavior: "smooth" });
+        window.scrollTo({ top: el.offsetTop + offset, behavior: "auto" });
       } else if (typeof target === "number") {
-        window.scrollTo({ top: target + offset, behavior: "smooth" });
+        window.scrollTo({ top: target + offset, behavior: "auto" });
       }
     },
-  };
+    [],
+  );
+
+  const value = useMemo<ScrollCtx>(
+    () => ({ progress, velocity, scrollTo }),
+    [progress, velocity, scrollTo],
+  );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

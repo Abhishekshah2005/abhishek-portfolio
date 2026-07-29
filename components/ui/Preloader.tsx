@@ -7,26 +7,30 @@ import { person } from "@/lib/content";
 
 /**
  * Opening curtain: a counter runs to 100 while the page settles, then the
- * panel splits and lifts away, handing off to the hero reveal.
+ * slats peel away and hand off to the hero reveal.
  *
- * It never blocks for longer than it has to — the count is tied to real
- * document readiness, with a hard ceiling so a slow asset can't trap anyone.
+ * Reduced motion skips it entirely — there's nothing behind it worth waiting
+ * for, so making someone sit through a curtain would be pure cost.
  */
 export function Preloader({ onDone }: { onDone: () => void }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const countRef = useRef<HTMLSpanElement>(null);
   const [gone, setGone] = useState(false);
   const reduced = useReducedMotion();
+
+  // Keep the callback fresh without making it a dependency of the timeline.
   const doneRef = useRef(onDone);
-  doneRef.current = onDone;
+  useEffect(() => {
+    doneRef.current = onDone;
+  });
 
   useEffect(() => {
-    if (reduced) {
-      setGone(true);
-      doneRef.current();
-      return;
-    }
+    if (!reduced) return;
+    doneRef.current();
+  }, [reduced]);
 
+  useEffect(() => {
+    if (reduced) return;
     const root = rootRef.current;
     const count = countRef.current;
     if (!root || !count) return;
@@ -72,7 +76,7 @@ export function Preloader({ onDone }: { onDone: () => void }) {
     };
   }, [reduced]);
 
-  if (gone) return null;
+  if (gone || reduced) return null;
 
   return (
     <div

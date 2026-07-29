@@ -11,7 +11,9 @@
   --color-paper-3: #e8e3d9; /* sunken / hairline fill */
   --color-ink: #111014; /* near-black text */
   --color-ink-2: #56524a; /* muted text */
-  --color-ink-3: #8c8779; /* faint text / meta */
+  /* Meta text is small (10–13px), so it has to clear 4.5:1 like body copy —
+     4.71:1 on paper. Anything lighter reads as decoration, not text. */
+  --color-ink-3: #6e6a5d;
 
   /* accents */
   --color-blue: #2b44ff; /* primary — light, glass, links */
@@ -115,6 +117,21 @@
 
   .hairline {
     border-color: var(--line);
+  }
+
+  /* Text lit by a travelling light source. The darkest stop still clears
+     AA against the near-black surface, so the copy is legible even where
+     the light isn't. */
+  .lit-text {
+    background: radial-gradient(
+      240px circle at var(--mx, 50%) var(--my, 50%),
+      #ffffff 0%,
+      #ffe9d2 22%,
+      rgba(242, 239, 233, 0.72) 62%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 
   .grain::after {

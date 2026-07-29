@@ -1,42 +1,37 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 
 /** useLayoutEffect that doesn't warn during SSR. */
 export const useIsoLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
+/** Subscribe a component to a media query without setState-in-effect. */
+function useMediaQuery(query: string, serverValue: boolean) {
+  const subscribe = (onChange: () => void) => {
+    const mq = window.matchMedia(query);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  };
+
+  return useSyncExternalStore(
+    subscribe,
+    () => window.matchMedia(query).matches,
+    () => serverValue,
+  );
+}
+
 /**
- * Live `prefers-reduced-motion`. Starts `true` so the very first client render
- * matches the server and never plays a frame of motion we'd have to undo.
+ * Live `prefers-reduced-motion`. Defaults to `true` on the server so the
+ * first paint never commits to a frame of motion we'd have to undo.
  */
 export function useReducedMotion() {
-  const [reduced, setReduced] = useState(true);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const apply = () => setReduced(mq.matches);
-    apply();
-    mq.addEventListener("change", apply);
-    return () => mq.removeEventListener("change", apply);
-  }, []);
-
-  return reduced;
+  return useMediaQuery("(prefers-reduced-motion: reduce)", true);
 }
 
 /** True when the device has a real pointer (mouse/trackpad). */
 export function useFinePointer() {
-  const [fine, setFine] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(pointer: fine)");
-    const apply = () => setFine(mq.matches);
-    apply();
-    mq.addEventListener("change", apply);
-    return () => mq.removeEventListener("change", apply);
-  }, []);
-
-  return fine;
+  return useMediaQuery("(pointer: fine)", false);
 }
 
 /**
@@ -61,20 +56,31 @@ export function useInView<T extends HTMLElement>(rootMargin = "200px") {
   return { ref, inView };
 }
 
-/** Coarse device tier so heavy scenes can scale themselves down. */
-export function useDeviceTier(): "low" | "mid" | "high" {
-  const [tier, setTier] = useState<"low" | "mid" | "high">("mid");
+/**
+ * Coarse device tier so heavy scenes can scale themselves down.
+ *
+ * Computed once and cached: the answer can't change during a session, and a
+ * stable snapshot is what useSyncExternalStore requires.
+ */
+type Tier = "low" | "mid" | "high";
+let cachedTier: Tier | null = null;
 
-  useEffect(() => {
-    const cores = navigator.hardwareConcurrency ?? 4;
-    const mem = (navigator as Navigator & { deviceMemory?: number })
-      .deviceMemory;
-    const coarse = window.matchMedia("(pointer: coarse)").matches;
+function readTier(): Tier {
+  if (cachedTier) return cachedTier;
 
-    if (coarse || cores <= 4 || (mem !== undefined && mem <= 4)) setTier("low");
-    else if (cores >= 8) setTier("high");
-    else setTier("mid");
-  }, []);
+  const cores = navigator.hardwareConcurrency ?? 4;
+  const mem = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+  const coarse = window.matchMedia("(pointer: coarse)").matches;
 
-  return tier;
+  if (coarse || cores <= 4 || (mem !== undefined && mem <= 4)) cachedTier = "low";
+  else if (cores >= 8) cachedTier = "high";
+  else cachedTier = "mid";
+
+  return cachedTier;
+}
+
+const noopSubscribe = () => () => {};
+
+export function useDeviceTier(): Tier {
+  return useSyncExternalStore(noopSubscribe, readTier, () => "mid");
 }
