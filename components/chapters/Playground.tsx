@@ -50,7 +50,9 @@ export function Playground() {
           </div>
         </div>
 
-        <div className="relative h-[62vh] min-h-[380px] overflow-hidden rounded-3xl border border-paper/10 bg-[#0d0c10]">
+        {/* Shorter than it was: the toys settle along the floor, and a taller
+            box just left a large empty rectangle above them. */}
+        <div className="relative h-[48vh] min-h-[340px] overflow-hidden rounded-3xl border border-paper/10 bg-[#0d0c10]">
           {/* Reduced motion gets a still arrangement rather than a physics
               sim it never asked for. */}
           {inView && !reduced && (

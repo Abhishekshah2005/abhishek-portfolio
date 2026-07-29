@@ -20,6 +20,7 @@ export function Hero({ started }: { started: boolean }) {
   const [sceneReady, setSceneReady] = useState(false);
   const [near, setNear] = useState(false);
   const [sceneKey, setSceneKey] = useState(0);
+  const [resetToken, setResetToken] = useState(0);
   const reduced = useReducedMotion();
 
   // Reduced motion gets the DOM headline instead of the WebGL one — same
@@ -117,11 +118,14 @@ export function Hero({ started }: { started: boolean }) {
       className="relative h-[190vh]"
       aria-label="Introduction"
     >
-      <div className="sticky top-0 h-dvh overflow-hidden">
+      {/* select-none: the hero is a drag surface, and without it every
+          throw smears a text selection across the copy. */}
+      <div className="sticky top-0 h-dvh overflow-hidden select-none">
         {useScene && near && (
           <div className="absolute inset-0 z-0">
             <HeroScene
               key={sceneKey}
+              resetToken={resetToken}
               onReady={() => setSceneReady(true)}
               onContextLost={() => {
                 setSceneReady(false);
@@ -158,10 +162,13 @@ export function Hero({ started }: { started: boolean }) {
           </h1>
         </div>
 
-        {/* Supporting layer: sits above the glass, stays legible. */}
+        {/* Supporting layer: sits above the scene but must not intercept
+            pointer events — the whole canvas is a drag surface now, and a
+            full-bleed overlay would silently swallow every grab. Only the
+            genuinely interactive children opt back in. */}
         <div
           ref={metaRef}
-          className="absolute inset-0 z-20 flex flex-col justify-between p-5 md:p-10"
+          className="pointer-events-none absolute inset-0 z-20 flex flex-col justify-between p-5 md:p-10"
         >
           <div />
 
@@ -201,6 +208,23 @@ export function Hero({ started }: { started: boolean }) {
             Scroll
           </span>
         </div>
+
+        {/* Tells you it's playable, and puts the words back when it isn't
+            any more. Only shown once the scene is actually driving them. */}
+        {sceneReady && near && (
+          <div className="absolute top-24 right-5 z-20 flex flex-col items-end gap-3 md:top-32 md:right-10">
+            <span className="font-mono text-[10px] tracking-[0.24em] text-ink-3 uppercase">
+              Throw the marble
+            </span>
+            <button
+              onClick={() => setResetToken((t) => t + 1)}
+              data-cursor="reset"
+              className="pointer-events-auto inline-flex min-h-11 items-center rounded-full border border-ink/20 px-5 text-[12px] tracking-tight text-ink-2 transition-colors duration-300 hover:border-ink hover:text-ink"
+            >
+              Put it back
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

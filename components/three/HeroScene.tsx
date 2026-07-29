@@ -1,12 +1,25 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { Environment, Lightformer, MeshTransmissionMaterial } from "@react-three/drei";
+import {
+  CuboidCollider,
+  Physics,
+  RigidBody,
+  type RapierRigidBody,
+} from "@react-three/rapier";
 import * as THREE from "three";
 import { gsap } from "@/lib/gsap";
 import { pointer, lerp } from "@/lib/pointer";
-import { heroScroll, heroLayout } from "@/lib/scene-store";
+import { heroScroll } from "@/lib/scene-store";
 import { heroLines } from "@/lib/content";
 import { useDeviceTier } from "@/lib/hooks";
 import { bindContextLoss } from "@/lib/webgl";
@@ -16,384 +29,542 @@ const INK = "#111014";
 const BLUE = "#2b44ff";
 
 /* ------------------------------------------------------------------
-   The headline, rendered to a canvas texture so that WebGL — and
-   therefore the glass — can actually refract it. The DOM keeps a real
-   <h1> for search engines and screen readers.
+   Typesetting
+
+   The headline is laid out in CSS pixels exactly as before, but each
+   glyph becomes its own texture so it can be an independent physics
+   body. The DOM keeps a real <h1> for search engines and screen readers.
 ------------------------------------------------------------------ */
 
-type Drawn = { texture: THREE.CanvasTexture; edges: THREE.Vector4 };
+type Glyph = {
+  id: string;
+  canvas: HTMLCanvasElement;
+  /** centre position and size, in CSS pixels */
+  xPx: number;
+  yPx: number;
+  wPx: number;
+  hPx: number;
+};
 
-function drawHeadline(width: number, height: number): Drawn | null {
+function font(px: number) {
+  return `500 ${px}px "Archivo Variable", system-ui, sans-serif`;
+}
+
+/** One glyph rendered to a transparent canvas, sized to its own ink. */
+function glyphCanvas(char: string, fontPx: number, color: string) {
+  const probe = document.createElement("canvas").getContext("2d");
+  if (!probe) return null;
+  probe.font = font(fontPx);
+  const advance = probe.measureText(char).width;
+
+  const pad = fontPx * 0.14;
   const canvas = document.createElement("canvas");
-  // Cap the backing store: 2K across is plenty for type this large.
-  const scale = Math.min(2048 / width, 2);
-  canvas.width = Math.round(width * scale);
-  canvas.height = Math.round(height * scale);
+  canvas.width = Math.max(2, Math.ceil(advance + pad * 2));
+  canvas.height = Math.max(2, Math.ceil(fontPx * 1.15 + pad * 2));
 
+  // Sizing a canvas resets its context, so the font has to be set again.
   const ctx = canvas.getContext("2d");
   if (!ctx) return null;
+  ctx.font = font(fontPx);
+  ctx.fillStyle = color;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(char, canvas.width / 2, canvas.height / 2);
 
-  ctx.fillStyle = PAPER;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  return { canvas, advance };
+}
 
-  const target = canvas.width * 0.94;
+function layoutHeadline(width: number, height: number): Glyph[] {
+  const probe = document.createElement("canvas").getContext("2d");
+  if (!probe) return [];
+
+  const target = width * 0.94;
   const measure = (text: string, size: number) => {
-    ctx.font = `500 ${size}px "Archivo Variable", system-ui, sans-serif`;
-    return ctx.measureText(text).width;
+    probe.font = font(size);
+    return probe.measureText(text).width;
   };
 
-  // Each line is scaled independently so all three flush to the same
-  // width — the justified slab that makes this kind of type feel huge.
+  // Each line fills the width, then the whole slab is scaled to a height
+  // budget — filling the width alone overflows on a wide screen.
   const sized = heroLines.map((line) => {
-    const probe = 200;
-    const size = probe * (target / measure(line.text, probe));
+    const p = 200;
+    const size = p * (target / measure(line.text, p));
     return { ...line, size, lineHeight: size * 0.8 };
   });
 
-  // Filling the width can easily overflow the height on a wide screen, so
-  // the whole slab is then scaled to fit — lines stay flush with each
-  // other, just smaller.
-  const rawHeight = sized.reduce((sum, l) => sum + l.lineHeight, 0);
-  const maxHeight = canvas.height * 0.72;
-  let widthFactor = 1;
-  if (rawHeight > maxHeight) {
-    widthFactor = maxHeight / rawHeight;
+  const raw = sized.reduce((sum, l) => sum + l.lineHeight, 0);
+  const maxHeight = height * 0.72;
+  if (raw > maxHeight) {
+    const k = maxHeight / raw;
     for (const line of sized) {
-      line.size *= widthFactor;
-      line.lineHeight *= widthFactor;
+      line.size *= k;
+      line.lineHeight *= k;
     }
   }
 
-  // Publish the slab's real half-width so the lens knows where the type is.
-  heroLayout.slabHalfWidth = (0.94 * widthFactor) / 2;
+  const total = sized.reduce((sum, l) => sum + l.lineHeight, 0);
+  let y = height * 0.46 - total / 2;
 
-  const totalHeight = sized.reduce((sum, l) => sum + l.lineHeight, 0);
-  // Sits slightly above centre, leaving the lower band clear for the
-  // supporting copy and the CTA.
-  let y = canvas.height * 0.46 - totalHeight / 2;
+  const glyphs: Glyph[] = [];
 
-  // v-coordinates (1 = top) of each line's band, for the reveal shader.
-  const edges: number[] = [1 - y / canvas.height];
+  sized.forEach((line, lineIndex) => {
+    const lineWidth = measure(line.text, line.size);
+    let x = (width - lineWidth) / 2;
+    const centreY = y + line.lineHeight / 2;
 
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
+    Array.from(line.text).forEach((char, charIndex) => {
+      probe.font = font(line.size);
+      const advance = probe.measureText(char).width;
 
-  for (const line of sized) {
-    ctx.font = `500 ${line.size}px "Archivo Variable", system-ui, sans-serif`;
-    ctx.fillStyle = line.accent ? BLUE : INK;
-    ctx.fillText(line.text, canvas.width / 2, y + line.lineHeight / 2);
+      if (char.trim()) {
+        const drawn = glyphCanvas(char, line.size, line.accent ? BLUE : INK);
+        if (drawn) {
+          glyphs.push({
+            id: `${lineIndex}-${charIndex}`,
+            canvas: drawn.canvas,
+            xPx: x + advance / 2,
+            yPx: centreY,
+            wPx: drawn.canvas.width,
+            hPx: drawn.canvas.height,
+          });
+        }
+      }
+      x += advance;
+    });
+
     y += line.lineHeight;
-    edges.push(1 - y / canvas.height);
-  }
+  });
 
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.minFilter = THREE.LinearFilter;
-  texture.generateMipmaps = false;
-  texture.anisotropy = 4;
-
-  return {
-    texture,
-    edges: new THREE.Vector4(edges[0], edges[1], edges[2], edges[3]),
-  };
+  return glyphs;
 }
 
-const headlineVertex = /* glsl */ `
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
+/* ------------------------------------------------------------------
+   A letter
 
-/**
- * Per-line mask reveal: each line is clipped to its own band and its content
- * slides up into place. Doing it in the shader (rather than with three DOM
- * elements) is what lets the glass refract mid-reveal.
- */
-const headlineFragment = /* glsl */ `
-  uniform sampler2D uMap;
-  uniform vec3 uReveal;
-  uniform vec4 uEdges;
-  uniform vec2 uPointer;
-  uniform vec3 uPaper;
-  uniform float uDrift;
-  varying vec2 vUv;
+   Sits fixed in its typeset position until something hits it, then
+   becomes a free body. Reset tweens it home and pins it again.
+------------------------------------------------------------------ */
 
-  // One line: clipped to its own band, its content sliding up into place.
-  vec3 band(vec2 uv, float top, float bottom, float reveal, vec3 base) {
-    float h = top - bottom;
-    float sv = uv.y - (1.0 - reveal) * h;
-    if (uv.y <= top && uv.y >= bottom && sv <= top && sv >= bottom) {
-      return texture2D(uMap, vec2(uv.x, sv)).rgb;
-    }
-    return base;
-  }
+type Placed = Glyph & { x: number; y: number; w: number; h: number };
 
-  void main() {
-    vec2 uv = vec2(vUv.x, vUv.y + uDrift);
-    vec3 col = uPaper;
+function Letter({
+  glyph,
+  resetToken,
+  intro,
+}: {
+  glyph: Placed;
+  resetToken: number;
+  intro: boolean;
+}) {
+  const body = useRef<RapierRigidBody>(null);
+  const mesh = useRef<THREE.Mesh>(null);
+  const loose = useRef(false);
+  const dragging = useRef(false);
 
-    col = band(uv, uEdges.x, uEdges.y, uReveal.x, col);
-    col = band(uv, uEdges.y, uEdges.z, uReveal.y, col);
-    col = band(uv, uEdges.z, uEdges.w, uReveal.z, col);
+  const { camera } = useThree();
+  const plane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), []);
+  const ray = useMemo(() => new THREE.Raycaster(), []);
+  const point = useRef(new THREE.Vector3());
+  const previous = useRef(new THREE.Vector3());
+  const velocity = useRef(new THREE.Vector3());
 
-    // The cursor lifts the paper very slightly — a light in the room,
-    // not a spotlight.
-    float d = distance(vUv, uPointer * 0.5 + 0.5);
-    col += (1.0 - smoothstep(0.0, 0.42, d)) * 0.035;
+  const texture = useMemo(() => {
+    const t = new THREE.CanvasTexture(glyph.canvas);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.minFilter = THREE.LinearFilter;
+    t.generateMipmaps = false;
+    t.anisotropy = 4;
+    return t;
+  }, [glyph.canvas]);
 
-    gl_FragColor = vec4(col, 1.0);
-  }
-`;
+  useEffect(() => () => texture.dispose(), [texture]);
 
-function Headline() {
-  const { viewport, size } = useThree();
-  const [drawn, setDrawn] = useState<Drawn | null>(null);
-  const matRef = useRef<THREE.ShaderMaterial>(null);
+  /** Anything that moves this letter also un-pins it. */
+  const wake = useCallback(() => {
+    const b = body.current;
+    if (!b || loose.current) return;
+    loose.current = true;
+    b.setBodyType(0, true); // Dynamic
+  }, []);
 
-  // Redraw whenever the viewport changes shape, and once webfonts land.
+  // Intro: the glyph rises into place. The body stays parked at home —
+  // only the mesh inside it animates, so physics never sees the reveal.
   useEffect(() => {
-    let cancelled = false;
-    const render = () => {
-      if (cancelled) return;
-      const next = drawHeadline(size.width, size.height);
-      if (next) {
-        setDrawn((prev) => {
-          prev?.texture.dispose();
-          return next;
-        });
-      }
-    };
-
-    if (document.fonts?.status === "loaded") render();
-    else document.fonts?.ready.then(render).catch(render);
-
-    return () => {
-      cancelled = true;
-    };
-  }, [size.width, size.height]);
-
-  useEffect(() => () => drawn?.texture.dispose(), [drawn]);
-
-  const uniforms = useMemo(
-    () => ({
-      uMap: { value: null as THREE.Texture | null },
-      uReveal: { value: new THREE.Vector3(0, 0, 0) },
-      uEdges: { value: new THREE.Vector4(1, 0.66, 0.33, 0) },
-      uPointer: { value: new THREE.Vector2(0, 0) },
-      uPaper: { value: new THREE.Color(PAPER) },
-      uDrift: { value: 0 },
-    }),
-    [],
-  );
-
-  // Play the reveal once the texture exists — never before, or the first
-  // line would flash in un-typeset.
-  useEffect(() => {
-    if (!drawn || !matRef.current) return;
-    const u = matRef.current.uniforms;
-    u.uMap.value = drawn.texture;
-    u.uEdges.value = drawn.edges;
-
-    const target = u.uReveal.value as THREE.Vector3;
-    if (heroScroll.revealed >= 1) {
-      target.set(1, 1, 1);
+    const m = mesh.current;
+    if (!m) return;
+    if (!intro) {
+      m.position.set(0, 0, 0);
+      (m.material as THREE.Material).opacity = 1;
       return;
     }
+    const material = m.material as THREE.Material;
+    const delay = 0.25 + glyph.xPx * 0.00035 + Number(glyph.id.split("-")[0]) * 0.12;
 
-    const tl = gsap.timeline({ delay: 0.15 });
-    tl.to(target, { x: 1, duration: 1.5, ease: "expo.out" })
-      .to(target, { y: 1, duration: 1.5, ease: "expo.out" }, "-=1.25")
-      .to(target, { z: 1, duration: 1.5, ease: "expo.out" }, "-=1.25")
-      .call(() => {
-        heroScroll.revealed = 1;
-      });
+    const tl = gsap.timeline({ delay });
+    tl.fromTo(
+      m.position,
+      { y: -glyph.h * 1.1 },
+      { y: 0, duration: 1.3, ease: "expo.out" },
+      0,
+    ).fromTo(
+      material,
+      { opacity: 0 },
+      { opacity: 1, duration: 0.7, ease: "power2.out" },
+      0,
+    );
 
     return () => {
       tl.kill();
     };
-  }, [drawn]);
+  }, [intro, glyph]);
 
-  useFrame(() => {
-    const mat = matRef.current;
-    if (!mat) return;
-    const u = mat.uniforms;
-    (u.uPointer.value as THREE.Vector2).set(pointer.ex, pointer.ey);
-    // The whole slab drifts up as the hero leaves — parallax against the glass.
-    u.uDrift.value = lerp(u.uDrift.value as number, heroScroll.progress * 0.22, 0.1);
+  // Reset: fly home, then pin again so the headline reads cleanly.
+  useEffect(() => {
+    if (resetToken === 0) return;
+    const b = body.current;
+    if (!b) return;
+
+    b.setBodyType(2, true); // Kinematic while we drive it back
+    const from = b.translation();
+    const proxy = { x: from.x, y: from.y, z: from.z };
+
+    const tween = gsap.to(proxy, {
+      x: glyph.x,
+      y: glyph.y,
+      z: 0,
+      duration: 1.1,
+      ease: "expo.inOut",
+      onUpdate: () => {
+        b.setNextKinematicTranslation(proxy);
+      },
+      onComplete: () => {
+        b.setTranslation({ x: glyph.x, y: glyph.y, z: 0 }, true);
+        b.setRotation({ x: 0, y: 0, z: 0, w: 1 }, true);
+        b.setBodyType(1, true); // Fixed
+        loose.current = false;
+      },
+    });
+
+    return () => {
+      tween.kill();
+    };
+  }, [resetToken, glyph.x, glyph.y]);
+
+  useFrame((state) => {
+    if (!dragging.current || !body.current) return;
+    ray.setFromCamera(state.pointer, camera);
+    if (!ray.ray.intersectPlane(plane, point.current)) return;
+    velocity.current.subVectors(point.current, previous.current);
+    previous.current.copy(point.current);
+    body.current.setNextKinematicTranslation({
+      x: point.current.x,
+      y: point.current.y,
+      z: 0,
+    });
   });
 
+  const release = useCallback(() => {
+    const b = body.current;
+    if (!b) return;
+    dragging.current = false;
+    loose.current = true;
+    b.setBodyType(0, true);
+    b.setLinvel(
+      { x: velocity.current.x * 42, y: velocity.current.y * 42, z: 0 },
+      true,
+    );
+    b.setAngvel({ x: 0, y: 0, z: -velocity.current.x * 9 }, true);
+  }, []);
+
+  useEffect(() => {
+    if (!dragging.current) return;
+    window.addEventListener("pointerup", release);
+    window.addEventListener("pointercancel", release);
+    return () => {
+      window.removeEventListener("pointerup", release);
+      window.removeEventListener("pointercancel", release);
+    };
+  });
+
+  const grab = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    const b = body.current;
+    if (!b) return;
+    const t = b.translation();
+    previous.current.set(t.x, t.y, 0);
+    velocity.current.set(0, 0, 0);
+    b.setBodyType(2, true);
+    dragging.current = true;
+  };
+
   return (
-    <mesh position={[0, 0, 0]}>
-      <planeGeometry args={[viewport.width, viewport.height]} />
-      <shaderMaterial
-        ref={matRef}
-        vertexShader={headlineVertex}
-        fragmentShader={headlineFragment}
-        uniforms={uniforms}
-      />
-    </mesh>
+    <RigidBody
+      ref={body}
+      type="fixed"
+      position={[glyph.x, glyph.y, 0]}
+      colliders={false}
+      linearDamping={0.55}
+      angularDamping={0.7}
+      restitution={0.45}
+      friction={0.2}
+      onCollisionEnter={wake}
+    >
+      <CuboidCollider args={[glyph.w / 2, glyph.h / 2, 0.14]} />
+      <mesh ref={mesh} onPointerDown={grab}>
+        <planeGeometry args={[glyph.w, glyph.h]} />
+        <meshBasicMaterial
+          map={texture}
+          transparent
+          opacity={0}
+          toneMapped={false}
+          depthWrite={false}
+        />
+      </mesh>
+    </RigidBody>
   );
 }
 
 /* ------------------------------------------------------------------
-   The glass. A slowly-morphing blob of transmissive material that
-   follows the cursor and swells as the hero scrolls away.
+   The marble — the thing you throw at the words.
 ------------------------------------------------------------------ */
 
-function Glass({ tier }: { tier: "low" | "mid" | "high" }) {
-  const ref = useRef<THREE.Mesh>(null);
-  const { viewport } = useThree();
+function Marble({
+  tier,
+  homeX,
+  radius,
+  resetToken,
+}: {
+  tier: "low" | "mid" | "high";
+  homeX: number;
+  radius: number;
+  resetToken: number;
+}) {
+  const body = useRef<RapierRigidBody>(null);
+  const dragging = useRef(false);
+  const { camera, viewport } = useThree();
+
+  const plane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), []);
+  const ray = useMemo(() => new THREE.Raycaster(), []);
+  const point = useRef(new THREE.Vector3());
+  const previous = useRef(new THREE.Vector3());
+  const velocity = useRef(new THREE.Vector3());
 
   const detail = tier === "low" ? 8 : tier === "mid" ? 16 : 32;
   const samples = tier === "low" ? 3 : tier === "mid" ? 6 : 10;
   const resolution = tier === "low" ? 256 : tier === "mid" ? 512 : 1024;
 
-  // Base radius keyed to the smaller viewport dimension so the lens reads
-  // the same on a laptop and an ultrawide.
-  const radius = Math.min(viewport.width, viewport.height) * 0.155;
+  useEffect(() => {
+    if (resetToken === 0) return;
+    const b = body.current;
+    if (!b) return;
+    b.setLinvel({ x: 0, y: 0, z: 0 }, true);
+    b.setAngvel({ x: 0, y: 0, z: 0 }, true);
+    b.setTranslation({ x: homeX, y: 0, z: 0 }, true);
+  }, [resetToken, homeX]);
 
-  useFrame((state, delta) => {
-    const mesh = ref.current;
-    if (!mesh) return;
+  useFrame((state) => {
+    const b = body.current;
+    if (!b) return;
 
-    const t = state.clock.elapsedTime;
-    const p = heroScroll.progress;
-    const k = 1 - Math.pow(0.001, delta);
+    if (dragging.current) {
+      ray.setFromCamera(state.pointer, camera);
+      if (!ray.ray.intersectPlane(plane, point.current)) return;
+      velocity.current.subVectors(point.current, previous.current);
+      previous.current.copy(point.current);
+      b.setNextKinematicTranslation({
+        x: point.current.x,
+        y: point.current.y,
+        z: 0,
+      });
+      return;
+    }
 
-    // Rest position sits partway out along the headline, so the lens is
-    // always over letterforms — that's the whole effect. It tracks the
-    // measured slab rather than a fixed offset.
-    const homeX = viewport.width * heroLayout.slabHalfWidth * 0.62;
-    const homeY = viewport.height * 0.02;
-
-    const targetX =
-      homeX + pointer.ex * viewport.width * 0.17 + Math.sin(t * 0.24) * 0.22;
-    const targetY =
-      homeY + pointer.ey * viewport.height * 0.14 + Math.cos(t * 0.19) * 0.18;
-
-    mesh.position.x = lerp(mesh.position.x, targetX, k);
-    mesh.position.y = lerp(
-      mesh.position.y,
-      targetY - p * viewport.height * 0.3,
-      k,
-    );
-
-    // Scrolling nudges the lens *away* from the camera, not toward it.
-    // Moving it closer multiplies its apparent size on top of the scale —
-    // the two compounded to well over a screen height and buried the hero
-    // under a white sphere.
-    mesh.position.z = 1.1 + p * 0.45;
-
-    const growth = 1 + p * 0.22;
-
-    // Never let the lens leave the frame — a half-cropped sphere just reads
-    // as a rendering bug. The visible frame shrinks with depth, so the
-    // bounds are taken at the mesh's own z, not at z = 0.
-    const margin = radius * growth * 1.15;
-    const depth = Math.max(state.camera.position.z - mesh.position.z, 0.001);
-    const shrink = depth / state.camera.position.z;
-    const limitX = Math.max((viewport.width * shrink) / 2 - margin, 0);
-    const limitY = Math.max((viewport.height * shrink) / 2 - margin, 0);
-    mesh.position.x = Math.min(Math.max(mesh.position.x, -limitX), limitX);
-    mesh.position.y = Math.min(Math.max(mesh.position.y, -limitY), limitY);
-
-    mesh.rotation.x = t * 0.12 + pointer.ey * 0.3;
-    mesh.rotation.y = t * 0.16 + pointer.ex * 0.4;
-
-    const scale = growth;
-    // Uneven breathing is what separates "liquid" from "billiard ball".
-    mesh.scale.set(
-      scale * (1 + Math.sin(t * 0.63) * 0.035),
-      scale * (1 + Math.sin(t * 0.47 + 1.7) * 0.045),
-      scale * (1 + Math.cos(t * 0.55) * 0.03),
+    // Left alone it drifts after the cursor across the full frame, so it
+    // keeps passing over letterforms — a lens on blank paper is just a grey
+    // ball. Weak enough that it reads as drifting, not chasing.
+    const t = b.translation();
+    const targetX = pointer.ex * viewport.width * 0.32;
+    const targetY = pointer.ey * viewport.height * 0.26;
+    b.applyImpulse(
+      {
+        x: (targetX - t.x) * 0.0022,
+        y: (targetY - t.y) * 0.0022,
+        z: 0,
+      },
+      true,
     );
   });
 
+  const release = useCallback(() => {
+    const b = body.current;
+    if (!b) return;
+    dragging.current = false;
+    b.setBodyType(0, true);
+    b.setLinvel(
+      { x: velocity.current.x * 58, y: velocity.current.y * 58, z: 0 },
+      true,
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!dragging.current) return;
+    window.addEventListener("pointerup", release);
+    window.addEventListener("pointercancel", release);
+    return () => {
+      window.removeEventListener("pointerup", release);
+      window.removeEventListener("pointercancel", release);
+    };
+  });
+
+  const grab = (e: ThreeEvent<PointerEvent>) => {
+    e.stopPropagation();
+    const b = body.current;
+    if (!b) return;
+    const t = b.translation();
+    previous.current.set(t.x, t.y, 0);
+    velocity.current.set(0, 0, 0);
+    b.setBodyType(2, true);
+    dragging.current = true;
+  };
+
   return (
-    <mesh ref={ref} position={[0, 0, 1.1]}>
-      <icosahedronGeometry args={[radius, detail]} />
-      <MeshTransmissionMaterial
-        samples={samples}
-        resolution={resolution}
-        transmission={1}
-        // Thin and clear: a lens that magnifies the type behind it rather
-        // than a frosted marble that hides it.
-        thickness={radius * 0.55}
-        roughness={0}
-        ior={1.5}
-        chromaticAberration={0.08}
-        anisotropicBlur={0}
-        distortion={0.12}
-        distortionScale={0.2}
-        temporalDistortion={0.04}
-        backside={tier === "high"}
-        backsideThickness={radius * 0.25}
-        color="#ffffff"
-        attenuationColor="#ffffff"
-        attenuationDistance={12}
-      />
-    </mesh>
+    <RigidBody
+      ref={body}
+      position={[homeX, 0, 0]}
+      colliders="ball"
+      restitution={0.6}
+      friction={0.1}
+      linearDamping={0.5}
+      angularDamping={0.6}
+      // Heavier than the letters, so a throw actually scatters them.
+      density={6}
+    >
+      <mesh onPointerDown={grab}>
+        <icosahedronGeometry args={[radius, detail]} />
+        <MeshTransmissionMaterial
+          samples={samples}
+          resolution={resolution}
+          transmission={1}
+          thickness={radius * 0.55}
+          roughness={0}
+          ior={1.5}
+          chromaticAberration={0.08}
+          anisotropicBlur={0}
+          distortion={0.12}
+          distortionScale={0.2}
+          temporalDistortion={0.04}
+          backside={tier === "high"}
+          backsideThickness={radius * 0.25}
+          color="#ffffff"
+          attenuationColor="#ffffff"
+          attenuationDistance={12}
+        />
+      </mesh>
+    </RigidBody>
   );
 }
 
-/** Small solid accents that give the glass something to bend besides type. */
-function Shards({ tier }: { tier: "low" | "mid" | "high" }) {
-  const group = useRef<THREE.Group>(null);
+/** Keeps everything on stage. */
+function Bounds() {
   const { viewport } = useThree();
-  const count = tier === "low" ? 3 : 6;
-
-  const items = useMemo(
-    () =>
-      Array.from({ length: count }, (_, i) => ({
-        position: [
-          (Math.sin(i * 2.7) * 0.42) * viewport.width,
-          (Math.cos(i * 1.9) * 0.36) * viewport.height,
-          -0.6 - (i % 3) * 0.4,
-        ] as [number, number, number],
-        scale: 0.05 + (i % 3) * 0.022,
-        color: i % 3 === 0 ? BLUE : i % 3 === 1 ? "#ff5a2b" : "#7b5cff",
-        speed: 0.2 + (i % 4) * 0.08,
-      })),
-    [count, viewport.width, viewport.height],
-  );
-
-  useFrame((state) => {
-    const g = group.current;
-    if (!g) return;
-    const t = state.clock.elapsedTime;
-    g.children.forEach((child, i) => {
-      child.rotation.x = t * items[i].speed;
-      child.rotation.z = t * items[i].speed * 0.6;
-      child.position.y = items[i].position[1] + Math.sin(t * 0.5 + i) * 0.12;
-    });
-    g.position.y = heroScroll.progress * viewport.height * 0.5;
-  });
+  const w = viewport.width / 2;
+  const h = viewport.height / 2;
 
   return (
-    <group ref={group}>
-      {items.map((item, i) => (
-        <mesh key={i} position={item.position} scale={item.scale}>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial
-            color={item.color}
-            roughness={0.35}
-            metalness={0.1}
+    <RigidBody type="fixed" colliders={false} restitution={0.5}>
+      <CuboidCollider args={[w, 0.5, 2]} position={[0, -h - 0.5, 0]} />
+      <CuboidCollider args={[w, 0.5, 2]} position={[0, h + 0.5, 0]} />
+      <CuboidCollider args={[0.5, h * 2, 2]} position={[-w - 0.5, 0, 0]} />
+      <CuboidCollider args={[0.5, h * 2, 2]} position={[w + 0.5, 0, 0]} />
+      {/* A shallow slab in z so nothing can drift out of focus. */}
+      <CuboidCollider args={[w, h, 0.5]} position={[0, 0, -0.9]} />
+      <CuboidCollider args={[w, h, 0.5]} position={[0, 0, 0.9]} />
+    </RigidBody>
+  );
+}
+
+function Stage({ resetToken, tier }: { resetToken: number; tier: "low" | "mid" | "high" }) {
+  const { size, viewport } = useThree();
+  const [glyphs, setGlyphs] = useState<Glyph[]>([]);
+  // Whether this mount owns the intro is knowable at first render — the
+  // headline shouldn't replay its reveal every time you scroll back up.
+  const [intro] = useState(() => heroScroll.revealed < 1);
+
+  // Re-typeset on resize, and once webfonts have actually landed.
+  useEffect(() => {
+    let cancelled = false;
+    const run = () => {
+      if (cancelled) return;
+      setGlyphs(layoutHeadline(size.width, size.height));
+    };
+    if (document.fonts?.status === "loaded") run();
+    else document.fonts?.ready.then(run).catch(run);
+    return () => {
+      cancelled = true;
+    };
+  }, [size.width, size.height]);
+
+  useEffect(() => {
+    if (!intro) return;
+    const id = window.setTimeout(() => {
+      heroScroll.revealed = 1;
+    }, 2600);
+    return () => window.clearTimeout(id);
+  }, [intro]);
+
+  // CSS pixels -> world units.
+  const scale = viewport.width / size.width;
+  const placed = useMemo<Placed[]>(
+    () =>
+      glyphs.map((g) => ({
+        ...g,
+        x: (g.xPx - size.width / 2) * scale,
+        y: (size.height / 2 - g.yPx) * scale,
+        w: g.wPx * scale,
+        h: g.hPx * scale,
+      })),
+    [glyphs, scale, size.width, size.height],
+  );
+
+  const radius = Math.min(viewport.width, viewport.height) * 0.13;
+  const homeX = viewport.width * 0.34;
+
+  return (
+    <Suspense fallback={null}>
+      {/* Zero gravity: knocked letters drift and spin instead of piling up
+          at the bottom of the frame, which would wreck the composition. */}
+      <Physics gravity={[0, 0, 0]} timeStep="vary">
+        <Bounds />
+        {placed.map((glyph) => (
+          <Letter
+            key={glyph.id}
+            glyph={glyph}
+            resetToken={resetToken}
+            intro={intro}
           />
-        </mesh>
-      ))}
-    </group>
+        ))}
+        {placed.length > 0 && (
+          <Marble
+            tier={tier}
+            homeX={homeX}
+            radius={radius}
+            resetToken={resetToken}
+          />
+        )}
+      </Physics>
+    </Suspense>
   );
 }
 
 function Rig() {
   useFrame((state, delta) => {
-    // A whisper of parallax on the camera so the whole frame feels held.
     const cam = state.camera;
+    const p = heroScroll.progress;
     const k = 1 - Math.pow(0.004, delta);
-    cam.position.x = lerp(cam.position.x, pointer.ex * 0.18, k);
-    cam.position.y = lerp(cam.position.y, pointer.ey * 0.12, k);
+    cam.position.x = lerp(cam.position.x, pointer.ex * 0.16, k);
+    cam.position.y = lerp(cam.position.y, pointer.ey * 0.1 - p * 0.5, k);
+    // Pulls back as the hero leaves, so the chapter recedes rather than cuts.
+    cam.position.z = lerp(cam.position.z, 5 + p * 1.6, k);
     cam.lookAt(0, 0, 0);
   });
   return null;
@@ -402,9 +573,11 @@ function Rig() {
 export default function HeroScene({
   onReady,
   onContextLost,
+  resetToken = 0,
 }: {
   onReady?: () => void;
   onContextLost?: () => void;
+  resetToken?: number;
 }) {
   const tier = useDeviceTier();
 
@@ -413,7 +586,7 @@ export default function HeroScene({
       camera={{ position: [0, 0, 5], fov: 35 }}
       dpr={[1, tier === "low" ? 1.25 : 1.75]}
       gl={{ antialias: tier !== "low", powerPreference: "high-performance" }}
-      // The scene owns its background so the transmissive material has
+      // The scene owns its background so the transmissive marble has
       // something real to sample.
       onCreated={({ scene, gl }) => {
         scene.background = new THREE.Color(PAPER);
@@ -421,13 +594,11 @@ export default function HeroScene({
         onReady?.();
       }}
     >
-      <ambientLight intensity={1.1} />
-      <directionalLight position={[3, 4, 6]} intensity={1.6} />
-      <directionalLight position={[-4, -2, 2]} intensity={0.5} color={BLUE} />
+      <ambientLight intensity={1.15} />
+      <directionalLight position={[3, 4, 6]} intensity={1.5} />
+      <directionalLight position={[-4, -2, 2]} intensity={0.45} color={BLUE} />
 
-      <Headline />
-      <Shards tier={tier} />
-      <Glass tier={tier} />
+      <Stage resetToken={resetToken} tier={tier} />
       <Rig />
 
       {/* Reflections come from lightformers in-scene — no HDRI fetch. */}
