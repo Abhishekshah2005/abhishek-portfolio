@@ -19,6 +19,8 @@ items below are worth doing.
 | 4 | `contact.socials` | LinkedIn / GitHub / X all point at `#` and are marked `placeholder: true` | Real URLs, or delete the entries. They're currently rendered non-focusable so they can't trap keyboard users, but a dead link is still a dead link. |
 | 5 | `manifesto` | "Fifteen years of closing books" | Your actual number of years. |
 | 6 | `metadataBase` in `app/layout.tsx` | `https://abhishekshah.com` | Your real domain — Open Graph URLs are resolved against it. |
+| 7 | `jurisdictions[]` tax figures | UAE: 0% personal income tax, 9% corporate above AED 375k, free-zone 0% on qualifying income | **Verify against current law before launch.** These were accurate when written, but thresholds and free-zone rules change — a stale tax claim on a compliance-services site is the worst possible bug. Same for UK (MTD scope) and US (Form 5472) references. |
+| 8 | `credentials.body` | "not a CA, not ACCA and not FCA … worked alongside chartered accountants" | Confirm this wording is exactly how you want your qualifications framed — it's rendered verbatim in the Companies section. |
 
 ## Should add
 

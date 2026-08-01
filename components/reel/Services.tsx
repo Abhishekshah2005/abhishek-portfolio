@@ -44,7 +44,7 @@ export function Services() {
           What I take <span className="text-outline-lime">off your desk</span>
         </h2>
         <p className="hidden font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase md:block">
-          03 — Services
+          04 — Services
         </p>
       </div>
 

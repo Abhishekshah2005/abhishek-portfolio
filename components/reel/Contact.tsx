@@ -117,7 +117,7 @@ export function Contact() {
     >
       <div>
         <p className="mb-10 font-mono text-[10px] tracking-[0.3em] text-cream-3 uppercase">
-          04 — Talk
+          05 — Talk
         </p>
 
         <h2

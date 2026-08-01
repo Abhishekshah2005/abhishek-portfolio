@@ -16,6 +16,7 @@ export const person = {
 };
 
 export const nav = [
+  { id: "registrations", label: "Companies" },
   { id: "work", label: "Work" },
   { id: "services", label: "Services" },
   { id: "contact", label: "Contact" },
@@ -92,6 +93,85 @@ export const projects: Project[] = [
     placeholder: true,
   },
 ];
+
+/* ------------------------------------------------------------------
+   THE FLAGSHIP: company registration & filings across three flags.
+   Tax figures are stated factually and hedged — verify current
+   thresholds before launch (see CONTENT.md).
+------------------------------------------------------------------ */
+
+export type Jurisdiction = {
+  code: string;
+  name: string;
+  tagline: string;
+  services: string[];
+  /** Only the UAE gets the "why" panel — it's the pitch. */
+  why?: {
+    title: string;
+    points: string[];
+    note: string;
+  };
+};
+
+export const jurisdictions: Jurisdiction[] = [
+  {
+    code: "UAE",
+    name: "United Arab Emirates",
+    tagline: "Where founders keep more of what they earn.",
+    services: [
+      "Mainland & free-zone company registration",
+      "Corporate tax registration & filings",
+      "VAT registration & returns",
+      "Residency visas through your company",
+      "Corporate bank account support",
+      "Bookkeeping kept FTA-compliant",
+    ],
+    why: {
+      title: "Why the UAE is worth a hard look",
+      points: [
+        "0% personal income tax — salaries and dividends land whole",
+        "Corporate tax of 9% only above AED 375k profit — qualifying free-zone income can sit at 0%",
+        "No capital gains or withholding tax for individual investors",
+        "100% foreign ownership — no local partner needed",
+        "Full repatriation of profits and capital",
+        "An extensive double-tax-treaty network protecting cross-border income",
+      ],
+      note: "The honest caveat: what you actually save depends on where you live and earn. That's the first conversation we have — before anything gets registered.",
+    },
+  },
+  {
+    code: "UK",
+    name: "United Kingdom",
+    tagline: "Companies House and HMRC, handled end to end.",
+    services: [
+      "Ltd company registration at Companies House",
+      "Confirmation statements — filed on time, every year",
+      "Annual accounts & Corporation Tax (CT600)",
+      "Director self-assessment returns",
+      "VAT registration & Making Tax Digital returns",
+      "Payroll — PAYE, RTI submissions, payslips & pension auto-enrolment",
+    ],
+  },
+  {
+    code: "US",
+    name: "United States",
+    tagline: "Formation and filings without the Delaware mystique.",
+    services: [
+      "LLC & C-Corp formation — Delaware, Wyoming & beyond",
+      "EIN and state registrations",
+      "Federal & state tax filings",
+      "Foreign-owned LLC reporting (Form 5472)",
+      "Annual reports & franchise tax",
+      "Bookkeeping in US GAAP shape",
+    ],
+  },
+];
+
+/** The straight-talk block — his words, kept honest. */
+export const credentials = {
+  kicker: "The honest bit",
+  body: "I'm not a CA, not ACCA and not FCA — and I say that upfront. I'm an accountant: strong accounting fundamentals and solid audit knowledge, built over years of working alongside chartered accountants. You get the work done properly — and if a job ever needs a chartered signature, I'll be the first to tell you.",
+};
 
 export const services = [
   { name: "Fractional CFO", tag: "Advisory · projections · runway" },

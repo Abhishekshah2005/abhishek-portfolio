@@ -92,7 +92,7 @@ export function Reel() {
           Selected <span className="text-outline-lime">work</span>
         </h2>
         <p className="font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase">
-          02 — {String(projects.length).padStart(2, "0")} problems
+          03 — {String(projects.length).padStart(2, "0")} problems
         </p>
       </div>
 
