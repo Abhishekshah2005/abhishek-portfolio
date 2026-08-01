@@ -1,63 +1,42 @@
 /**
- * Every word and number the site renders lives here.
+ * Every word the site renders lives here.
  *
- * Anything marked `placeholder: true` is invented scaffolding so the layout can
- * be judged — it must be replaced before this goes live. See CONTENT.md for the
- * checklist. Nothing here claims a named client or a verified metric.
+ * Anything marked `placeholder: true` is scaffolding so the layout can be
+ * judged — replace before launch (see CONTENT.md). Nothing here claims a
+ * named client or a verified metric.
  */
 
 export const person = {
   name: "Abhishek Shah",
   short: "Abhishek",
-  /** Shown under the hero — the one sentence that has to land. */
-  role: "Finance · Technology · AI",
-  tagline: "I fix what slows businesses down.",
+  role: "Finance · Technology · A.I.",
   location: "London · Dubai · Ahmedabad",
   email: "abhishekrathod630@gmail.com",
   available: "Available for select projects",
 };
 
-/** The giant hero words, revealed one line at a time. */
-export const heroLines = [
-  { text: "FINANCE", accent: false },
-  { text: "TECHNOLOGY", accent: false },
-  { text: "& A.I.", accent: true },
-];
-
-export const heroSub =
-  "I build the systems that let a business see clearly, run leaner and scale without breaking — accounting and CFO work on one side, software and AI on the other.";
-
-export const chapters = [
-  { id: "hero", index: "01", label: "Index" },
-  { id: "about", index: "02", label: "Who" },
-  { id: "work", index: "03", label: "Work" },
-  { id: "playground", index: "04", label: "Play" },
-  { id: "capabilities", index: "05", label: "What" },
-  { id: "contact", index: "06", label: "Talk" },
+export const nav = [
+  { id: "work", label: "Work" },
+  { id: "services", label: "Services" },
+  { id: "contact", label: "Contact" },
 ] as const;
 
-export const about = {
-  heading: "Two disciplines that almost never meet.",
-  body: [
-    "Most businesses hire an accountant who can't build, or a developer who can't read a P&L. I do both — which means the numbers and the software that produce them are designed together instead of arguing.",
-    "Fifteen-ish years of that has looked like: closing books across three jurisdictions, standing up fractional CFO functions, and then writing the automation that made half of it unnecessary.",
+/** Hero — two voices: solid and hollow. */
+export const hero = {
+  lines: [
+    { text: "ABHISHEK", outline: false },
+    { text: "SHAH", outline: true },
   ],
-  /** Draggable stickers — icon is a lucide-style key we render as SVG. */
-  stickers: [
-    { label: "Xero", tone: "blue" },
-    { label: "Sage", tone: "mint" },
-    { label: "Fractional CFO", tone: "ink" },
-    { label: "Next.js", tone: "ink" },
-    { label: "AI agents", tone: "flare" },
-    { label: "P&L", tone: "paper" },
-    { label: "Audit", tone: "paper" },
-    { label: "React", tone: "blue" },
-    { label: "Automation", tone: "flare" },
-    { label: "Three.js", tone: "ink" },
-    { label: "UK · UAE · IN", tone: "paper" },
-    { label: "CRM", tone: "mint" },
-  ],
-} as const;
+  statement:
+    "I build the systems that let a business see clearly, run leaner and scale without breaking — accounting and CFO work on one side, software and AI on the other.",
+};
+
+/**
+ * The manifesto — scrubbed word by word while pinned. Words wrapped in
+ * *asterisks* light up lime instead of cream.
+ */
+export const manifesto =
+  "Most businesses hire an accountant who can't build, or a developer who can't read a *P&L*. I never chose. Fifteen years of closing books across *three* countries, standing up *CFO* functions — then writing the *software* and *AI* that made half of that work disappear. The numbers and the machines that produce them, designed *together*.";
 
 export type Project = {
   slug: string;
@@ -65,16 +44,12 @@ export type Project = {
   discipline: string;
   year: string;
   summary: string;
-  /** Solid-colour poster stand-in until real imagery exists. */
+  /** Poster tint until real imagery exists. */
   tone: string;
   placeholder: boolean;
 };
 
-/**
- * PLACEHOLDER PROJECTS. Deliberately generic — a category of work, not a named
- * client. Replace title/summary/year with real engagements (and add imagery to
- * /public/work) before launch.
- */
+/** PLACEHOLDER projects — categories of work, not named clients. */
 export const projects: Project[] = [
   {
     slug: "close-automation",
@@ -83,7 +58,7 @@ export const projects: Project[] = [
     year: "—",
     summary:
       "A multi-entity close that ran on spreadsheets, rebuilt as a scheduled pipeline: bank feeds reconciled, journals posted, variance report written before anyone opened a laptop.",
-    tone: "#2b44ff",
+    tone: "#d9ff40",
     placeholder: true,
   },
   {
@@ -113,58 +88,28 @@ export const projects: Project[] = [
     year: "—",
     summary:
       "CRM, call-centre workflow and reporting stitched into one source of truth so a growing team stopped re-typing the same customer into four tools.",
-    tone: "#12110f",
+    tone: "#3fd0ff",
     placeholder: true,
   },
 ];
 
-export const capabilities = [
-  {
-    group: "See clearly",
-    tint: "#2b44ff",
-    items: [
-      "Bookkeeping & management accounts",
-      "Financial projections and models",
-      "P&L, cash flow and runway reporting",
-      "Audit support and compliance",
-    ],
-  },
-  {
-    group: "Run leaner",
-    tint: "#7b5cff",
-    items: [
-      "Process mapping and automation",
-      "Xero / Sage implementation and clean-up",
-      "AI agents for repetitive back-office work",
-      "Systems integration — one source of truth",
-    ],
-  },
-  {
-    group: "Scale confidently",
-    tint: "#ff5a2b",
-    items: [
-      "Fractional CFO and advisory",
-      "Custom software, SaaS and mobile apps",
-      "CRM, business development and call-centre setup",
-      "Team, process and operations scaling",
-    ],
-  },
+export const services = [
+  { name: "Fractional CFO", tag: "Advisory · projections · runway" },
+  { name: "Books & Audit", tag: "Xero · Sage · three jurisdictions" },
+  { name: "Financial Models", tag: "P&L · cash flow · what-if" },
+  { name: "Automation & AI Agents", tag: "The repetitive work, gone" },
+  { name: "Custom Software", tag: "SaaS · apps · integrations" },
+  { name: "Scaling Operations", tag: "CRM · call-centre · process" },
 ] as const;
 
 export const contact = {
-  heading: "Let's talk",
+  heading: "LET'S TALK",
   body: "Tell me what's slowing you down. If I'm not the right person, I'll say so and point you at someone who is.",
   cta: "Start a conversation",
   socials: [
-    { label: "Email", href: `mailto:${person.email}` },
+    { label: "Email", href: `mailto:${person.email}`, placeholder: false },
     { label: "LinkedIn", href: "#", placeholder: true },
     { label: "GitHub", href: "#", placeholder: true },
     { label: "X", href: "#", placeholder: true },
   ],
-};
-
-export const playground = {
-  heading: "Go on, throw something.",
-  body: "No reason for this to exist. That's the point — the same care goes into the things nobody asked for.",
-  hint: "Drag · Throw · Reset",
 };

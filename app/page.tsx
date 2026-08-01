@@ -3,12 +3,11 @@
 import { useState } from "react";
 import { Preloader } from "@/components/ui/Preloader";
 import { Header } from "@/components/site/Header";
-import { Hero } from "@/components/chapters/Hero";
-import { About } from "@/components/chapters/About";
-import { Work } from "@/components/chapters/Work";
-import { Playground } from "@/components/chapters/Playground";
-import { Capabilities } from "@/components/chapters/Capabilities";
-import { Contact } from "@/components/chapters/Contact";
+import { Hero } from "@/components/reel/Hero";
+import { Manifesto } from "@/components/reel/Manifesto";
+import { Reel } from "@/components/reel/Reel";
+import { Services } from "@/components/reel/Services";
+import { Contact } from "@/components/reel/Contact";
 import { Marquee, ScrollProgress } from "@/components/ui/motion";
 
 export default function Home() {
@@ -21,16 +20,11 @@ export default function Home() {
       <Header started={started} />
       <main id="main">
         <Hero started={started} />
-        <Marquee text="See clearly — Run leaner — Scale confidently —" />
-        <About />
-        <Work />
-        <Playground />
-        <Capabilities />
-        <Marquee
-          text="Finance — Technology — A.I. —"
-          speed={60}
-          className="border-t-0"
-        />
+        <Marquee text="Finance — Technology — A.I. —" outline />
+        <Manifesto />
+        <Reel />
+        <Services />
+        <Marquee text="See clearly — Run leaner — Scale confidently —" speed={70} />
         <Contact />
       </main>
     </>

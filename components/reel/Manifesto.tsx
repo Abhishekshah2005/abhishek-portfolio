@@ -1,0 +1,102 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { gsap, SplitText } from "@/lib/gsap";
+import { useReducedMotion } from "@/lib/hooks";
+import { manifesto } from "@/lib/content";
+
+/**
+ * The manifesto: pinned full-screen while the paragraph lights up word by
+ * word under your scroll. Words marked *like this* in the copy turn lime.
+ *
+ * Reading speed is literally handed to the visitor — the scrub IS the
+ * pacing, which is why this pattern beats a fade-in for long-ish copy.
+ */
+export function Manifesto() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const copyRef = useRef<HTMLParagraphElement>(null);
+  const reduced = useReducedMotion();
+
+  // The asterisks are authoring syntax, not content.
+  const plain = manifesto.replace(/\*/g, "");
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const copy = copyRef.current;
+    if (!section || !copy || reduced) return;
+
+    // Which words are accents, by their index in the word stream.
+    const accents = new Set<number>();
+    manifesto.split(/\s+/).forEach((word, i) => {
+      if (word.includes("*")) accents.add(i);
+    });
+
+    let split: SplitText | null = null;
+    const ctx = gsap.context(() => {
+      split = new SplitText(copy, { type: "words" });
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: true,
+        },
+      });
+
+      split.words.forEach((word, i) => {
+        tl.to(
+          word,
+          {
+            opacity: 1,
+            color: accents.has(i) ? "#d9ff40" : "#f2f1ec",
+            duration: 1,
+            ease: "none",
+          },
+          i,
+        );
+      });
+    }, section);
+
+    return () => {
+      split?.revert();
+      ctx.revert();
+    };
+  }, [reduced]);
+
+  return (
+    <section
+      ref={sectionRef}
+      id="manifesto"
+      className={reduced ? "relative" : "relative h-[280vh]"}
+      aria-label="About"
+    >
+      <div
+        className={
+          reduced
+            ? "flex min-h-[60vh] items-center"
+            : "sticky top-0 flex h-dvh items-center overflow-hidden"
+        }
+      >
+        <div className="mx-auto w-full max-w-[1200px] px-5 md:px-10">
+          <p className="mb-8 font-mono text-[10px] tracking-[0.3em] text-cream-3 uppercase">
+            01 — Who
+          </p>
+          <p
+            ref={copyRef}
+            className="font-display text-[clamp(1.7rem,4.2vw,4rem)] leading-[1.14] font-medium tracking-[-0.015em]"
+            // Words start barely-there and are lit by the timeline. Reduced
+            // motion never dims them in the first place.
+            style={reduced ? undefined : { opacity: 1 }}
+          >
+            {reduced ? (
+              plain
+            ) : (
+              <span className="text-cream/15">{plain}</span>
+            )}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}

@@ -1,60 +1,51 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------
-   Design tokens — warm-light premium base, electric accent duo.
-   Every colour used in the app resolves through one of these.
+   THE DARK REEL — design tokens.
+   Near-black stage, warm cream ink, one electric lime accent.
+   Every colour in the app resolves through these.
 ------------------------------------------------------------------ */
 @theme {
   /* surfaces */
-  --color-paper: #f2efe9; /* warm bone — the canvas */
-  --color-paper-2: #faf8f4; /* raised surface */
-  --color-paper-3: #e8e3d9; /* sunken / hairline fill */
-  --color-ink: #111014; /* near-black text */
-  --color-ink-2: #56524a; /* muted text */
-  /* Meta text is small (10–13px), so it has to clear 4.5:1 like body copy —
-     4.71:1 on paper. Anything lighter reads as decoration, not text. */
-  --color-ink-3: #6e6a5d;
-
-  /* accents */
-  --color-blue: #2b44ff; /* primary — light, glass, links */
-  --color-blue-2: #6f80ff; /* lifted blue */
-  --color-violet: #7b5cff; /* gradient mid */
-  --color-flare: #ff5a2b; /* secondary — energy, hover, play */
-  --color-flare-2: #ffb03a; /* gradient warm end */
+  --color-coal: #0a0a0b; /* the stage */
+  --color-raise: #131316; /* lifted panel */
+  --color-raise-2: #1b1b1f; /* hover / borders on panels */
 
   /* type */
+  --color-cream: #f2f1ec; /* primary ink */
+  --color-cream-2: #b9b8b0; /* secondary — 4.5:1+ on base */
+  --color-cream-3: #8f8e87; /* meta — for large/mono only */
+
+  /* the accent */
+  --color-lime: #d9ff40;
+  --color-lime-2: #b8e02e;
+
+  /* fonts */
   --font-display: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
 
-  /* motion — one rhythm for the whole site */
+  /* motion */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
-
-  /* layered z-scale */
-  --z-canvas: 0;
-  --z-content: 10;
-  --z-chrome: 40;
-  --z-cursor: 100;
-  --z-preloader: 1000;
 }
 
 @layer base {
   :root {
-    color-scheme: light;
-    --line: color-mix(in oklab, var(--color-ink) 12%, transparent);
-    --line-soft: color-mix(in oklab, var(--color-ink) 7%, transparent);
+    color-scheme: dark;
+    --line: color-mix(in oklab, var(--color-cream) 14%, transparent);
+    --line-soft: color-mix(in oklab, var(--color-cream) 8%, transparent);
   }
 
   html {
-    /* Lenis drives scrolling; never let the browser fight it. */
     scroll-behavior: auto;
+    background: var(--color-coal);
     -webkit-text-size-adjust: 100%;
   }
 
   body {
-    background: var(--color-paper);
-    color: var(--color-ink);
+    background: var(--color-coal);
+    color: var(--color-cream);
     font-family: var(--font-sans);
     font-synthesis-weight: none;
     text-rendering: optimizeLegibility;
@@ -62,26 +53,35 @@
     overflow-x: clip;
   }
 
-  ::selection {
-    background: var(--color-blue);
-    color: var(--color-paper-2);
+  /* Film grain over everything — the "shot on something" feel. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* Visible, on-brand focus ring — never removed, only restyled. */
+  ::selection {
+    background: var(--color-lime);
+    color: var(--color-coal);
+  }
+
   :focus-visible {
-    outline: 2px solid var(--color-blue);
+    outline: 2px solid var(--color-lime);
     outline-offset: 3px;
     border-radius: 2px;
   }
 
   h1,
   h2,
-  h3,
-  h4 {
+  h3 {
     font-family: var(--font-display);
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: -0.03em;
-    line-height: 0.92;
+    line-height: 0.9;
     text-wrap: balance;
   }
 
@@ -91,57 +91,42 @@
 }
 
 @layer utilities {
-  /* Fluid display sizes — the "massive type" scale. */
+  /* The oversized type scale. */
   .text-mega {
-    font-size: clamp(3.5rem, 14vw, 15rem);
+    font-size: clamp(4rem, 16.5vw, 17rem);
   }
   .text-major {
-    font-size: clamp(2.5rem, 7.5vw, 7rem);
+    font-size: clamp(2.6rem, 8vw, 8rem);
   }
   .text-minor {
-    font-size: clamp(1.75rem, 3.6vw, 3.25rem);
+    font-size: clamp(1.6rem, 3.4vw, 3.2rem);
   }
 
-  .font-stretch-tight {
-    font-stretch: 85%;
+  /* Hollow display type — the reel's second voice. */
+  .text-outline {
+    -webkit-text-stroke: 1.5px var(--color-cream);
+    color: transparent;
+  }
+  .text-outline-lime {
+    -webkit-text-stroke: 1.5px var(--color-lime);
+    color: transparent;
+  }
+  @media (max-width: 768px) {
+    .text-outline,
+    .text-outline-lime {
+      -webkit-text-stroke-width: 1px;
+    }
   }
 
-  /* Mask-reveal wrapper: a line of type that slides up out of nothing. */
   .line-mask {
     overflow: hidden;
     display: block;
-    /* padding stops descenders (g, y, p) from being clipped */
     padding-bottom: 0.12em;
     margin-bottom: -0.12em;
   }
 
   .hairline {
     border-color: var(--line);
-  }
-
-  /* Text lit by a travelling light source. The darkest stop still clears
-     AA against the near-black surface, so the copy is legible even where
-     the light isn't. */
-  .lit-text {
-    background: radial-gradient(
-      240px circle at var(--mx, 50%) var(--my, 50%),
-      #ffffff 0%,
-      #ffe9d2 22%,
-      rgba(242, 239, 233, 0.72) 62%
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-
-  .grain::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.35;
-    mix-blend-mode: multiply;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
   }
 }
 
@@ -157,10 +142,7 @@ html.lenis body {
   overflow: hidden;
 }
 
-/* ------------------------------------------------------------------
-   Reduced motion: the site must still be complete and readable —
-   we remove movement, never content.
------------------------------------------------------------------- */
+/* Reduced motion: remove movement, never content. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

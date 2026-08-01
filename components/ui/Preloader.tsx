@@ -6,11 +6,8 @@ import { useReducedMotion } from "@/lib/hooks";
 import { person } from "@/lib/content";
 
 /**
- * Opening curtain: a counter runs to 100 while the page settles, then the
- * slats peel away and hand off to the hero reveal.
- *
- * Reduced motion skips it entirely — there's nothing behind it worth waiting
- * for, so making someone sit through a curtain would be pure cost.
+ * Opening: black frame, a counter, then a lime flash-wipe that hands the
+ * screen to the hero. Under two seconds — a title card, not a wait.
  */
 export function Preloader({ onDone }: { onDone: () => void }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -18,7 +15,6 @@ export function Preloader({ onDone }: { onDone: () => void }) {
   const [gone, setGone] = useState(false);
   const reduced = useReducedMotion();
 
-  // Keep the callback fresh without making it a dependency of the timeline.
   const doneRef = useRef(onDone);
   useEffect(() => {
     doneRef.current = onDone;
@@ -43,9 +39,9 @@ export function Preloader({ onDone }: { onDone: () => void }) {
       doneRef.current();
     };
 
-    // The timeline runs on animation frames, which a browser will suspend
-    // entirely (background tab, some low-power modes). Wall-clock time is the
-    // backstop: nothing can leave someone staring at a curtain.
+    // The timeline runs on animation frames, which a background tab
+    // suspends outright. Wall-clock is the backstop: nothing gets to
+    // leave someone staring at a black rectangle.
     const failsafe = window.setTimeout(finish, 5000);
 
     const progress = { value: 0 };
@@ -58,27 +54,20 @@ export function Preloader({ onDone }: { onDone: () => void }) {
 
     tl.to(progress, {
       value: 100,
-      duration: 1.6,
+      duration: 1.3,
       ease: "power2.inOut",
       onUpdate: () => {
         count.textContent = String(Math.round(progress.value)).padStart(3, "0");
       },
     })
-      .to(
-        root.querySelectorAll("[data-pre-fade]"),
-        { autoAlpha: 0, y: -14, duration: 0.5, stagger: 0.06 },
-        "-=0.15",
-      )
-      .to(
-        root.querySelectorAll("[data-pre-panel]"),
-        {
-          scaleY: 0,
-          duration: 1.1,
-          ease: "expo.inOut",
-          stagger: { each: 0.07, from: "start" },
-        },
-        "-=0.2",
-      );
+      // Lime slams up over the black…
+      .to("[data-pre-flash]", {
+        scaleY: 1,
+        duration: 0.45,
+        ease: "expo.inOut",
+      })
+      // …then the whole card lifts away, revealing the hero.
+      .to(root, { yPercent: -100, duration: 0.7, ease: "expo.inOut" }, "+=0.05");
 
     return () => {
       window.clearTimeout(failsafe);
@@ -92,31 +81,18 @@ export function Preloader({ onDone }: { onDone: () => void }) {
   return (
     <div
       ref={rootRef}
-      className="fixed inset-0 z-[1000] overflow-hidden"
+      className="fixed inset-0 z-[1000] overflow-hidden bg-coal"
       aria-hidden
     >
-      {/* Vertical slats that peel away one after another. */}
-      <div className="absolute inset-0 flex">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div
-            key={i}
-            data-pre-panel
-            className="h-full flex-1 origin-top bg-ink"
-          />
-        ))}
-      </div>
-
-      <div className="relative flex h-full w-full items-end justify-between p-6 md:p-10">
-        <span
-          data-pre-fade
-          className="font-display text-[11px] tracking-[0.22em] text-paper uppercase"
-        >
-          {person.name}
+      <div
+        data-pre-flash
+        className="absolute inset-0 origin-bottom scale-y-0 bg-lime"
+      />
+      <div className="relative flex h-full w-full flex-col justify-between p-6 md:p-10">
+        <span className="font-mono text-[11px] tracking-[0.24em] text-cream-2 uppercase">
+          {person.name} — portfolio
         </span>
-        <span
-          data-pre-fade
-          className="font-display text-paper text-[18vw] leading-[0.8] tracking-tight md:text-[9vw]"
-        >
+        <span className="self-end font-display text-[20vw] leading-[0.8] font-semibold text-cream md:text-[10vw]">
           <span ref={countRef}>000</span>
         </span>
       </div>

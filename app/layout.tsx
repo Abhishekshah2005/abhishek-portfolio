@@ -35,8 +35,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f2efe9",
-  colorScheme: "light",
+  themeColor: "#0a0a0b",
+  colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
   // Never block zoom — pinch-to-zoom is an accessibility requirement.
@@ -51,7 +51,7 @@ export default function RootLayout({
       <body>
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[1001] focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-paper-2 focus:no-underline"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[1001] focus:rounded-full focus:bg-lime focus:px-5 focus:py-3 focus:text-coal focus:no-underline"
         >
           Skip to content
         </a>

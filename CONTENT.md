@@ -17,7 +17,7 @@ items below are worth doing.
 | 2 | `person.location` | `London · Dubai · Ahmedabad` | Confirm the three cities are how you want to present the UK/UAE/India coverage. |
 | 3 | `projects[]` | 4 placeholder engagements, all `placeholder: true`, `year: "—"` | Real engagements. Keep them anonymous if the clients are confidential — "a 40-person logistics firm" is credible; a fabricated logo is not. Add real `year` values. |
 | 4 | `contact.socials` | LinkedIn / GitHub / X all point at `#` and are marked `placeholder: true` | Real URLs, or delete the entries. They're currently rendered non-focusable so they can't trap keyboard users, but a dead link is still a dead link. |
-| 5 | `about.body` | "Fifteen-ish years" | Your actual number of years. |
+| 5 | `manifesto` | "Fifteen years of closing books" | Your actual number of years. |
 | 6 | `metadataBase` in `app/layout.tsx` | `https://abhishekshah.com` | Your real domain — Open Graph URLs are resolved against it. |
 
 ## Should add
