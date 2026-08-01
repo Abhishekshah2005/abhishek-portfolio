@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap, Draggable, ScrollTrigger, SplitText } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/hooks";
 import { about, person } from "@/lib/content";
+import { GhostIndex } from "@/components/ui/motion";
 
 /** Deterministic scatter — must match between server and client render. */
 const LAYOUT = [
@@ -179,6 +180,8 @@ export function About() {
       className="relative isolate overflow-hidden py-24 md:py-40"
       aria-label="About"
     >
+      <GhostIndex n="02" />
+
       {/* Warm gradient wash — the colour chapter of the site. */}
       <div
         data-wash

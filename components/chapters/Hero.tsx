@@ -18,7 +18,11 @@ export function Hero({ started }: { started: boolean }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
   const [sceneReady, setSceneReady] = useState(false);
-  const [near, setNear] = useState(false);
+  // Starts true — this is the top of the page, so it's near by definition.
+  // The observer's job is releasing the scene once you've scrolled well past,
+  // not deciding whether the opening chapter gets to exist; a throttled tab
+  // can delay its first callback indefinitely.
+  const [near, setNear] = useState(true);
   const [sceneKey, setSceneKey] = useState(0);
   const [resetToken, setResetToken] = useState(0);
   const reduced = useReducedMotion();
@@ -55,6 +59,31 @@ export function Hero({ started }: { started: boolean }) {
       io.disconnect();
     };
   }, []);
+
+  // Exit: as the scene recedes, the supporting copy lifts away with it —
+  // the whole chapter leaves as one piece instead of the DOM outstaying
+  // the WebGL behind it.
+  useEffect(() => {
+    const section = sectionRef.current;
+    const meta = metaRef.current;
+    if (!section || !meta || reduced) return;
+
+    const ctx = gsap.context(() => {
+      gsap.to(meta, {
+        autoAlpha: 0,
+        yPercent: -12,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "12% top",
+          end: "55% top",
+          scrub: true,
+        },
+      });
+    });
+
+    return () => ctx.revert();
+  }, [reduced]);
 
   // Intro: the supporting copy comes in under the headline reveal.
   useEffect(() => {

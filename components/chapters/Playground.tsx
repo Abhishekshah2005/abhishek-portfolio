@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useInView, useReducedMotion } from "@/lib/hooks";
 import { playground } from "@/lib/content";
 import { Magnetic } from "@/components/ui/Magnetic";
+import { GhostIndex, useLineReveal, useScaleIn } from "@/components/ui/motion";
 
 const PlaygroundScene = dynamic(
   () => import("@/components/three/PlaygroundScene"),
@@ -16,21 +17,33 @@ export function Playground() {
   const [resetKey, setResetKey] = useState(0);
   const [sceneKey, setSceneKey] = useState(0);
   const reduced = useReducedMotion();
+  const shellRef = useScaleIn<HTMLDivElement>();
+  const headingRef = useLineReveal<HTMLHeadingElement>();
 
   return (
     <section
       ref={ref}
       id="playground"
-      className="relative bg-ink py-24 text-paper md:py-32"
+      className="relative"
       aria-label="Playground"
     >
-      <div className="mx-auto max-w-[1500px] px-5 md:px-10">
+      {/* The dark card zooms up to full bleed as it takes the screen. */}
+      <div
+        ref={shellRef}
+        className="relative overflow-hidden bg-ink py-24 text-paper will-change-transform md:py-32"
+      >
+        <GhostIndex n="04" dark />
+
+        <div className="relative z-10 mx-auto max-w-[1500px] px-5 md:px-10">
         <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
           <div>
             <p className="mb-6 font-mono text-[10px] tracking-[0.28em] text-paper/55 uppercase">
               04 — Play
             </p>
-            <h2 className="text-major max-w-[14ch] font-medium text-paper">
+            <h2
+              ref={headingRef}
+              className="text-major max-w-[14ch] font-medium text-paper"
+            >
               {playground.heading}
             </h2>
           </div>
@@ -80,6 +93,7 @@ export function Playground() {
               {playground.hint}
             </p>
           )}
+          </div>
         </div>
       </div>
     </section>

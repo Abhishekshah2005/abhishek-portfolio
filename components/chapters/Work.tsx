@@ -5,6 +5,7 @@ import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { pointer } from "@/lib/pointer";
 import { useFinePointer, useReducedMotion } from "@/lib/hooks";
 import { projects } from "@/lib/content";
+import { GhostIndex, useLineReveal } from "@/components/ui/motion";
 
 export function Work() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -15,6 +16,7 @@ export function Work() {
 
   const fine = useFinePointer();
   const reduced = useReducedMotion();
+  const headingRef = useLineReveal<HTMLHeadingElement>();
   const previewEnabled = fine && !reduced;
 
   // Rows rise into place as the chapter arrives.
@@ -78,13 +80,15 @@ export function Work() {
       className="relative py-24 md:py-40"
       aria-label="Selected work"
     >
-      <div className="mx-auto max-w-[1500px] px-5 md:px-10">
+      <GhostIndex n="03" />
+
+      <div className="relative z-10 mx-auto max-w-[1500px] px-5 md:px-10">
         <div className="mb-14 flex flex-wrap items-end justify-between gap-8 border-b border-[var(--line)] pb-6">
           <div>
             <p className="mb-6 font-mono text-[10px] tracking-[0.28em] text-ink-3 uppercase">
               03 — Work
             </p>
-            <h2 className="text-minor max-w-[16ch] font-medium">
+            <h2 ref={headingRef} className="text-minor max-w-[16ch] font-medium">
               Problems I&apos;ve been handed, and what I did with them.
             </h2>
           </div>

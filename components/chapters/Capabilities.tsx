@@ -6,6 +6,7 @@ import { gsap } from "@/lib/gsap";
 import { pointer } from "@/lib/pointer";
 import { useFinePointer, useInView, useReducedMotion } from "@/lib/hooks";
 import { capabilities } from "@/lib/content";
+import { GhostIndex, useLineReveal, useScaleIn } from "@/components/ui/motion";
 
 const RevealScene = dynamic(() => import("@/components/three/RevealScene"), {
   ssr: false,
@@ -17,6 +18,8 @@ export function Capabilities() {
   const [sceneKey, setSceneKey] = useState(0);
   const reduced = useReducedMotion();
   const fine = useFinePointer();
+  const shellRef = useScaleIn<HTMLDivElement>();
+  const headingRef = useLineReveal<HTMLHeadingElement>();
 
   // Each lit item needs the cursor in its *own* coordinate space. Offsets
   // within the list are cached (they only change on resize) so the frame
@@ -78,9 +81,14 @@ export function Capabilities() {
     <section
       ref={ref}
       id="capabilities"
-      className="relative isolate overflow-hidden bg-[#0b0a0e] py-24 md:py-40"
+      className="relative"
       aria-label="Capabilities"
     >
+      <div
+        ref={shellRef}
+        className="relative isolate overflow-hidden bg-[#0b0a0e] py-24 will-change-transform md:py-40"
+      >
+      <GhostIndex n="05" dark />
       {inView && !reduced && (
         <div aria-hidden className="absolute inset-0 -z-10">
           <RevealScene
@@ -99,7 +107,10 @@ export function Capabilities() {
         <p className="mb-6 font-mono text-[10px] tracking-[0.28em] text-paper/55 uppercase">
           05 — What
         </p>
-        <h2 className="text-major mb-4 max-w-[16ch] font-medium text-paper">
+        <h2
+          ref={headingRef}
+          className="text-major mb-4 max-w-[16ch] font-medium text-paper"
+        >
           Everything I can take off your desk.
         </h2>
         <p className="mb-16 max-w-md text-base leading-relaxed text-paper/60">
@@ -140,6 +151,7 @@ export function Capabilities() {
             </div>
           ))}
         </div>
+      </div>
       </div>
     </section>
   );
