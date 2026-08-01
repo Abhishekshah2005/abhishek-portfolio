@@ -22,14 +22,34 @@ export const nav = [
   { id: "contact", label: "Contact" },
 ] as const;
 
-/** Hero — two voices: solid and hollow. */
+/**
+ * Hero — offer-first, built to convert. The name lives in the header and
+ * the title tag; the first screen's job is to hook the right visitor.
+ * Every figure here is factual and re-stated with its caveat in the
+ * Companies section below.
+ */
 export const hero = {
+  kicker: "Company registration & filings — UAE · UK · US",
   lines: [
-    { text: "ABHISHEK", outline: false },
-    { text: "SHAH", outline: true },
+    { text: "Register in Dubai.", outline: false },
+    { text: "Keep what you earn.", outline: true },
   ],
-  statement:
-    "I build the systems that let a business see clearly, run leaner and scale without breaking — accounting and CFO work on one side, software and AI on the other.",
+  sub: "Mainland or free-zone company, residency visa, bank account and every filing after — plus UK and US formation, tax and payroll. One desk, end to end.",
+  /** The cycling hook — the number IS the headline. */
+  stats: [
+    { value: "0%", label: "personal income tax in the UAE" },
+    { value: "9%", label: "corporate tax — and only above AED 375k profit" },
+    { value: "100%", label: "foreign ownership — no local partner needed" },
+  ],
+  chips: [
+    "Free-zone & mainland",
+    "Residency visas",
+    "Bank account support",
+    "UK — CT600 · VAT · payroll",
+    "US — LLC · Form 5472",
+  ],
+  primaryCta: "Get a free consultation",
+  secondaryCta: "Compare UAE · UK · US",
 };
 
 /**
