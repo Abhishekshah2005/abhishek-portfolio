@@ -21,18 +21,36 @@ items below are worth doing.
 | 6 | `metadataBase` in `app/layout.tsx` | `https://abhishekshah.com` | Your real domain — Open Graph URLs are resolved against it. |
 | 7 | `jurisdictions[]` tax figures | UAE: 0% personal income tax, 9% corporate above AED 375k, free-zone 0% on qualifying income | **Verify against current law before launch.** These were accurate when written, but thresholds and free-zone rules change — a stale tax claim on a compliance-services site is the worst possible bug. Same for UK (MTD scope) and US (Form 5472) references. |
 | 8 | `credentials.body` | "not a CA, not ACCA and not FCA … worked alongside chartered accountants" | Confirm this wording is exactly how you want your qualifications framed — it's rendered verbatim in the Companies section. |
+| 9 | `SITE_URL` in `lib/seo.ts` | `https://abhishekshah.com` | Same placeholder domain as item 6, now also feeding `sitemap.ts`, `robots.ts`, structured data and Open Graph URLs — update once the real domain is live. |
+| 10 | `faqs[]` in `lib/content.ts` | 6 Q&As about UAE/UK/US registration and the credentials note | Same tax-law caveat as item 7 — the UAE ownership/tax answers and the Form 5472 answer should be re-verified before launch, since they also feed the FAQPage structured data search engines read directly. |
 
 ## Should add
 
 - **Project imagery.** `projects[].tone` currently drives a solid colour poster
   for both the hover preview and the expanded panel. Drop real images into
   `public/work/` and swap the gradient for `next/image`.
-- **An OG image.** There's no `opengraph-image` yet, so link previews will be
-  bare. A 1200×630 in `app/opengraph-image.png` is picked up automatically.
 - **A favicon.** Currently none.
 - **Proof figures.** The single highest-value addition. One concrete,
   defensible number per project ("cut close from 9 days to 2") does more than
   any amount of motion design.
+
+## SEO (added, verify before launch)
+
+- **Metadata, structured data and the FAQ section now foreground the actual
+  offer** — UAE/UK/US company registration and filings — instead of the
+  generic "Finance · Technology · AI" framing the site launched with. Title,
+  description, keywords: `app/layout.tsx`. Everything else pulls from
+  `lib/content.ts`, so there's one place to edit copy.
+- **`app/opengraph-image.tsx`** generates the link-preview card at build time
+  (no external asset) — codes the current headline directly, so update it if
+  the hero headline ever changes.
+- **`app/sitemap.ts` / `app/robots.ts`** — minimal but real; both read
+  `SITE_URL` from `lib/seo.ts`.
+- **Two JSON-LD graphs** render in `app/layout.tsx`, built from
+  `jurisdictions`, `services` and `faqs` so they can never assert something
+  the visible page doesn't back up: a `ProfessionalService` with an
+  `OfferCatalog` (9 offers — 3 jurisdictions + 6 general services), and a
+  `FAQPage` matching the visible FAQ section verbatim.
 
 ## Deliberately not included
 

@@ -156,7 +156,7 @@ export function Reel() {
         </h2>
         <div className="text-right">
           <p className="font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase">
-            03 — Work
+            04 — Work
           </p>
           <p className="mt-1 hidden font-mono text-[10px] tracking-[0.24em] text-cream-2 uppercase md:block">
             {String(projects.length).padStart(2, "0")} case files · scroll →

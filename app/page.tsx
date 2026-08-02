@@ -6,6 +6,7 @@ import { Header } from "@/components/site/Header";
 import { Hero } from "@/components/reel/Hero";
 import { Manifesto } from "@/components/reel/Manifesto";
 import { Registrations } from "@/components/reel/Registrations";
+import { FAQ } from "@/components/reel/FAQ";
 import { Reel } from "@/components/reel/Reel";
 import { Services } from "@/components/reel/Services";
 import { Contact } from "@/components/reel/Contact";
@@ -24,6 +25,7 @@ export default function Home() {
         <Marquee text="Finance — Technology — A.I. —" outline />
         <Manifesto />
         <Registrations />
+        <FAQ />
         <Reel />
         <Services />
         <Marquee text="UAE — UK — US — Registered — Filed — Compliant —" speed={70} />

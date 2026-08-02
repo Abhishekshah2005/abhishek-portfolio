@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap, SplitText } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/hooks";
-import { manifesto } from "@/lib/content";
+import { manifesto, person } from "@/lib/content";
 
 /**
  * The manifesto: pinned full-screen while the paragraph lights up word by
@@ -79,6 +79,13 @@ export function Manifesto() {
         }
       >
         <div className="mx-auto w-full max-w-[1200px] px-5 md:px-10">
+          {/* The chapter has no visible heading — the kicker + scrubbed
+              paragraph ARE the design. A real (sr-only) h2 still completes
+              the document outline for screen readers and crawlers. */}
+          <h2 className="sr-only">
+            About {person.name} — an accountant handling UAE, UK and US
+            company registration and filings
+          </h2>
           <p className="mb-8 font-mono text-[10px] tracking-[0.3em] text-cream-3 uppercase">
             01 — Who
           </p>

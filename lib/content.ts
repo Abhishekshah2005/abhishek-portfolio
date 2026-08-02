@@ -193,13 +193,80 @@ export const credentials = {
   body: "I'm not a CA, not ACCA and not FCA — and I say that upfront. I'm an accountant: strong accounting fundamentals and solid audit knowledge, built over years of working alongside chartered accountants. You get the work done properly — and if a job ever needs a chartered signature, I'll be the first to tell you.",
 };
 
+/**
+ * The broader service list, below the flagship. Each entry carries a real
+ * sentence, not just a tag — search engines and scanning visitors both read
+ * off the same copy, so it has to earn its place either way.
+ */
 export const services = [
-  { name: "Fractional CFO", tag: "Advisory · projections · runway" },
-  { name: "Books & Audit", tag: "Xero · Sage · three jurisdictions" },
-  { name: "Financial Models", tag: "P&L · cash flow · what-if" },
-  { name: "Automation & AI Agents", tag: "The repetitive work, gone" },
-  { name: "Custom Software", tag: "SaaS · apps · integrations" },
-  { name: "Scaling Operations", tag: "CRM · call-centre · process" },
+  {
+    name: "Fractional CFO",
+    tag: "Advisory · projections · runway",
+    description:
+      "Board-ready financial leadership without a full-time hire — cash flow forecasting, fundraising support and the budget-vs-actual reporting investors and lenders actually ask for.",
+  },
+  {
+    name: "Bookkeeping & Audit Support",
+    tag: "Xero · Sage · three countries",
+    description:
+      "Books kept accurate month to month in Xero or Sage across UK, UAE and Indian entities, with audit-ready files and direct support for your external auditor.",
+  },
+  {
+    name: "Financial Modelling",
+    tag: "P&L · cash flow · what-if",
+    description:
+      "Three-statement models, scenario planning and cash-runway forecasts built to hold up under real investor and lender scrutiny — not just look good in a pitch deck.",
+  },
+  {
+    name: "Automation & AI Agents",
+    tag: "The repetitive work, gone",
+    description:
+      "The reconciliations, data entry and recurring reports that used to eat a week, handled by workflows and AI agents that just run — and tell you when something looks wrong.",
+  },
+  {
+    name: "Custom Software & Integrations",
+    tag: "SaaS · apps · integrations",
+    description:
+      "SaaS products, internal tools and system integrations that connect your accounting stack to the rest of the business, so numbers stop getting re-typed by hand.",
+  },
+  {
+    name: "Scaling Operations",
+    tag: "CRM · call-centre · process",
+    description:
+      "CRM, call-centre setup and process design for teams that have outgrown spreadsheets and tribal knowledge — the operational half of getting bigger without breaking.",
+  },
+] as const;
+
+/**
+ * FAQ — the objections a real prospect has before they email. Shared by the
+ * visible FAQ section and its FAQPage structured data (see lib/seo.ts), so
+ * the two can never drift out of sync.
+ */
+export const faqs = [
+  {
+    q: "How much does it cost to register a company in Dubai as a foreigner?",
+    a: "Free-zone and mainland setup costs vary by activity, licence type and how many visas you need — the two or three numbers that actually decide it. I size it properly for your case before you commit to a jurisdiction.",
+  },
+  {
+    q: "Can I own 100% of my UAE company as a foreign national?",
+    a: "Yes — free-zone companies and most mainland activities now allow full foreign ownership, with no local sponsor required.",
+  },
+  {
+    q: "What is a UK confirmation statement, and what happens if I miss it?",
+    a: "It's an annual snapshot Companies House requires, confirming your directors, shareholders and registered address are current. Miss it and the company can be struck off the register — so it's filed on a fixed schedule, every year, without you having to remember.",
+  },
+  {
+    q: "Do I need to file US taxes if my LLC has no US-based owners?",
+    a: "Almost always, yes — a foreign-owned single-member LLC still carries an annual Form 5472 and pro forma 1120 filing obligation, even with zero US activity. Missing it carries a real penalty, so it's one of the first things I set up.",
+  },
+  {
+    q: "Are you a Chartered Accountant — CA, ACCA or FCA?",
+    a: "No, and I lead with that. I'm an accountant with strong accounting and audit fundamentals, built over years working alongside chartered accountants. If a job ever needs a chartered signature, you'll hear it from me before you have to ask.",
+  },
+  {
+    q: "Can you handle UAE, UK and US filings for one business at the same time?",
+    a: "That's the actual point of working from one desk. A UAE holding company, a UK trading entity and a US LLC can be registered and kept compliant together, by one person who understands how the three interact.",
+  },
 ] as const;
 
 export const contact = {

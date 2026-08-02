@@ -5,31 +5,49 @@ import "./globals.css";
 import { SmoothScroll } from "@/components/providers/SmoothScroll";
 import { Cursor } from "@/components/ui/Cursor";
 import { person } from "@/lib/content";
-
-const description =
-  "Abhishek Shah builds the systems that let a business see clearly, run leaner and scale — accounting and fractional CFO work on one side, software and AI on the other.";
+import {
+  SITE_DESCRIPTION,
+  SITE_TITLE,
+  SITE_URL,
+  buildFaqGraph,
+  buildServiceGraph,
+} from "@/lib/seo";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://abhishekshah.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: `${person.name} — ${person.role}`,
+    default: `${SITE_TITLE} — ${person.name}`,
     template: `%s — ${person.name}`,
   },
-  description,
+  description: SITE_DESCRIPTION,
   keywords: [
+    "company registration Dubai",
+    "UAE company formation",
+    "UAE free zone company",
+    "UAE corporate tax registration",
+    "UK confirmation statement filing",
+    "UK company accounts and payroll",
+    "US LLC formation for non-residents",
+    "Form 5472 filing",
     "fractional CFO",
+    "Xero bookkeeping",
     "financial automation",
-    "AI agents",
-    "accounting technology",
-    "custom software",
     "Abhishek Shah",
   ],
   authors: [{ name: person.name }],
+  alternates: { canonical: "/" },
   openGraph: {
-    title: `${person.name} — ${person.role}`,
-    description,
+    title: `${SITE_TITLE} — ${person.name}`,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    siteName: person.name,
     type: "website",
     locale: "en_GB",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_TITLE} — ${person.name}`,
+    description: SITE_DESCRIPTION,
   },
   robots: { index: true, follow: true },
 };
@@ -46,9 +64,25 @@ export const viewport: Viewport = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Structured data is built from the same content the page renders, so it
+  // can never assert a service or fact the visible copy doesn't back up.
+  const serviceGraph = buildServiceGraph();
+  const faqGraph = buildFaqGraph();
+
   return (
     <html lang="en">
+      {/* No manual <head> here — Next.js owns it via the `metadata` export.
+          JSON-LD is valid in <body> too (Google reads it either way), which
+          avoids any risk of two heads colliding. */}
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceGraph) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqGraph) }}
+        />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[1001] focus:rounded-full focus:bg-lime focus:px-5 focus:py-3 focus:text-coal focus:no-underline"

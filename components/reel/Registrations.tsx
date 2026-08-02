@@ -83,6 +83,9 @@ export function Registrations() {
                 }`}
               >
                 {j.code}
+                {/* Visually "UAE"/"UK"/"US" stays huge and iconic; the full
+                    name gives the heading itself real, crawlable text. */}
+                <span className="sr-only"> — {j.name} company registration and filings</span>
               </h3>
               <p
                 data-reveal
