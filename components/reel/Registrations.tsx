@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/hooks";
-import { useLineReveal } from "@/components/ui/motion";
+import { useLineDraw, useLineReveal } from "@/components/ui/motion";
 import { credentials, jurisdictions } from "@/lib/content";
 
 /**
@@ -16,6 +16,7 @@ import { credentials, jurisdictions } from "@/lib/content";
 export function Registrations() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useLineReveal<HTMLHeadingElement>();
+  const drawRef = useLineDraw<HTMLSpanElement>();
   const reduced = useReducedMotion();
 
   useEffect(() => {
@@ -62,7 +63,12 @@ export function Registrations() {
             Companies, registered &amp; kept{" "}
             <span className="text-outline-lime">compliant</span>
           </h2>
-          <p className="hidden font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase md:block">
+          <p className="hidden items-center gap-2.5 font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase md:flex">
+            <span
+              ref={drawRef}
+              aria-hidden
+              className="block h-px w-8 origin-left bg-lime"
+            />
             02 — Companies
           </p>
         </div>

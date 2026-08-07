@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/hooks";
-import { useLineReveal } from "@/components/ui/motion";
+import { useLineDraw, useLineReveal } from "@/components/ui/motion";
 import { services } from "@/lib/content";
 
 /**
@@ -17,6 +17,7 @@ import { services } from "@/lib/content";
 export function Services() {
   const listRef = useRef<HTMLUListElement>(null);
   const headingRef = useLineReveal<HTMLHeadingElement>();
+  const drawRef = useLineDraw<HTMLSpanElement>();
   const reduced = useReducedMotion();
 
   useEffect(() => {
@@ -50,7 +51,12 @@ export function Services() {
           <h2 ref={headingRef} className="text-minor max-w-[14ch] font-semibold">
             What I take <span className="text-outline-lime">off your desk</span>
           </h2>
-          <p className="hidden font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase md:block">
+          <p className="hidden items-center gap-2.5 font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase md:flex">
+            <span
+              ref={drawRef}
+              aria-hidden
+              className="block h-px w-8 origin-left bg-lime"
+            />
             05 — Services
           </p>
         </div>

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { useFinePointer, useReducedMotion } from "@/lib/hooks";
-import { useLineReveal } from "@/components/ui/motion";
+import { useLineDraw, useLineReveal } from "@/components/ui/motion";
 import { projects, type Project } from "@/lib/content";
 
 /**
@@ -23,6 +23,8 @@ export function Reel() {
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const headingRef = useLineReveal<HTMLHeadingElement>();
+  const drawRef = useLineDraw<HTMLSpanElement>();
+  const progressRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
 
   useEffect(() => {
@@ -34,6 +36,12 @@ export function Reel() {
 
     mm.add("(min-width: 768px)", () => {
       const distance = () => track.scrollWidth - window.innerWidth;
+      // Reused, not a second trigger: the same scrub that drives the pin
+      // also fills the progress rail below the heading, so "how far
+      // through the reel am I" always matches what's actually on screen.
+      const setProgress = progressRef.current
+        ? gsap.quickSetter(progressRef.current, "scaleX")
+        : null;
 
       const scrollTween = gsap.to(track, {
         x: () => -distance(),
@@ -45,6 +53,7 @@ export function Reel() {
           pin: true,
           scrub: 1,
           invalidateOnRefresh: true,
+          onUpdate: (self) => setProgress?.(self.progress),
         },
       });
 
@@ -159,13 +168,31 @@ export function Reel() {
           Selected <span className="text-outline-lime">work</span>
         </h2>
         <div className="text-right">
-          <p className="font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase">
+          <p className="flex items-center justify-end gap-2.5 font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase">
+            <span
+              ref={drawRef}
+              aria-hidden
+              className="block h-px w-8 origin-left bg-lime"
+            />
             04 — Work
           </p>
           <p className="mt-1 hidden font-mono text-[10px] tracking-[0.24em] text-cream-2 uppercase md:block">
             {String(projects.length).padStart(2, "0")} case files · scroll →
           </p>
         </div>
+      </div>
+
+      {/* The reel's own progress — fills left to right exactly as far as
+          you've scrubbed through the pinned strip below. Desktop only:
+          mobile doesn't pin/scrub, so there's no "progress" to show. */}
+      <div
+        aria-hidden
+        className="relative mx-5 hidden h-px bg-[var(--line)] md:mx-[8vw] md:block"
+      >
+        <div
+          ref={progressRef}
+          className="absolute inset-y-0 left-0 w-full origin-left scale-x-0 bg-lime"
+        />
       </div>
 
       <div

@@ -10,7 +10,15 @@ import { useSmoothScroll } from "@/components/providers/SmoothScroll";
    from here so the whole site moves as one instrument.
 ------------------------------------------------------------------ */
 
-/** Mask-reveals each line of a heading as it scrolls into view. */
+/**
+ * Mask-reveals each line of a heading as it scrolls into view — slides up
+ * out of its mask while pulling into focus (blur + a touch of scale settle
+ * out). `filter`/`transform` only, deliberately: no colour is involved in
+ * this tween, which matters in this codebase specifically — see the
+ * Manifesto fix in git history for why a GSAP colour tween reading an
+ * oklab() value (which is what Tailwind's arbitrary-opacity utilities
+ * compile to in v4) silently does nothing.
+ */
 export function useLineReveal<T extends HTMLElement>(start = "top 82%") {
   const ref = useRef<T>(null);
   const reduced = useReducedMotion();
@@ -24,6 +32,9 @@ export function useLineReveal<T extends HTMLElement>(start = "top 82%") {
       split = new SplitText(el, { type: "lines", mask: "lines" });
       gsap.from(split.lines, {
         yPercent: 112,
+        scale: 1.045,
+        filter: "blur(14px)",
+        transformOrigin: "left bottom",
         duration: 1.25,
         stagger: 0.09,
         ease: "expo.out",
@@ -35,6 +46,38 @@ export function useLineReveal<T extends HTMLElement>(start = "top 82%") {
       split?.revert();
       ctx.revert();
     };
+  }, [reduced, start]);
+
+  return ref;
+}
+
+/**
+ * A short hairline that draws itself in (scaleX 0 → 1) as it scrolls into
+ * view — the "chapter mark" that now sits beside every "0N — Label" kicker,
+ * echoing the same tick shape the chapter rail uses for its active dot.
+ */
+export function useLineDraw<T extends HTMLElement>(start = "top 88%") {
+  const ref = useRef<T>(null);
+  const reduced = useReducedMotion();
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || reduced) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        el,
+        { scaleX: 0 },
+        {
+          scaleX: 1,
+          duration: 0.8,
+          ease: "expo.out",
+          scrollTrigger: { trigger: el, start },
+        },
+      );
+    });
+
+    return () => ctx.revert();
   }, [reduced, start]);
 
   return ref;

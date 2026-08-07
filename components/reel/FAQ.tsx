@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/hooks";
-import { useLineReveal } from "@/components/ui/motion";
+import { useLineDraw, useLineReveal } from "@/components/ui/motion";
 import { faqs, person } from "@/lib/content";
 
 /**
@@ -21,6 +21,7 @@ import { faqs, person } from "@/lib/content";
 export function FAQ() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useLineReveal<HTMLHeadingElement>();
+  const drawRef = useLineDraw<HTMLSpanElement>();
   const [open, setOpen] = useState<number | null>(0);
   const reduced = useReducedMotion();
 
@@ -58,7 +59,12 @@ export function FAQ() {
           <h2 ref={headingRef} className="text-minor max-w-[16ch] font-semibold">
             Before you <span className="text-outline-lime">email</span>
           </h2>
-          <p className="hidden font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase md:block">
+          <p className="hidden items-center gap-2.5 font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase md:flex">
+            <span
+              ref={drawRef}
+              aria-hidden
+              className="block h-px w-8 origin-left bg-lime"
+            />
             03 — FAQ
           </p>
         </div>

@@ -53,7 +53,9 @@
     overflow-x: clip;
   }
 
-  /* Film grain over everything — the "shot on something" feel. */
+  /* Film grain over everything — the "shot on something" feel. A slow
+     breathe keeps it from reading as a static texture; the global
+     reduced-motion rule below already neutralises this via *::after. */
   body::after {
     content: "";
     position: fixed;
@@ -62,6 +64,19 @@
     pointer-events: none;
     opacity: 0.05;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grain-breathe 9s ease-in-out infinite;
+  }
+
+  @keyframes grain-breathe {
+    0%,
+    100% {
+      opacity: 0.045;
+      transform: scale(1) translate(0, 0);
+    }
+    50% {
+      opacity: 0.075;
+      transform: scale(1.03) translate(-1%, 1%);
+    }
   }
 
   ::selection {

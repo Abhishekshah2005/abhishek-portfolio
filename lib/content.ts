@@ -23,6 +23,20 @@ export const nav = [
 ] as const;
 
 /**
+ * The full chapter list, for the scroll-position rail — mirrors the
+ * "0N — Label" kickers already printed at the top of each section, so the
+ * rail can never disagree with what's on screen.
+ */
+export const chapters = [
+  { id: "manifesto", label: "Who" },
+  { id: "registrations", label: "Companies" },
+  { id: "faq", label: "FAQ" },
+  { id: "work", label: "Work" },
+  { id: "services", label: "Services" },
+  { id: "contact", label: "Talk" },
+] as const;
+
+/**
  * Hero — offer-first, built to convert. The name lives in the header and
  * the title tag; the first screen's job is to hook the right visitor.
  * Every figure here is factual and re-stated with its caveat in the

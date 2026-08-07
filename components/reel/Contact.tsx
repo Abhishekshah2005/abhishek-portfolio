@@ -5,6 +5,7 @@ import { gsap, SplitText } from "@/lib/gsap";
 import { useFinePointer, useReducedMotion } from "@/lib/hooks";
 import { contact, person } from "@/lib/content";
 import { Magnetic } from "@/components/ui/Magnetic";
+import { useLineDraw } from "@/components/ui/motion";
 
 /**
  * The finale: LET'S TALK filling the frame, every letter individually
@@ -13,6 +14,7 @@ import { Magnetic } from "@/components/ui/Magnetic";
 export function Contact() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const drawRef = useLineDraw<HTMLSpanElement>("top 95%");
   const reduced = useReducedMotion();
   const fine = useFinePointer();
 
@@ -119,7 +121,12 @@ export function Contact() {
           last section still spreading its body/CTA edge-to-edge on a wide
           screen instead of sitting in the shared column. */}
       <div className="mx-auto w-full max-w-[1320px]">
-        <p className="mb-10 font-mono text-[10px] tracking-[0.3em] text-cream-3 uppercase">
+        <p className="mb-10 flex items-center gap-2.5 font-mono text-[10px] tracking-[0.3em] text-cream-3 uppercase">
+          <span
+            ref={drawRef}
+            aria-hidden
+            className="block h-px w-8 origin-left bg-lime"
+          />
           06 — Talk
         </p>
 
