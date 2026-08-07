@@ -50,7 +50,7 @@ export function ChapterRail() {
   return (
     <nav
       aria-label="Chapters"
-      className="fixed top-1/2 right-5 z-40 hidden -translate-y-1/2 flex-col items-end gap-4 lg:flex"
+      className="fixed top-1/2 right-5 z-40 hidden -translate-y-1/2 flex-col items-end gap-4 md:flex"
     >
       {chapters.map((chapter, i) => {
         const isActive = i === active;

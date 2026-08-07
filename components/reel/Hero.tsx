@@ -23,6 +23,7 @@ export function Hero({ started }: { started: boolean }) {
   const sectionRef = useRef<HTMLElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
+  const scrollHintRef = useRef<HTMLDivElement>(null);
   const smearRef = useVelocitySkew<HTMLDivElement>(0.4, 5);
   const { scrollTo } = useSmoothScroll();
 
@@ -139,10 +140,41 @@ export function Hero({ started }: { started: boolean }) {
           scrub: true,
         },
       });
+
+      // The hint fades out over the first sliver of scroll — once you're
+      // actually scrolling, you don't need to be told to.
+      gsap.to("[data-scroll-hint]", {
+        autoAlpha: 0,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "12% top",
+          scrub: true,
+        },
+      });
     }, section);
 
     return () => ctx.revert();
   }, [reduced]);
+
+  // The hint bounces gently on a loop — visible the instant the page
+  // settles, no scroll or hover needed to notice it.
+  useEffect(() => {
+    const hint = scrollHintRef.current;
+    if (!hint || reduced || !started) return;
+
+    const tl = gsap.timeline({ repeat: -1, delay: 1.4 });
+    tl.to(hint, { y: 8, duration: 0.9, ease: "sine.inOut" }).to(hint, {
+      y: 0,
+      duration: 0.9,
+      ease: "sine.inOut",
+    });
+
+    return () => {
+      tl.kill();
+    };
+  }, [reduced, started]);
 
   return (
     <section
@@ -284,10 +316,30 @@ export function Hero({ started }: { started: boolean }) {
           </div>
         </div>
 
-        <div className="pointer-events-none absolute bottom-5 left-1/2 z-20 -translate-x-1/2 md:bottom-8">
+        <div
+          data-scroll-hint
+          ref={scrollHintRef}
+          className="pointer-events-none absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-2 md:bottom-8"
+        >
           <span className="font-mono text-[10px] tracking-[0.3em] text-cream-3 uppercase">
             Scroll
           </span>
+          <svg
+            width="10"
+            height="14"
+            viewBox="0 0 10 14"
+            fill="none"
+            aria-hidden
+          >
+            <path
+              d="M1 1L5 12L9 1"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-cream-3"
+            />
+          </svg>
         </div>
       </div>
     </section>
