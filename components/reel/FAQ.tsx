@@ -49,66 +49,72 @@ export function FAQ() {
       className="relative px-5 py-24 md:px-10 md:py-32"
       aria-label="Frequently asked questions"
     >
-      <div className="mb-12 flex items-end justify-between">
-        <h2 ref={headingRef} className="text-minor max-w-[16ch] font-semibold">
-          Before you <span className="text-outline-lime">email</span>
-        </h2>
-        <p className="hidden font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase md:block">
-          03 — FAQ
+      {/* One shared container for the heading AND the list — they used to
+          live in separate boxes (heading full-width, list independently
+          centered at max-w-4xl), which on a wide screen put the questions
+          visibly out of step with the heading above them. */}
+      <div className="mx-auto max-w-[1320px]">
+        <div className="mb-12 flex items-end justify-between">
+          <h2 ref={headingRef} className="text-minor max-w-[16ch] font-semibold">
+            Before you <span className="text-outline-lime">email</span>
+          </h2>
+          <p className="hidden font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase md:block">
+            03 — FAQ
+          </p>
+        </div>
+
+        <dl className="max-w-3xl">
+          {faqs.map((item, i) => {
+            const isOpen = open === i;
+            const panelId = `faq-panel-${i}`;
+            return (
+              <div
+                key={item.q}
+                data-faq-row
+                className="border-t border-[var(--line)] last:border-b"
+              >
+                <dt>
+                  <button
+                    type="button"
+                    data-cursor
+                    aria-expanded={isOpen}
+                    aria-controls={panelId}
+                    onClick={() => setOpen((prev) => (prev === i ? null : i))}
+                    className="group flex w-full items-center justify-between gap-6 py-6 text-left md:py-7"
+                  >
+                    <span className="font-display text-xl leading-snug font-medium tracking-[-0.01em] text-cream md:text-2xl">
+                      {item.q}
+                    </span>
+                    <span
+                      aria-hidden
+                      className={`shrink-0 text-2xl text-lime transition-transform duration-400 ease-[var(--ease-out-expo)] ${
+                        isOpen ? "rotate-45" : ""
+                      }`}
+                    >
+                      +
+                    </span>
+                  </button>
+                </dt>
+                <dd
+                  id={panelId}
+                  className="grid overflow-hidden transition-[grid-template-rows] duration-500 ease-[var(--ease-out-expo)]"
+                  style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
+                >
+                  <div className="overflow-hidden">
+                    <p className="max-w-2xl pb-7 text-[15px] leading-relaxed text-cream-2 md:pb-8 md:text-base">
+                      {item.a}
+                    </p>
+                  </div>
+                </dd>
+              </div>
+            );
+          })}
+        </dl>
+
+        <p className="mt-10 max-w-3xl font-mono text-[10px] leading-relaxed tracking-[0.14em] text-cream-3 uppercase">
+          Something else on your mind? {person.email}
         </p>
       </div>
-
-      <dl className="mx-auto max-w-4xl">
-        {faqs.map((item, i) => {
-          const isOpen = open === i;
-          const panelId = `faq-panel-${i}`;
-          return (
-            <div
-              key={item.q}
-              data-faq-row
-              className="border-t border-[var(--line)] last:border-b"
-            >
-              <dt>
-                <button
-                  type="button"
-                  data-cursor
-                  aria-expanded={isOpen}
-                  aria-controls={panelId}
-                  onClick={() => setOpen((prev) => (prev === i ? null : i))}
-                  className="group flex w-full items-center justify-between gap-6 py-6 text-left md:py-7"
-                >
-                  <span className="font-display text-xl leading-snug font-medium tracking-[-0.01em] text-cream md:text-2xl">
-                    {item.q}
-                  </span>
-                  <span
-                    aria-hidden
-                    className={`shrink-0 text-2xl text-lime transition-transform duration-400 ease-[var(--ease-out-expo)] ${
-                      isOpen ? "rotate-45" : ""
-                    }`}
-                  >
-                    +
-                  </span>
-                </button>
-              </dt>
-              <dd
-                id={panelId}
-                className="grid overflow-hidden transition-[grid-template-rows] duration-500 ease-[var(--ease-out-expo)]"
-                style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
-              >
-                <div className="overflow-hidden">
-                  <p className="max-w-2xl pb-7 text-[15px] leading-relaxed text-cream-2 md:pb-8 md:text-base">
-                    {item.a}
-                  </p>
-                </div>
-              </dd>
-            </div>
-          );
-        })}
-      </dl>
-
-      <p className="mx-auto mt-10 max-w-4xl font-mono text-[10px] leading-relaxed tracking-[0.14em] text-cream-3 uppercase">
-        Something else on your mind? {person.email}
-      </p>
     </section>
   );
 }

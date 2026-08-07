@@ -150,7 +150,11 @@ export function Reel() {
       className="relative overflow-hidden"
       aria-label="Selected work"
     >
-      <div className="flex items-end justify-between px-5 pt-24 pb-10 md:px-10 md:pt-32">
+      {/* Padding matches the track's own md:px-[8vw] inset below — they used
+          to disagree (px-10 vs 8vw), which left the heading and the first
+          poster card starting at visibly different x-positions on a wide
+          screen. */}
+      <div className="flex items-end justify-between px-5 pt-24 pb-10 md:px-[8vw] md:pt-32">
         <h2 ref={headingRef} className="text-minor font-semibold">
           Selected <span className="text-outline-lime">work</span>
         </h2>
@@ -196,7 +200,7 @@ export function Reel() {
         </div>
       </div>
 
-      <p className="px-5 pb-10 font-mono text-[10px] tracking-[0.2em] text-cream-3 uppercase md:px-10">
+      <p className="px-5 pb-10 font-mono text-[10px] tracking-[0.2em] text-cream-3 uppercase md:px-[8vw]">
         Representative engagements · names withheld · references on request
       </p>
     </section>

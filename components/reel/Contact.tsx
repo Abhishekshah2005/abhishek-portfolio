@@ -115,7 +115,10 @@ export function Contact() {
       className="relative flex min-h-dvh flex-col justify-between px-5 pt-28 pb-8 md:px-10 md:pt-40"
       aria-label="Contact"
     >
-      <div>
+      {/* Same container width as every other chapter now — this was the
+          last section still spreading its body/CTA edge-to-edge on a wide
+          screen instead of sitting in the shared column. */}
+      <div className="mx-auto w-full max-w-[1320px]">
         <p className="mb-10 font-mono text-[10px] tracking-[0.3em] text-cream-3 uppercase">
           06 — Talk
         </p>
@@ -166,7 +169,7 @@ export function Contact() {
 
       <footer
         data-contact-fade
-        className="mt-20 flex flex-col gap-6 border-t border-[var(--line)] pt-6 md:flex-row md:items-center md:justify-between"
+        className="mx-auto mt-20 flex w-full max-w-[1320px] flex-col gap-6 border-t border-[var(--line)] pt-6 md:flex-row md:items-center md:justify-between"
       >
         <div className="flex flex-wrap items-center gap-2">
           {contact.socials.map((social) => (
