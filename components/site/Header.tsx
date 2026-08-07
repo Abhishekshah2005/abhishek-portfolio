@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { gsap } from "@/lib/gsap";
+import { useEffect, useRef, useState } from "react";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { useSmoothScroll } from "@/components/providers/SmoothScroll";
 import { useReducedMotion } from "@/lib/hooks";
 import { nav, person } from "@/lib/content";
@@ -14,6 +14,7 @@ export function Header({ started }: { started: boolean }) {
   const ref = useRef<HTMLElement>(null);
   const { scrollTo } = useSmoothScroll();
   const reduced = useReducedMotion();
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     if (!started || !ref.current) return;
@@ -31,10 +32,29 @@ export function Header({ started }: { started: boolean }) {
     return () => ctx.revert();
   }, [started, reduced]);
 
+  // The bar is transparent over the hero (that's the intentional cinematic
+  // look), but with NO background at all it has no guaranteed contrast
+  // against whatever scrolls underneath it once you leave the hero — a
+  // bright marquee band or a lit Services row could wash the wordmark out
+  // completely. A scrim past a small scroll threshold fixes that without
+  // touching the hero's clean-chrome look.
+  useEffect(() => {
+    const st = ScrollTrigger.create({
+      start: 80,
+      end: Number.MAX_SAFE_INTEGER,
+      onToggle: (self) => setScrolled(self.isActive),
+    });
+    return () => st.kill();
+  }, []);
+
   return (
     <header
       ref={ref}
-      className="fixed inset-x-0 top-0 z-40 flex items-center justify-between px-5 py-4 md:px-10 md:py-6"
+      className={`fixed inset-x-0 top-0 z-40 flex items-center justify-between px-5 py-4 transition-[background-color,backdrop-filter,border-color] duration-500 md:px-10 md:py-5 ${
+        scrolled
+          ? "border-b border-[var(--line)] bg-coal/75 backdrop-blur-md"
+          : "border-b border-transparent bg-transparent"
+      }`}
     >
       <button
         data-nav-item
@@ -43,8 +63,8 @@ export function Header({ started }: { started: boolean }) {
         className="invisible -my-2 flex min-h-11 items-center gap-3 py-2"
         aria-label="Back to top"
       >
-        <span className="h-2 w-2 rounded-full bg-lime" />
-        <span className="font-display text-[13px] font-semibold tracking-tight">
+        <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-lime shadow-[0_0_10px_1px_rgba(217,255,64,0.55)]" />
+        <span className="font-display text-lg font-semibold tracking-tight text-cream md:text-xl">
           {person.name}
         </span>
       </button>

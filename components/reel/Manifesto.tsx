@@ -99,7 +99,18 @@ export function Manifesto() {
             {reduced ? (
               plain
             ) : (
-              <span className="text-cream/15">{plain}</span>
+              // NOT text-cream/15: Tailwind v4 compiles that arbitrary-
+              // opacity utility to `color-mix(in oklab, ...)`, which
+              // computes to an oklab() string. GSAP's color tween can only
+              // parse rgb/rgba/hsl/hsla/hex/named colors (see its
+              // _colorExp source) — an oklab() starting value is simply
+              // invisible to it, so the per-word reveal below silently
+              // never fires. This is the one spot in the app where a GSAP
+              // color tween's FROM state depends on inherited CSS colour,
+              // so it's the one spot that needed the literal RGBA instead.
+              <span style={{ color: "rgba(242, 241, 236, 0.15)" }}>
+                {plain}
+              </span>
             )}
           </p>
         </div>
