@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef } from "react";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { bindPointer, updatePointer } from "@/lib/pointer";
@@ -26,6 +27,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
   const stateRef = useRef({ progress: 0, velocity: 0 });
   const reduced = useReducedMotion();
+  const pathname = usePathname();
 
   useEffect(() => {
     // Reduced motion: leave native scrolling completely alone.
@@ -87,6 +89,21 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       lenisRef.current = null;
     };
   }, [reduced]);
+
+  // This provider lives in the root layout, so it survives client-side
+  // navigation between routes — every trigger built against "the whole
+  // document" (the top progress bar's `end: "max"` among them) is measured
+  // against whichever page's content was mounted first unless something
+  // re-measures after a route change. Landing on a hash (a header link back
+  // to `/#registrations`, a card straight to `/services#fractional-cfo`) is
+  // deliberately left to Next's own Link scroll-into-view — it already
+  // respects each target's `scroll-margin-top`, and duplicating that by
+  // hand here only fights it over who gets the last word on scroll position.
+  useEffect(() => {
+    if (!lenisRef.current) return;
+    const raf = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(raf);
+  }, [pathname]);
 
   useEffect(() => {
     if (!reduced) return;

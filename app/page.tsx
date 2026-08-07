@@ -10,9 +10,8 @@ import { FAQ } from "@/components/reel/FAQ";
 import { Reel } from "@/components/reel/Reel";
 import { Services } from "@/components/reel/Services";
 import { Contact } from "@/components/reel/Contact";
-import { Marquee, ScrollProgress } from "@/components/ui/motion";
+import { Marquee } from "@/components/ui/motion";
 import { ChapterRail } from "@/components/ui/ChapterRail";
-import { CursorGlow } from "@/components/ui/CursorGlow";
 
 export default function Home() {
   const [started, setStarted] = useState(false);
@@ -20,8 +19,6 @@ export default function Home() {
   return (
     <>
       <Preloader onDone={() => setStarted(true)} />
-      <ScrollProgress />
-      <CursorGlow />
       <ChapterRail />
       <Header started={started} />
       <main id="main">

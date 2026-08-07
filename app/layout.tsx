@@ -4,6 +4,8 @@ import "@fontsource-variable/space-grotesk";
 import "./globals.css";
 import { SmoothScroll } from "@/components/providers/SmoothScroll";
 import { Cursor } from "@/components/ui/Cursor";
+import { CursorGlow } from "@/components/ui/CursorGlow";
+import { ScrollProgress } from "@/components/ui/motion";
 import { person } from "@/lib/content";
 import {
   SITE_DESCRIPTION,
@@ -90,6 +92,8 @@ export default function RootLayout({
           Skip to content
         </a>
         <SmoothScroll>
+          <ScrollProgress />
+          <CursorGlow />
           <Cursor />
           {children}
         </SmoothScroll>

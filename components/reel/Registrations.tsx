@@ -60,7 +60,7 @@ export function Registrations() {
     <section
       ref={sectionRef}
       id="registrations"
-      className="relative overflow-hidden px-5 py-24 md:px-10 md:py-40"
+      className="relative scroll-mt-24 overflow-hidden px-5 py-24 md:px-10 md:py-40"
       aria-label="Company registration and filings"
     >
       <SectionNumeral n="02" />

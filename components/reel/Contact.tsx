@@ -5,6 +5,7 @@ import { gsap, SplitText } from "@/lib/gsap";
 import { useFinePointer, useReducedMotion } from "@/lib/hooks";
 import { contact, person } from "@/lib/content";
 import { Magnetic } from "@/components/ui/Magnetic";
+import { Footer } from "@/components/site/Footer";
 import { useLineDraw } from "@/components/ui/motion";
 
 /**
@@ -116,13 +117,11 @@ export function Contact() {
     };
   }, [reduced, fine]);
 
-  const year = 2026;
-
   return (
     <section
       ref={sectionRef}
       id="contact"
-      className="relative flex min-h-dvh flex-col justify-between px-5 pt-28 pb-8 md:px-10 md:pt-40"
+      className="relative scroll-mt-24 flex min-h-dvh flex-col justify-between px-5 pt-28 pb-8 md:px-10 md:pt-40"
       aria-label="Contact"
     >
       {/* Same container width as every other chapter now — this was the
@@ -182,33 +181,9 @@ export function Contact() {
         </div>
       </div>
 
-      <footer
-        data-contact-fade
-        className="mx-auto mt-20 flex w-full max-w-[1320px] flex-col gap-6 border-t border-[var(--line)] pt-6 md:flex-row md:items-center md:justify-between"
-      >
-        <div className="flex flex-wrap items-center gap-2">
-          {contact.socials.map((social) => (
-            <a
-              key={social.label}
-              href={social.href}
-              data-cursor
-              className="inline-flex min-h-11 min-w-11 items-center justify-center px-2 text-[13px] text-cream-2 transition-colors duration-300 hover:text-lime"
-              {...(social.placeholder
-                ? { "aria-disabled": true, tabIndex: -1 }
-                : {})}
-            >
-              {social.label}
-            </a>
-          ))}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-6 font-mono text-[10px] tracking-[0.18em] text-cream-3 uppercase">
-          <span>{person.location}</span>
-          <span>
-            © {year} {person.name}
-          </span>
-        </div>
-      </footer>
+      <div data-contact-fade>
+        <Footer className="mt-20 px-0 md:px-0" />
+      </div>
     </section>
   );
 }

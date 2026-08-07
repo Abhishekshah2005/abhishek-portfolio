@@ -160,7 +160,7 @@ export function Reel() {
     <section
       ref={sectionRef}
       id="work"
-      className="relative overflow-hidden"
+      className="relative scroll-mt-24 overflow-hidden"
       aria-label="Selected work"
     >
       {/* Padding matches the track's own md:px-[8vw] inset below — they used

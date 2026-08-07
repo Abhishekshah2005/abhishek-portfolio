@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/seo";
 
 /**
- * A single-page site still gets a sitemap: it's a near-zero-cost signal
- * that tells crawlers the canonical URL and how often to expect it to
- * change, and it's where a second real route (case studies, a blog) would
- * get added later without restructuring anything.
+ * A near-zero-cost signal that tells crawlers the canonical URLs and how
+ * often to expect them to change. `/services` is the second real route —
+ * added here, not just linked, so it gets crawled on its own rather than
+ * relying entirely on discovery through the homepage's card links.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -16,6 +16,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: SITE_URL,
       changeFrequency: "monthly",
       priority: 1,
+    },
+    {
+      url: `${SITE_URL}/services`,
+      changeFrequency: "monthly",
+      priority: 0.9,
     },
   ];
 }

@@ -18,7 +18,9 @@ export const person = {
 export const nav = [
   { id: "registrations", label: "Companies" },
   { id: "work", label: "Work" },
-  { id: "services", label: "Services" },
+  // The only nav item that's a real route rather than a same-page anchor —
+  // it goes to the full writeups on /services, not the homepage teaser.
+  { href: "/services", label: "Services" },
   { id: "contact", label: "Contact" },
 ] as const;
 
@@ -207,49 +209,202 @@ export const credentials = {
   body: "I'm not a CA, not ACCA and not FCA — and I say that upfront. I'm an accountant: strong accounting fundamentals and solid audit knowledge, built over years of working alongside chartered accountants. You get the work done properly — and if a job ever needs a chartered signature, I'll be the first to tell you.",
 };
 
+export type Service = {
+  slug: string;
+  name: string;
+  tag: string;
+  description: string;
+  /** The flip-card back / page "what's included" list. */
+  points: string[];
+  idealFor: string;
+  process: { step: string; detail: string }[];
+};
+
 /**
  * The broader service list, below the flagship. Each entry carries a real
  * sentence, not just a tag — search engines and scanning visitors both read
- * off the same copy, so it has to earn its place either way.
+ * off the same copy, so it has to earn its place either way. `points` /
+ * `idealFor` / `process` back the flip cards on the homepage and the full
+ * writeups on `/services` — one array, two views, so they can never drift
+ * out of sync with each other.
  */
-export const services = [
+export const services: Service[] = [
   {
+    slug: "fractional-cfo",
     name: "Fractional CFO",
     tag: "Advisory · projections · runway",
     description:
       "Board-ready financial leadership without a full-time hire — cash flow forecasting, fundraising support and the budget-vs-actual reporting investors and lenders actually ask for.",
+    points: [
+      "Monthly board packs — cash runway, budget-vs-actual, the numbers investors actually read",
+      "Fundraising support — data room prep, cap table sanity checks, investor Q&A",
+      "Rolling 13-week and 12-month cash flow forecasts",
+      "A direct line to your bank, auditor and lawyers when finance questions come up",
+    ],
+    idealFor:
+      "Founders and operators who need senior financial judgement on tap, not a full-time hire's salary.",
+    process: [
+      {
+        step: "Diagnostic",
+        detail:
+          "A first pass through your books, cap table and reporting — what's solid, what's missing, what's actually urgent.",
+      },
+      {
+        step: "Cadence",
+        detail:
+          "Monthly close, board pack and a standing call — the rhythm investors and lenders expect to see.",
+      },
+      {
+        step: "Scale with you",
+        detail:
+          "More hours when you're raising or closing a round, fewer when things are steady — priced for the shape of your year, not a fixed retainer.",
+      },
+    ],
   },
   {
+    slug: "bookkeeping-audit-support",
     name: "Bookkeeping & Audit Support",
     tag: "Xero · Sage · three countries",
     description:
       "Books kept accurate month to month in Xero or Sage across UK, UAE and Indian entities, with audit-ready files and direct support for your external auditor.",
+    points: [
+      "Monthly bookkeeping in Xero or Sage — UK, UAE and Indian entities, one consistent chart of accounts",
+      "Bank and card reconciliations closed every month, not caught up in a scramble before year-end",
+      "Audit-ready working files, so your external auditor gets what they ask for the first time",
+      "VAT / corporation tax filings scheduled and filed on time, every time",
+    ],
+    idealFor:
+      "Businesses that want their books closed monthly, not reconstructed in a panic at year-end.",
+    process: [
+      {
+        step: "Migrate or clean up",
+        detail: "Bring your existing books in — or start clean if there's nothing worth keeping.",
+      },
+      {
+        step: "Monthly close",
+        detail: "Reconciled accounts, categorised transactions, a P&L you can actually read, every month.",
+      },
+      {
+        step: "Audit season, handled",
+        detail: "Working papers ready before your auditor asks, and I'm on the call when they have questions.",
+      },
+    ],
   },
   {
+    slug: "financial-modelling",
     name: "Financial Modelling",
     tag: "P&L · cash flow · what-if",
     description:
       "Three-statement models, scenario planning and cash-runway forecasts built to hold up under real investor and lender scrutiny — not just look good in a pitch deck.",
+    points: [
+      "Three-statement models — P&L, balance sheet, cash flow — properly linked, not a spreadsheet that breaks on one changed number",
+      "Scenario and what-if planning for pricing, hiring and fundraising decisions",
+      "Cash-runway forecasts that hold up under investor and lender diligence",
+      "A model you can actually update yourself after handover",
+    ],
+    idealFor:
+      "Anyone about to raise, borrow, or make a pricing or hiring call they can't afford to get wrong.",
+    process: [
+      {
+        step: "Structure",
+        detail: "Map the business into the drivers that actually move the numbers — not a generic template.",
+      },
+      {
+        step: "Build",
+        detail: "A linked three-statement model, stress-tested against the scenarios you're actually worried about.",
+      },
+      {
+        step: "Hand-off",
+        detail: "A walkthrough so you can run it yourself, plus updates when the assumptions change.",
+      },
+    ],
   },
   {
+    slug: "automation-ai-agents",
     name: "Automation & AI Agents",
     tag: "The repetitive work, gone",
     description:
       "The reconciliations, data entry and recurring reports that used to eat a week, handled by workflows and AI agents that just run — and tell you when something looks wrong.",
+    points: [
+      "Bank feeds and reconciliations automated end to end",
+      "Recurring reports generated and sent on a schedule — no more manual exports",
+      "AI agents that flag anomalies — a duplicate invoice, an unusual spend — instead of you finding them three months later",
+      "Built on the tools you already use — no rip-and-replace",
+    ],
+    idealFor: "Teams doing the same manual finance task every week that a workflow could just do.",
+    process: [
+      {
+        step: "Find the repeat work",
+        detail: "The reconciliations, exports and copy-paste jobs eating real hours every month.",
+      },
+      {
+        step: "Automate it",
+        detail: "Workflows and AI agents that run on schedule, on top of your existing stack.",
+      },
+      {
+        step: "Watch it run",
+        detail: "Reporting on what the automation caught, so it's trusted — not a black box.",
+      },
+    ],
   },
   {
+    slug: "custom-software-integrations",
     name: "Custom Software & Integrations",
     tag: "SaaS · apps · integrations",
     description:
       "SaaS products, internal tools and system integrations that connect your accounting stack to the rest of the business, so numbers stop getting re-typed by hand.",
+    points: [
+      "Internal tools built for the exact process you have, not the closest off-the-shelf fit",
+      "Integrations between your accounting stack, CRM and everything else that touches a number",
+      "Small SaaS products, when the tool that should exist doesn't yet",
+      "Built and maintained by someone who also understands the accounting behind it",
+    ],
+    idealFor:
+      "Operations that have outgrown spreadsheets but aren't ready for — or don't need — enterprise software.",
+    process: [
+      {
+        step: "Scope",
+        detail: "What's the process today, where does it break, what would \"fixed\" actually look like.",
+      },
+      {
+        step: "Build",
+        detail: "A tool or integration scoped to that process — shipped, not a six-month platform project.",
+      },
+      {
+        step: "Support",
+        detail: "Maintained and extended as the business changes, not handed off and forgotten.",
+      },
+    ],
   },
   {
+    slug: "scaling-operations",
     name: "Scaling Operations",
     tag: "CRM · call-centre · process",
     description:
       "CRM, call-centre setup and process design for teams that have outgrown spreadsheets and tribal knowledge — the operational half of getting bigger without breaking.",
+    points: [
+      "CRM setup and clean-up — pipeline, ownership, reporting that actually reflects the business",
+      "Call-centre and support tooling for teams past the point of ad-hoc",
+      "Process documentation, so growth doesn't depend on one person's memory",
+      "The operational backbone that lets finance, sales and support actually talk to each other",
+    ],
+    idealFor: "Teams that have outgrown spreadsheets and tribal knowledge and need real process underneath them.",
+    process: [
+      {
+        step: "Audit",
+        detail: "Where's the process actually living today — a spreadsheet, someone's head, three disconnected tools.",
+      },
+      {
+        step: "Design",
+        detail: "Process and tooling that fits how the team actually works, not a generic playbook.",
+      },
+      {
+        step: "Embed",
+        detail: "Documented, trained, and checked back on — so it sticks after I'm not in the room.",
+      },
+    ],
   },
-] as const;
+];
 
 /**
  * FAQ — the objections a real prospect has before they email. Shared by the
