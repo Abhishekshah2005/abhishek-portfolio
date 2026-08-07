@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/hooks";
 import { useLineDraw, useLineReveal } from "@/components/ui/motion";
+import { SectionNumeral } from "@/components/ui/SectionNumeral";
 import { faqs, person } from "@/lib/content";
 
 /**
@@ -36,7 +37,11 @@ export function FAQ() {
         duration: 1,
         stagger: 0.06,
         ease: "expo.out",
-        scrollTrigger: { trigger: section, start: "top 78%" },
+        scrollTrigger: {
+          trigger: section,
+          start: "top 78%",
+          toggleActions: "restart none restart reverse",
+        },
       });
     }, section);
 
@@ -47,9 +52,10 @@ export function FAQ() {
     <section
       ref={sectionRef}
       id="faq"
-      className="relative px-5 py-24 md:px-10 md:py-32"
+      className="relative overflow-hidden px-5 py-24 md:px-10 md:py-32"
       aria-label="Frequently asked questions"
     >
+      <SectionNumeral n="03" />
       {/* One shared container for the heading AND the list — they used to
           live in separate boxes (heading full-width, list independently
           centered at max-w-4xl), which on a wide screen put the questions

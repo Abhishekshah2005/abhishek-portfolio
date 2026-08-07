@@ -56,7 +56,7 @@ export function CursorGlow() {
       }`}
       style={{
         background:
-          "radial-gradient(560px circle at var(--gx, 50%) var(--gy, 50%), rgba(217,255,64,0.11), transparent 68%)",
+          "radial-gradient(720px circle at var(--gx, 50%) var(--gy, 50%), rgba(217,255,64,0.22), rgba(217,255,64,0.05) 45%, transparent 70%)",
         mixBlendMode: "screen",
       }}
     />

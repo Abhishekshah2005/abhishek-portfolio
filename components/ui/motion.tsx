@@ -38,7 +38,10 @@ export function useLineReveal<T extends HTMLElement>(start = "top 82%") {
         duration: 1.25,
         stagger: 0.09,
         ease: "expo.out",
-        scrollTrigger: { trigger: el, start },
+        // Replays every time this heading crosses into view, in either
+        // scroll direction — a one-shot reveal is invisible the second
+        // time you pass it, which reads as "nothing happening" on a scan.
+        scrollTrigger: { trigger: el, start, toggleActions: "restart none restart reverse" },
       });
     }, el);
 
@@ -72,7 +75,7 @@ export function useLineDraw<T extends HTMLElement>(start = "top 88%") {
           scaleX: 1,
           duration: 0.8,
           ease: "expo.out",
-          scrollTrigger: { trigger: el, start },
+          scrollTrigger: { trigger: el, start, toggleActions: "restart none restart reverse" },
         },
       );
     });
@@ -212,7 +215,7 @@ export function ScrollProgress() {
     <div
       ref={ref}
       aria-hidden
-      className="fixed inset-x-0 top-0 z-[60] h-[2px] origin-left bg-lime"
+      className="fixed inset-x-0 top-0 z-[60] h-[3px] origin-left bg-lime shadow-[0_0_12px_1px_rgba(217,255,64,0.65)]"
       style={{ transform: "scaleX(0)" }}
     />
   );

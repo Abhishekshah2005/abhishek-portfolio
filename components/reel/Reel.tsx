@@ -144,7 +144,11 @@ export function Reel() {
           autoAlpha: 0,
           duration: 1,
           ease: "expo.out",
-          scrollTrigger: { trigger: panel, start: "top 85%" },
+          scrollTrigger: {
+            trigger: panel,
+            start: "top 85%",
+            toggleActions: "restart none restart reverse",
+          },
         });
       });
     });

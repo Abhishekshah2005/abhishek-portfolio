@@ -32,7 +32,11 @@ export function Contact() {
         duration: 1.05,
         stagger: 0.035,
         ease: "expo.out",
-        scrollTrigger: { trigger: section, start: "top 65%" },
+        scrollTrigger: {
+          trigger: section,
+          start: "top 65%",
+          toggleActions: "restart none restart reverse",
+        },
       });
 
       gsap.from("[data-contact-fade]", {
@@ -40,7 +44,11 @@ export function Contact() {
         y: 22,
         duration: 1,
         stagger: 0.08,
-        scrollTrigger: { trigger: section, start: "top 55%" },
+        scrollTrigger: {
+          trigger: section,
+          start: "top 55%",
+          toggleActions: "restart none restart reverse",
+        },
       });
     }, section);
 

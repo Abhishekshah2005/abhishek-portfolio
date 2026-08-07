@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/hooks";
 import { useLineDraw, useLineReveal } from "@/components/ui/motion";
+import { SectionNumeral } from "@/components/ui/SectionNumeral";
 import { services } from "@/lib/content";
 
 /**
@@ -31,7 +32,11 @@ export function Services() {
         duration: 1,
         stagger: 0.07,
         ease: "expo.out",
-        scrollTrigger: { trigger: list, start: "top 80%" },
+        scrollTrigger: {
+          trigger: list,
+          start: "top 80%",
+          toggleActions: "restart none restart reverse",
+        },
       });
     }, list);
 
@@ -41,9 +46,10 @@ export function Services() {
   return (
     <section
       id="services"
-      className="relative px-5 py-24 md:px-10 md:py-40"
+      className="relative overflow-hidden px-5 py-24 md:px-10 md:py-40"
       aria-label="Services"
     >
+      <SectionNumeral n="05" />
       {/* Same container width as Companies/FAQ — every chapter now shares
           one rhythm instead of each picking its own. */}
       <div className="mx-auto max-w-[1320px]">

@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/hooks";
 import { useLineDraw, useLineReveal } from "@/components/ui/motion";
+import { SectionNumeral } from "@/components/ui/SectionNumeral";
 import { credentials, jurisdictions } from "@/lib/content";
 
 /**
@@ -31,7 +32,11 @@ export function Registrations() {
           duration: 1,
           stagger: 0.06,
           ease: "expo.out",
-          scrollTrigger: { trigger: block, start: "top 78%" },
+          scrollTrigger: {
+            trigger: block,
+            start: "top 78%",
+            toggleActions: "restart none restart reverse",
+          },
         });
       });
 
@@ -40,7 +45,11 @@ export function Registrations() {
         y: 30,
         duration: 1,
         ease: "expo.out",
-        scrollTrigger: { trigger: "[data-honest]", start: "top 85%" },
+        scrollTrigger: {
+          trigger: "[data-honest]",
+          start: "top 85%",
+          toggleActions: "restart none restart reverse",
+        },
       });
     }, section);
 
@@ -51,9 +60,10 @@ export function Registrations() {
     <section
       ref={sectionRef}
       id="registrations"
-      className="relative px-5 py-24 md:px-10 md:py-40"
+      className="relative overflow-hidden px-5 py-24 md:px-10 md:py-40"
       aria-label="Company registration and filings"
     >
+      <SectionNumeral n="02" />
       {/* Every other chapter constrains its content width — this one didn't,
           so on anything wider than ~1600px the fluid label column below
           ballooned into a huge dead gap next to short text. */}
