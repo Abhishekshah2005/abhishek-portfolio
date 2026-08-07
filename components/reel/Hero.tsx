@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { gsap, SplitText } from "@/lib/gsap";
-import { useReducedMotion } from "@/lib/hooks";
+import { useFinePointer, useReducedMotion } from "@/lib/hooks";
 import { useVelocitySkew } from "@/components/ui/motion";
 import { useSmoothScroll } from "@/components/providers/SmoothScroll";
 import { hero, person } from "@/lib/content";
@@ -23,6 +23,7 @@ export function Hero({ started }: { started: boolean }) {
   const sectionRef = useRef<HTMLElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
+  const hookRef = useRef<HTMLDivElement>(null);
   const scrollHintRef = useRef<HTMLDivElement>(null);
   const smearRef = useVelocitySkew<HTMLDivElement>(0.4, 5);
   const { scrollTo } = useSmoothScroll();
@@ -32,6 +33,7 @@ export function Hero({ started }: { started: boolean }) {
   const [near, setNear] = useState(true);
   const [sceneKey, setSceneKey] = useState(0);
   const reduced = useReducedMotion();
+  const fine = useFinePointer();
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -123,7 +125,47 @@ export function Hero({ started }: { started: boolean }) {
     };
   }, [reduced, started]);
 
-  // Exit: the whole frame lifts away as you scroll into the marquee.
+  // The hook panel (giant stat + attribution) tilts toward the cursor in
+  // 3D, the same language as the work reel's cards — one interaction
+  // vocabulary reused instead of a hero-only gimmick.
+  useEffect(() => {
+    const section = sectionRef.current;
+    const hook = hookRef.current;
+    if (!section || !hook || reduced || !fine) return;
+
+    gsap.set(hook, { transformPerspective: 1000 });
+    const rx = gsap.quickTo(hook, "rotationX", {
+      duration: 0.7,
+      ease: "power3.out",
+    });
+    const ry = gsap.quickTo(hook, "rotationY", {
+      duration: 0.7,
+      ease: "power3.out",
+    });
+
+    const onMove = (e: PointerEvent) => {
+      const r = section.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      ry(px * 10);
+      rx(-py * 7);
+    };
+    const onLeave = () => {
+      rx(0);
+      ry(0);
+    };
+
+    section.addEventListener("pointermove", onMove, { passive: true });
+    section.addEventListener("pointerleave", onLeave);
+    return () => {
+      section.removeEventListener("pointermove", onMove);
+      section.removeEventListener("pointerleave", onLeave);
+      gsap.killTweensOf(hook);
+    };
+  }, [reduced, fine]);
+
+  // Exit: the whole frame lifts away and pulls into focus-blur as you
+  // scroll into the marquee — a proper cinematic exit, not just a fade.
   useEffect(() => {
     const section = sectionRef.current;
     if (!section || reduced) return;
@@ -131,7 +173,9 @@ export function Hero({ started }: { started: boolean }) {
     const ctx = gsap.context(() => {
       gsap.to("[data-hero-inner]", {
         autoAlpha: 0,
-        y: -70,
+        y: -90,
+        scale: 0.96,
+        filter: "blur(6px)",
         ease: "none",
         scrollTrigger: {
           trigger: section,
@@ -202,13 +246,24 @@ export function Hero({ started }: { started: boolean }) {
         >
           {/* The offer */}
           <div ref={smearRef} className="will-change-transform">
-            <p
-              data-intro
-              className="invisible mb-6 flex items-center gap-3 font-mono text-[10px] tracking-[0.24em] text-cream-2 uppercase"
-            >
-              <span className="h-2 w-2 shrink-0 rounded-full bg-lime" />
-              {hero.kicker}
-            </p>
+            <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+              <p
+                data-intro
+                className="invisible flex items-center gap-3 font-mono text-[10px] tracking-[0.24em] text-cream-2 uppercase"
+              >
+                <span className="relative flex h-2 w-2 shrink-0">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-lime opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-lime" />
+                </span>
+                {hero.kicker}
+              </p>
+              <p
+                data-intro
+                className="invisible flex items-center gap-2 rounded-full border border-lime/25 bg-lime/5 px-3 py-1.5 font-mono text-[9px] tracking-[0.16em] text-lime uppercase"
+              >
+                {person.available}
+              </p>
+            </div>
 
             <h1
               ref={headlineRef}
@@ -288,7 +343,11 @@ export function Hero({ started }: { started: boolean }) {
           </div>
 
           {/* The hook — one figure at a time, huge and lime. */}
-          <div data-intro className="invisible lg:justify-self-end">
+          <div
+            data-intro
+            ref={hookRef}
+            className="invisible will-change-transform lg:justify-self-end"
+          >
             <div
               ref={statsRef}
               className="relative h-[clamp(150px,24vw,300px)] w-full overflow-hidden lg:w-[36vw]"
