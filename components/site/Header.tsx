@@ -69,7 +69,12 @@ export function Header({ started }: { started: boolean }) {
           aria-label="Back to top"
         >
           <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-lime shadow-[0_0_10px_1px_rgba(217,255,64,0.55)]" />
-          <span className="font-display text-lg font-semibold tracking-tight text-cream md:text-xl">
+          {/* Below `sm`, the dot alone is the mark — four nav items plus
+              the full wordmark don't fit in one row on a phone (the
+              header was designed for three, per the comment above; a
+              fourth pushed it over). The name still exists for a11y via
+              the button/link's own accessible name below. */}
+          <span className="hidden font-display text-lg font-semibold tracking-tight whitespace-nowrap text-cream sm:inline md:text-xl">
             {person.name}
           </span>
         </button>
@@ -82,7 +87,12 @@ export function Header({ started }: { started: boolean }) {
           aria-label="Home"
         >
           <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-lime shadow-[0_0_10px_1px_rgba(217,255,64,0.55)]" />
-          <span className="font-display text-lg font-semibold tracking-tight text-cream md:text-xl">
+          {/* Below `sm`, the dot alone is the mark — four nav items plus
+              the full wordmark don't fit in one row on a phone (the
+              header was designed for three, per the comment above; a
+              fourth pushed it over). The name still exists for a11y via
+              the button/link's own accessible name below. */}
+          <span className="hidden font-display text-lg font-semibold tracking-tight whitespace-nowrap text-cream sm:inline md:text-xl">
             {person.name}
           </span>
         </Link>

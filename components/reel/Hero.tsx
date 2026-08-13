@@ -66,9 +66,17 @@ export function Hero({ started }: { started: boolean }) {
       // Unmasked, same reason as useLineReveal in motion.tsx: "Dubai" and
       // "earn" are AccentShimmer children, and the mask wrapper's box
       // consistently measures a few px narrower than they actually render,
-      // permanently clipping the shimmer's moving edge.
+      // permanently clipping the shimmer's moving edge. `ignore` is the
+      // more critical bit here specifically: word-level splitting, unlike
+      // line-level, reaches *inside* a nested inline-block and wraps its
+      // own text in a fresh div — confirmed live by inspecting the DOM,
+      // where "Dubai" came back with its text moved into a child SplitText
+      // created, orphaning `background-clip: text` on the now-textless
+      // outer span (so it painted as fully invisible, not just unclipped).
+      // `ignore` keeps SplitText out of any AccentShimmer entirely.
       split = new SplitText(headline.querySelectorAll("[data-line]"), {
         type: "words",
+        ignore: "[data-shimmer]",
       });
       gsap.from(split.words, {
         yPercent: 115,

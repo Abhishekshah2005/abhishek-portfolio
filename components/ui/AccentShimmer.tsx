@@ -49,6 +49,7 @@ export function AccentShimmer({
   return (
     <GradientShimmer
       as="span"
+      data-shimmer
       gradient={gradient}
       baseColor={baseColor}
       duration={1.2}

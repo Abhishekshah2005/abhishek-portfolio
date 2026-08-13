@@ -40,6 +40,14 @@ export function useLineReveal<T extends HTMLElement>(start = "top 82%", masked =
 
     let split: SplitText | null = null;
     const ctx = gsap.context(() => {
+      // No `ignore` here, deliberately: unlike word-level splitting (see
+      // Hero.tsx), line-level splitting already preserves a nested
+      // AccentShimmer intact without it — verified live. Adding `ignore`
+      // was tried and made things worse: for line-only splitting it
+      // unwraps the ignored element and merges its text as plain string
+      // content instead of preserving the element, silently discarding the
+      // shimmer entirely (confirmed live: "Companies" rendered as
+      // plain text, its `<span>` gone from the DOM).
       split = new SplitText(el, masked ? { type: "lines", mask: "lines" } : { type: "lines" });
       gsap.from(split.lines, {
         yPercent: 112,
