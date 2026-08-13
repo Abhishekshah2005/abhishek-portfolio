@@ -16,7 +16,7 @@ const FlowField = dynamic(() => import("@/components/three/FlowField"), {
 
 /**
  * The hero is a pitch, not a poster. Left: the offer, the proof chips and
- * two CTAs. Right: the hook — a huge lime figure cycling through the three
+ * two CTAs. Right: the hook — a huge blue figure cycling through the three
  * UAE facts (0% / 9% / 100%). A visitor who never scrolls still leaves
  * knowing exactly what's on offer and how to start.
  */
@@ -353,7 +353,7 @@ export function Hero({ started }: { started: boolean }) {
             </div>
           </div>
 
-          {/* The hook — one figure at a time, huge and lime. */}
+          {/* The hook — one figure at a time, huge and blue. */}
           <div
             data-intro
             ref={hookRef}

@@ -68,7 +68,7 @@ export const hero = {
 
 /**
  * The manifesto — scrubbed word by word while pinned. Words wrapped in
- * *asterisks* light up lime instead of cream.
+ * *asterisks* light up blue instead of cream.
  */
 export const manifesto =
   "Most businesses hire an accountant who can't build, or a developer who can't read a *P&L*. I never chose. Fifteen years of closing books across *three* countries, standing up *CFO* functions — then writing the *software* and *AI* that made half of that work disappear. The numbers and the machines that produce them, designed *together*.";
@@ -93,7 +93,7 @@ export const projects: Project[] = [
     year: "—",
     summary:
       "A multi-entity close that ran on spreadsheets, rebuilt as a scheduled pipeline: bank feeds reconciled, journals posted, variance report written before anyone opened a laptop.",
-    tone: "#d9ff40",
+    tone: "#ff4f8b",
     placeholder: true,
   },
   {

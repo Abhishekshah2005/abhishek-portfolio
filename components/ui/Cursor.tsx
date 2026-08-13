@@ -7,7 +7,7 @@ import { useFinePointer, useReducedMotion } from "@/lib/hooks";
 
 /**
  * The reel cursor: a single dot in difference blend, so it inverts whatever
- * it crosses — cream on the black stage, black over lime. Grows over
+ * it crosses — cream on the black stage, black over blue. Grows over
  * anything interactive (`a`, `button`, or an explicit `data-cursor`).
  *
  * One element, one blend mode, no labels — on a dark site the cursor should

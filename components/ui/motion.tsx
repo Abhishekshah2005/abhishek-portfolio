@@ -212,7 +212,7 @@ export function Marquee({
   );
 }
 
-/** Hairline page-progress bar, lime, pinned to the very top. */
+/** Hairline page-progress bar, blue, pinned to the very top. */
 export function ScrollProgress() {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -234,7 +234,7 @@ export function ScrollProgress() {
     <div
       ref={ref}
       aria-hidden
-      className="fixed inset-x-0 top-0 z-[60] h-[3px] origin-left bg-lime shadow-[0_0_12px_1px_rgba(217,255,64,0.65)]"
+      className="fixed inset-x-0 top-0 z-[60] h-[3px] origin-left bg-lime shadow-[0_0_12px_1px_rgba(63,208,255,0.65)]"
       style={{ transform: "scaleX(0)" }}
     />
   );

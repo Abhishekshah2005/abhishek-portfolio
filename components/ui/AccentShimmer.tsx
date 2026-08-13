@@ -3,20 +3,22 @@
 import { GradientShimmer, type GradientStop } from "@/components/ui/gradient-shimmer";
 import { cn } from "@/lib/utils";
 
-// The resting color stays the site's actual lime/cream — only the sweeping
+// The resting color stays the site's actual blue/cream — only the sweeping
 // band itself dips dark then flashes bright, so at any instant most of the
 // word still reads as plain brand color and the wave passing through it is
 // the obviously-different part. A band that only nudges toward a
 // similarly-bright color (the first version) reads as "static text" at a
 // glance; dipping dark first is what makes the motion register.
+// (Still named LIME_STOPS/tone="lime" below — see globals.css: the token
+// name stayed put when the accent moved from lime to blue.)
 const LIME_STOPS: GradientStop[] = [
-  { color: "#7c8f2e", position: 0 },
-  { color: "#f5ffc2", position: 0.5 },
-  { color: "#7c8f2e", position: 1 },
+  { color: "#1c7599", position: 0 },
+  { color: "#d4f6ff", position: 0.5 },
+  { color: "#1c7599", position: 1 },
 ];
 
 // `--color-cream-3` (this project's own muted-text token) dipping to pure
-// white — the cream equivalent of the lime band above, for the plain
+// white — the cream equivalent of the blue band above, for the plain
 // white/cream lead-in half of each heading.
 const CREAM_STOPS: GradientStop[] = [
   { color: "#8f8e87", position: 0 },
@@ -25,16 +27,17 @@ const CREAM_STOPS: GradientStop[] = [
 ];
 
 const TONES = {
-  lime: { gradient: LIME_STOPS, baseColor: "#d9ff40" },
+  lime: { gradient: LIME_STOPS, baseColor: "#3fd0ff" },
   cream: { gradient: CREAM_STOPS, baseColor: "#f2f1ec" },
 } as const;
 
 /**
  * The recurring heading-shimmer treatment, in the site's two text colors.
  * `tone="lime"` replaces the old static `text-outline-lime` hollow stroke
- * on each heading's emphasized word; `tone="cream"` matches it on the
- * plain white lead-in half of the same heading, so the whole line shimmers
- * rather than just one word in it.
+ * on each heading's emphasized word (both now render the site's blue
+ * accent — see globals.css); `tone="cream"` matches it on the plain white
+ * lead-in half of the same heading, so the whole line shimmers rather than
+ * just one word in it.
  */
 export function AccentShimmer({
   children,

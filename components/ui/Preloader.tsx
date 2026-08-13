@@ -6,7 +6,7 @@ import { useReducedMotion } from "@/lib/hooks";
 import { person } from "@/lib/content";
 
 /**
- * Opening: black frame, a counter, then a lime flash-wipe that hands the
+ * Opening: black frame, a counter, then a blue flash-wipe that hands the
  * screen to the hero. Under two seconds — a title card, not a wait.
  */
 export function Preloader({ onDone }: { onDone: () => void }) {
@@ -60,7 +60,7 @@ export function Preloader({ onDone }: { onDone: () => void }) {
         count.textContent = String(Math.round(progress.value)).padStart(3, "0");
       },
     })
-      // Lime slams up over the black…
+      // Blue slams up over the black…
       .to("[data-pre-flash]", {
         scaleY: 1,
         duration: 0.45,

@@ -6,7 +6,7 @@ import { pointer } from "@/lib/pointer";
 import { useFinePointer } from "@/lib/hooks";
 
 /**
- * A soft lime glow that follows the cursor everywhere on the page, screen-
+ * A soft blue glow that follows the cursor everywhere on the page, screen-
  * blended so it lightens whatever's beneath it rather than sitting on top
  * as a flat shape — on the coal background that reads as ambient light
  * pooling around wherever you're pointing.
@@ -56,7 +56,7 @@ export function CursorGlow() {
       }`}
       style={{
         background:
-          "radial-gradient(720px circle at var(--gx, 50%) var(--gy, 50%), rgba(217,255,64,0.22), rgba(217,255,64,0.05) 45%, transparent 70%)",
+          "radial-gradient(720px circle at var(--gx, 50%) var(--gy, 50%), rgba(63,208,255,0.22), rgba(63,208,255,0.05) 45%, transparent 70%)",
         mixBlendMode: "screen",
       }}
     />

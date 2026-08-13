@@ -68,7 +68,7 @@ export function Header({ started }: { started: boolean }) {
           className="invisible -my-2 flex min-h-11 items-center gap-3 py-2"
           aria-label="Back to top"
         >
-          <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-lime shadow-[0_0_10px_1px_rgba(217,255,64,0.55)]" />
+          <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-lime shadow-[0_0_10px_1px_rgba(63,208,255,0.55)]" />
           {/* Below `sm`, the dot alone is the mark — four nav items plus
               the full wordmark don't fit in one row on a phone (the
               header was designed for three, per the comment above; a
@@ -86,7 +86,7 @@ export function Header({ started }: { started: boolean }) {
           className="invisible -my-2 flex min-h-11 items-center gap-3 py-2 no-underline"
           aria-label="Home"
         >
-          <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-lime shadow-[0_0_10px_1px_rgba(217,255,64,0.55)]" />
+          <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-lime shadow-[0_0_10px_1px_rgba(63,208,255,0.55)]" />
           {/* Below `sm`, the dot alone is the mark — four nav items plus
               the full wordmark don't fit in one row on a phone (the
               header was designed for three, per the comment above; a

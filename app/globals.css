@@ -2,7 +2,7 @@
 
 /* ------------------------------------------------------------------
    THE DARK REEL — design tokens.
-   Near-black stage, warm cream ink, one electric lime accent.
+   Near-black stage, warm cream ink, one electric blue accent.
    Every colour in the app resolves through these.
 ------------------------------------------------------------------ */
 @theme {
@@ -16,9 +16,10 @@
   --color-cream-2: #b9b8b0; /* secondary — 4.5:1+ on base */
   --color-cream-3: #8f8e87; /* meta — for large/mono only */
 
-  /* the accent */
-  --color-lime: #d9ff40;
-  --color-lime-2: #b8e02e;
+  /* the accent — token names kept as "lime" (bg-lime, text-outline-lime,
+     etc. are used ~50 places across the app); only the values changed. */
+  --color-lime: #3fd0ff;
+  --color-lime-2: #1fb8e6;
 
   /* fonts */
   --font-display: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;

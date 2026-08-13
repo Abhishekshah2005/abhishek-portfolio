@@ -8,7 +8,7 @@ export const alt = `${person.name} — UAE, UK & US company registration and fil
 const COAL = "#0a0a0b";
 const CREAM = "#f2f1ec";
 const CREAM_2 = "#b9b8b0";
-const LIME = "#d9ff40";
+const ACCENT = "#3fd0ff";
 
 /**
  * The link-preview card — what a shared search result or message actually
@@ -36,7 +36,7 @@ export default function Image() {
               width: 16,
               height: 16,
               borderRadius: "50%",
-              backgroundColor: LIME,
+              backgroundColor: ACCENT,
             }}
           />
           <span
@@ -65,7 +65,7 @@ export default function Image() {
           </span>
           <span
             style={{
-              color: LIME,
+              color: ACCENT,
               fontSize: 84,
               fontWeight: 700,
               lineHeight: 1.02,

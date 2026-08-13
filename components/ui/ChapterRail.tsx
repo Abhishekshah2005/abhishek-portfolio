@@ -77,7 +77,7 @@ export function ChapterRail() {
               aria-hidden
               className={`block rounded-full transition-all duration-300 ${
                 isActive
-                  ? "h-7 w-[3px] bg-lime shadow-[0_0_8px_0_rgba(217,255,64,0.6)]"
+                  ? "h-7 w-[3px] bg-lime shadow-[0_0_8px_0_rgba(63,208,255,0.6)]"
                   : "h-[3px] w-[3px] bg-cream-3/50 group-hover:bg-cream-2"
               }`}
             />

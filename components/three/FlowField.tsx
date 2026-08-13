@@ -9,7 +9,7 @@ import { bindContextLoss } from "@/lib/webgl";
 
 /**
  * The hero's backdrop: a slow, dark flow field — liquid smoke with faint
- * contour lines, and a lime glint that follows the cursor. Runs on time as
+ * contour lines, and a blue glint that follows the cursor. Runs on time as
  * well as input, so the frame is alive even when nobody's touching it.
  *
  * One fullscreen quad, one fragment shader — the cheapest possible way to
@@ -75,11 +75,11 @@ const fragment = /* glsl */ `
     float bands = abs(fract(n * 7.0) - 0.5);
     col += vec3(0.95, 0.95, 0.93) * smoothstep(0.02, 0.0, bands) * 0.045;
 
-    // The lime glint that lives under the cursor, swelling with speed.
+    // The blue glint that lives under the cursor, swelling with speed.
     vec2 p = vec2(uPointer.x, uPointer.y) * uAspect * 0.5;
     float d = length(uv - p);
     float glow = (1.0 - smoothstep(0.0, 0.55, d)) * (0.10 + uSpeed * 0.010);
-    col += vec3(0.851, 1.0, 0.251) * glow * (0.6 + n);
+    col += vec3(0.247, 0.816, 1.0) * glow * (0.6 + n);
 
     // Vignette holds the frame.
     float vig = smoothstep(1.25, 0.35, length(uv));

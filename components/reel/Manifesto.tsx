@@ -7,7 +7,7 @@ import { manifesto, person } from "@/lib/content";
 
 /**
  * The manifesto: pinned full-screen while the paragraph lights up word by
- * word under your scroll. Words marked *like this* in the copy turn lime.
+ * word under your scroll. Words marked *like this* in the copy turn blue.
  *
  * Reading speed is literally handed to the visitor — the scrub IS the
  * pacing, which is why this pattern beats a fade-in for long-ish copy.
@@ -49,7 +49,7 @@ export function Manifesto() {
           word,
           {
             opacity: 1,
-            color: accents.has(i) ? "#d9ff40" : "#f2f1ec",
+            color: accents.has(i) ? "#3fd0ff" : "#f2f1ec",
             duration: 1,
             ease: "none",
           },
