@@ -59,7 +59,8 @@ export function Services() {
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-6">
           <h2 ref={headingRef} className="text-minor max-w-[14ch] font-semibold">
-            What I take <AccentShimmer>off your desk</AccentShimmer>
+            <AccentShimmer tone="cream">What I take</AccentShimmer>{" "}
+            <AccentShimmer>off your desk</AccentShimmer>
           </h2>
           <p className="hidden items-center gap-2.5 font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase md:flex">
             <span

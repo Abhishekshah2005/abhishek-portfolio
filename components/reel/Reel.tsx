@@ -170,7 +170,8 @@ export function Reel() {
           screen. */}
       <div className="flex items-end justify-between px-5 pt-24 pb-10 md:px-[8vw] md:pt-32">
         <h2 ref={headingRef} className="text-minor font-semibold">
-          Selected <AccentShimmer>work</AccentShimmer>
+          <AccentShimmer tone="cream">Selected</AccentShimmer>{" "}
+          <AccentShimmer>work</AccentShimmer>
         </h2>
         <div className="text-right">
           <p className="flex items-center justify-end gap-2.5 font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase">

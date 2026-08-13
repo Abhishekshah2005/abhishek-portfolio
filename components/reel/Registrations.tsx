@@ -71,7 +71,7 @@ export function Registrations() {
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-6 flex items-end justify-between">
           <h2 ref={headingRef} className="text-minor max-w-[18ch] font-semibold">
-            Companies, registered &amp; kept{" "}
+            <AccentShimmer tone="cream">Companies, registered & kept</AccentShimmer>{" "}
             <AccentShimmer>compliant</AccentShimmer>
           </h2>
           <p className="hidden items-center gap-2.5 font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase md:flex">
