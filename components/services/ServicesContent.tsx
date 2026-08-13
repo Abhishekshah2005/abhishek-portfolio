@@ -16,7 +16,8 @@ import { contact, person, services, type Service } from "@/lib/content";
  * a teaser with nowhere to go.
  */
 export function ServicesContent() {
-  const heroHeadingRef = useLineReveal<HTMLHeadingElement>("top 90%");
+  // Unmasked: this heading has AccentShimmer children (see motion.tsx for why).
+  const heroHeadingRef = useLineReveal<HTMLHeadingElement>("top 90%", false);
   const reduced = useReducedMotion();
 
   return (
@@ -37,8 +38,8 @@ export function ServicesContent() {
             ref={heroHeadingRef}
             className="text-major max-w-[16ch] font-semibold"
           >
-            <AccentShimmer tone="cream">Everything I take</AccentShimmer>{" "}
-            <AccentShimmer>off your desk</AccentShimmer>
+            <AccentShimmer tone="cream">Everything</AccentShimmer> I take{" "}
+            <span className="text-lime">off your desk</span>
           </h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-cream-2 md:text-lg">
             Six ways I plug into a growing business — the finance function,

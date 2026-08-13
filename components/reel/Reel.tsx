@@ -23,7 +23,8 @@ import { projects, type Project } from "@/lib/content";
 export function Reel() {
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const headingRef = useLineReveal<HTMLHeadingElement>();
+  // Unmasked: this heading has AccentShimmer children (see motion.tsx for why).
+  const headingRef = useLineReveal<HTMLHeadingElement>("top 82%", false);
   const drawRef = useLineDraw<HTMLSpanElement>();
   const progressRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();

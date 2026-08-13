@@ -22,7 +22,8 @@ import { faqs, person } from "@/lib/content";
  */
 export function FAQ() {
   const sectionRef = useRef<HTMLElement>(null);
-  const headingRef = useLineReveal<HTMLHeadingElement>();
+  // Unmasked: this heading has AccentShimmer children (see motion.tsx for why).
+  const headingRef = useLineReveal<HTMLHeadingElement>("top 82%", false);
   const drawRef = useLineDraw<HTMLSpanElement>();
   const [open, setOpen] = useState<number | null>(0);
   const reduced = useReducedMotion();
@@ -64,7 +65,7 @@ export function FAQ() {
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-12 flex items-end justify-between">
           <h2 ref={headingRef} className="text-minor max-w-[16ch] font-semibold">
-            <AccentShimmer tone="cream">Before you</AccentShimmer>{" "}
+            <AccentShimmer tone="cream">Before</AccentShimmer> you{" "}
             <AccentShimmer>email</AccentShimmer>
           </h2>
           <p className="hidden items-center gap-2.5 font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase md:flex">

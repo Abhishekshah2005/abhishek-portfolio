@@ -46,10 +46,8 @@ export const chapters = [
  */
 export const hero = {
   kicker: "Company registration & filings — UAE · UK · US",
-  lines: [
-    { text: "Register in Dubai.", outline: false },
-    { text: "Keep what you earn.", outline: true },
-  ],
+  // The headline itself is hardcoded in Hero.tsx (it needs a specific word
+  // picked out per line for the shimmer, which this shape can't express).
   sub: "Mainland or free-zone company, residency visa, bank account and every filing after — plus UK and US formation, tax and payroll. One desk, end to end.",
   /** The cycling hook — the number IS the headline. */
   stats: [

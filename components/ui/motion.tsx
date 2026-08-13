@@ -18,8 +18,19 @@ import { useSmoothScroll } from "@/components/providers/SmoothScroll";
  * Manifesto fix in git history for why a GSAP colour tween reading an
  * oklab() value (which is what Tailwind's arbitrary-opacity utilities
  * compile to in v4) silently does nothing.
+ *
+ * `masked = false` skips SplitText's overflow-hidden wrapper around each
+ * line. Needed for any heading containing an AccentShimmer child: that
+ * component's `display: inline-block` makes SplitText's line-box
+ * measurement land a few px narrower than the text actually renders — fine
+ * normally, but AccentShimmer's own moving background then gets clipped at
+ * that edge permanently (confirmed live: an isolated single word like
+ * "email" was still ~8px clipped). The reveal itself doesn't depend on the
+ * mask — it's a transform+blur tween, not a wipe — so dropping it trades a
+ * very slightly less clean ~1s intro for correct shimmer rendering for the
+ * rest of the page's life.
  */
-export function useLineReveal<T extends HTMLElement>(start = "top 82%") {
+export function useLineReveal<T extends HTMLElement>(start = "top 82%", masked = true) {
   const ref = useRef<T>(null);
   const reduced = useReducedMotion();
 
@@ -29,7 +40,7 @@ export function useLineReveal<T extends HTMLElement>(start = "top 82%") {
 
     let split: SplitText | null = null;
     const ctx = gsap.context(() => {
-      split = new SplitText(el, { type: "lines", mask: "lines" });
+      split = new SplitText(el, masked ? { type: "lines", mask: "lines" } : { type: "lines" });
       gsap.from(split.lines, {
         yPercent: 112,
         scale: 1.045,
@@ -49,7 +60,7 @@ export function useLineReveal<T extends HTMLElement>(start = "top 82%") {
       split?.revert();
       ctx.revert();
     };
-  }, [reduced, start]);
+  }, [reduced, start, masked]);
 
   return ref;
 }

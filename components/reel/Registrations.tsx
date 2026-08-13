@@ -17,7 +17,8 @@ import { credentials, jurisdictions } from "@/lib/content";
  */
 export function Registrations() {
   const sectionRef = useRef<HTMLElement>(null);
-  const headingRef = useLineReveal<HTMLHeadingElement>();
+  // Unmasked: this heading has AccentShimmer children (see motion.tsx for why).
+  const headingRef = useLineReveal<HTMLHeadingElement>("top 82%", false);
   const drawRef = useLineDraw<HTMLSpanElement>();
   const reduced = useReducedMotion();
 
@@ -71,7 +72,7 @@ export function Registrations() {
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-6 flex items-end justify-between">
           <h2 ref={headingRef} className="text-minor max-w-[18ch] font-semibold">
-            <AccentShimmer tone="cream">Companies, registered & kept</AccentShimmer>{" "}
+            <AccentShimmer tone="cream">Companies</AccentShimmer>, registered &amp; kept{" "}
             <AccentShimmer>compliant</AccentShimmer>
           </h2>
           <p className="hidden items-center gap-2.5 font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase md:flex">

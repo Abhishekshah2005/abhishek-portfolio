@@ -21,7 +21,8 @@ import { services } from "@/lib/content";
  */
 export function Services() {
   const listRef = useRef<HTMLUListElement>(null);
-  const headingRef = useLineReveal<HTMLHeadingElement>();
+  // Unmasked: this heading has AccentShimmer children (see motion.tsx for why).
+  const headingRef = useLineReveal<HTMLHeadingElement>("top 82%", false);
   const drawRef = useLineDraw<HTMLSpanElement>();
   const reduced = useReducedMotion();
 
@@ -59,8 +60,8 @@ export function Services() {
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-6">
           <h2 ref={headingRef} className="text-minor max-w-[14ch] font-semibold">
-            <AccentShimmer tone="cream">What I take</AccentShimmer>{" "}
-            <AccentShimmer>off your desk</AccentShimmer>
+            <AccentShimmer tone="cream">What</AccentShimmer> I take{" "}
+            <span className="text-lime">off your desk</span>
           </h2>
           <p className="hidden items-center gap-2.5 font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase md:flex">
             <span

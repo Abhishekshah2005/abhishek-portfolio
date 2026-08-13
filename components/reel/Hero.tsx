@@ -8,6 +8,7 @@ import { useVelocitySkew } from "@/components/ui/motion";
 import { useSmoothScroll } from "@/components/providers/SmoothScroll";
 import { hero, person } from "@/lib/content";
 import { Magnetic } from "@/components/ui/Magnetic";
+import { AccentShimmer } from "@/components/ui/AccentShimmer";
 
 const FlowField = dynamic(() => import("@/components/three/FlowField"), {
   ssr: false,
@@ -62,9 +63,12 @@ export function Hero({ started }: { started: boolean }) {
 
     let split: SplitText | null = null;
     const ctx = gsap.context(() => {
+      // Unmasked, same reason as useLineReveal in motion.tsx: "Dubai" and
+      // "earn" are AccentShimmer children, and the mask wrapper's box
+      // consistently measures a few px narrower than they actually render,
+      // permanently clipping the shimmer's moving edge.
       split = new SplitText(headline.querySelectorAll("[data-line]"), {
         type: "words",
-        mask: "words",
       });
       gsap.from(split.words, {
         yPercent: 115,
@@ -272,17 +276,16 @@ export function Hero({ started }: { started: boolean }) {
               <span className="sr-only">
                 {person.name} — {person.role}.{" "}
               </span>
-              {hero.lines.map((line) => (
-                <span
-                  key={line.text}
-                  data-line
-                  className={`line-mask ${
-                    line.outline ? "text-outline-lime" : "text-cream"
-                  }`}
-                >
-                  {line.text}
-                </span>
-              ))}
+              {/* Hardcoded rather than mapped over hero.lines: each line now
+                  needs a specific word picked out for the shimmer, which a
+                  flat data-driven string can't express. SplitText still
+                  targets every [data-line] the same way regardless. */}
+              <span data-line className="line-mask text-cream">
+                Register in <AccentShimmer tone="cream">Dubai</AccentShimmer>.
+              </span>
+              <span data-line className="line-mask text-lime">
+                Keep what you <AccentShimmer>earn</AccentShimmer>.
+              </span>
             </h1>
 
             <p
