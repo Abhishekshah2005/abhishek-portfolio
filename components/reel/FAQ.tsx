@@ -5,6 +5,7 @@ import { gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/hooks";
 import { useLineDraw, useLineReveal } from "@/components/ui/motion";
 import { SectionNumeral } from "@/components/ui/SectionNumeral";
+import { AccentShimmer } from "@/components/ui/AccentShimmer";
 import { faqs, person } from "@/lib/content";
 
 /**
@@ -63,7 +64,7 @@ export function FAQ() {
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-12 flex items-end justify-between">
           <h2 ref={headingRef} className="text-minor max-w-[16ch] font-semibold">
-            Before you <span className="text-outline-lime">email</span>
+            Before you <AccentShimmer>email</AccentShimmer>
           </h2>
           <p className="hidden items-center gap-2.5 font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase md:flex">
             <span

@@ -5,6 +5,7 @@ import { gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/hooks";
 import { useLineDraw, useLineReveal } from "@/components/ui/motion";
 import { SectionNumeral } from "@/components/ui/SectionNumeral";
+import { AccentShimmer } from "@/components/ui/AccentShimmer";
 import { credentials, jurisdictions } from "@/lib/content";
 
 /**
@@ -71,7 +72,7 @@ export function Registrations() {
         <div className="mb-6 flex items-end justify-between">
           <h2 ref={headingRef} className="text-minor max-w-[18ch] font-semibold">
             Companies, registered &amp; kept{" "}
-            <span className="text-outline-lime">compliant</span>
+            <AccentShimmer>compliant</AccentShimmer>
           </h2>
           <p className="hidden items-center gap-2.5 font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase md:flex">
             <span

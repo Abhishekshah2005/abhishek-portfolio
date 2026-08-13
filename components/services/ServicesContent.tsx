@@ -6,6 +6,7 @@ import { gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/hooks";
 import { useLineReveal } from "@/components/ui/motion";
 import { Magnetic } from "@/components/ui/Magnetic";
+import { AccentShimmer } from "@/components/ui/AccentShimmer";
 import { contact, person, services, type Service } from "@/lib/content";
 
 /**
@@ -36,7 +37,7 @@ export function ServicesContent() {
             ref={heroHeadingRef}
             className="text-major max-w-[16ch] font-semibold"
           >
-            Everything I take <span className="text-outline-lime">off your desk</span>
+            Everything I take <AccentShimmer>off your desk</AccentShimmer>
           </h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-cream-2 md:text-lg">
             Six ways I plug into a growing business — the finance function,
@@ -62,7 +63,7 @@ export function ServicesContent() {
         <div className="mx-auto flex max-w-[1320px] flex-col items-start gap-8 md:flex-row md:items-end md:justify-between">
           <div>
             <h2 className="text-minor max-w-[16ch] font-semibold">
-              Not sure which one <span className="text-outline-lime">you need?</span>
+              Not sure which one <AccentShimmer>you need?</AccentShimmer>
             </h2>
             <p className="mt-4 max-w-md text-base leading-relaxed text-cream-2">
               {contact.body}

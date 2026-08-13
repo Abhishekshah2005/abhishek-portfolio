@@ -6,6 +6,7 @@ import { gsap } from "@/lib/gsap";
 import { useReducedMotion } from "@/lib/hooks";
 import { useLineDraw, useLineReveal } from "@/components/ui/motion";
 import { SectionNumeral } from "@/components/ui/SectionNumeral";
+import { AccentShimmer } from "@/components/ui/AccentShimmer";
 import { services } from "@/lib/content";
 
 /**
@@ -58,7 +59,7 @@ export function Services() {
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-6">
           <h2 ref={headingRef} className="text-minor max-w-[14ch] font-semibold">
-            What I take <span className="text-outline-lime">off your desk</span>
+            What I take <AccentShimmer>off your desk</AccentShimmer>
           </h2>
           <p className="hidden items-center gap-2.5 font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase md:flex">
             <span

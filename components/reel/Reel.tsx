@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { useFinePointer, useReducedMotion } from "@/lib/hooks";
 import { useLineDraw, useLineReveal } from "@/components/ui/motion";
+import { AccentShimmer } from "@/components/ui/AccentShimmer";
 import { projects, type Project } from "@/lib/content";
 
 /**
@@ -169,7 +170,7 @@ export function Reel() {
           screen. */}
       <div className="flex items-end justify-between px-5 pt-24 pb-10 md:px-[8vw] md:pt-32">
         <h2 ref={headingRef} className="text-minor font-semibold">
-          Selected <span className="text-outline-lime">work</span>
+          Selected <AccentShimmer>work</AccentShimmer>
         </h2>
         <div className="text-right">
           <p className="flex items-center justify-end gap-2.5 font-mono text-[10px] tracking-[0.24em] text-cream-3 uppercase">
