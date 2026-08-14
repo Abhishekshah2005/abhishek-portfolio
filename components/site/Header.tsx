@@ -118,7 +118,16 @@ export function Header({ started }: { started: boolean }) {
           const isActive =
             "href" in item ? pathname === item.href : isHome && activeSection === item.id;
 
-          const linkClass = `group relative min-h-11 px-2.5 py-2 text-[12px] tracking-wide uppercase transition-colors duration-300 md:px-3 md:text-[13px] ${
+          // `inline-flex items-center` on both the <button> and <a> variants
+          // deliberately, not left to each tag's own default: Chromium
+          // vertically centres a <button>'s text using its own internal
+          // layout rather than normal line-height flow, so an <a> with
+          // pixel-identical box/padding/line-height still rendered its text
+          // ~4px higher (confirmed via Range.getBoundingClientRect() on the
+          // text node, not just the container). Forcing the same explicit
+          // flex-centering on every variant is what actually guarantees a
+          // shared baseline.
+          const linkClass = `group relative inline-flex min-h-11 items-center px-2.5 py-2 text-[12px] tracking-wide uppercase transition-colors duration-300 md:px-3 md:text-[13px] ${
             isActive ? "text-lime" : "text-cream-2 hover:text-cream"
           }`;
           const underline = (
@@ -139,7 +148,7 @@ export function Header({ started }: { started: boolean }) {
                 href={item.href}
                 data-cursor
                 aria-current={isActive ? "page" : undefined}
-                className={`${linkClass} inline-block no-underline`}
+                className={`${linkClass} no-underline`}
               >
                 {item.label}
                 {underline}
@@ -166,7 +175,7 @@ export function Header({ started }: { started: boolean }) {
               key={item.id}
               href={`/#${item.id}`}
               data-cursor
-              className={`${linkClass} inline-block no-underline`}
+              className={`${linkClass} no-underline`}
             >
               {item.label}
               {underline}
