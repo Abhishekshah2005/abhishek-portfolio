@@ -458,8 +458,7 @@ export const contact = {
   socials: [
     { label: "Email", href: `mailto:${person.email}`, placeholder: false },
     { label: "Call", href: `tel:${person.phone.replace(/\s+/g, "")}`, placeholder: false },
-    { label: "LinkedIn", href: "#", placeholder: true },
-    { label: "GitHub", href: "#", placeholder: true },
-    { label: "X", href: "#", placeholder: true },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/abhishek-rathod-55514521a/", placeholder: false },
+    { label: "GitHub", href: "https://github.com/Abhishekshah2005", placeholder: false },
   ],
 };

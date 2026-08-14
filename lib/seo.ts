@@ -5,7 +5,7 @@
  * sitemap.ts, robots.ts and opengraph-image.tsx can never drift out of
  * sync with each other or with the visible page copy.
  */
-import { faqs, jurisdictions, person, services } from "@/lib/content";
+import { contact, faqs, jurisdictions, person, services } from "@/lib/content";
 
 export const SITE_URL = "https://abhishekshah.com";
 
@@ -57,6 +57,11 @@ export function buildServiceGraph() {
     url: SITE_URL,
     email: person.email,
     telephone: person.phone,
+    // Real profile links only — placeholders and mailto:/tel: entries
+    // don't belong in sameAs.
+    sameAs: contact.socials
+      .filter((s) => !s.placeholder && s.href.startsWith("http"))
+      .map((s) => s.href),
     areaServed: AREA_SERVED,
     knowsAbout: [
       "Company formation",
