@@ -5,8 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { useSmoothScroll } from "@/components/providers/SmoothScroll";
-import { useReducedMotion } from "@/lib/hooks";
+import { useActiveSection, useReducedMotion } from "@/lib/hooks";
 import { nav, person } from "@/lib/content";
+
+const NAV_SECTION_IDS = nav.flatMap((item) => ("id" in item ? [item.id] : []));
 
 /**
  * One bar, no sheet, no hamburger — three anchors fit on a phone. Fewer
@@ -19,6 +21,10 @@ export function Header({ started }: { started: boolean }) {
   const pathname = usePathname();
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
+  // Same scrollspy the chapter rail uses — only meaningful on the homepage
+  // (the section ids don't exist elsewhere), but the hook is unconditional
+  // either way since it's a no-op when it finds nothing to observe.
+  const activeSection = useActiveSection(NAV_SECTION_IDS);
 
   useEffect(() => {
     if (!started || !ref.current) return;
@@ -104,10 +110,24 @@ export function Header({ started }: { started: boolean }) {
         aria-label="Sections"
       >
         {nav.map((item) => {
-          const linkClass =
-            "group relative min-h-11 px-2.5 py-2 text-[12px] tracking-wide text-cream-2 uppercase transition-colors duration-300 hover:text-cream md:px-3 md:text-[13px]";
+          // "Where you are": Services lights up on /services itself; a
+          // chapter anchor lights up once its section owns the centre of
+          // the viewport, homepage only — the same signal the chapter rail
+          // gives on the right edge, now echoed in the nav itself instead
+          // of every item reading identically regardless of context.
+          const isActive =
+            "href" in item ? pathname === item.href : isHome && activeSection === item.id;
+
+          const linkClass = `group relative min-h-11 px-2.5 py-2 text-[12px] tracking-wide uppercase transition-colors duration-300 md:px-3 md:text-[13px] ${
+            isActive ? "text-lime" : "text-cream-2 hover:text-cream"
+          }`;
           const underline = (
-            <span className="absolute inset-x-2.5 bottom-2 h-px origin-right scale-x-0 bg-lime transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:origin-left group-hover:scale-x-100 md:inset-x-3" />
+            <span
+              aria-hidden
+              className={`absolute inset-x-2.5 bottom-2 h-px origin-right bg-lime transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:origin-left group-hover:scale-x-100 md:inset-x-3 ${
+                isActive ? "scale-x-100" : "scale-x-0"
+              }`}
+            />
           );
 
           // A real route (currently just /services) always navigates there,
@@ -118,6 +138,7 @@ export function Header({ started }: { started: boolean }) {
                 key={item.href}
                 href={item.href}
                 data-cursor
+                aria-current={isActive ? "page" : undefined}
                 className={`${linkClass} inline-block no-underline`}
               >
                 {item.label}
@@ -130,7 +151,13 @@ export function Header({ started }: { started: boolean }) {
           // otherwise a real navigation to `/#id` — the SmoothScroll
           // provider picks up the hash once the homepage has mounted.
           return isHome ? (
-            <button key={item.id} onClick={() => scrollTo(`#${item.id}`)} data-cursor className={linkClass}>
+            <button
+              key={item.id}
+              onClick={() => scrollTo(`#${item.id}`)}
+              data-cursor
+              aria-current={isActive ? "true" : undefined}
+              className={linkClass}
+            >
               {item.label}
               {underline}
             </button>

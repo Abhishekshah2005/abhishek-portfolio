@@ -57,6 +57,47 @@ export function useInView<T extends HTMLElement>(rootMargin = "200px") {
 }
 
 /**
+ * Which of the given section ids currently owns the vertical centre of the
+ * viewport — the scrollspy primitive behind both the chapter rail and the
+ * header's nav highlighting, so the two can never disagree with each other.
+ */
+export function useActiveSection(ids: string[]): string | null {
+  const [active, setActive] = useState<string | null>(null);
+  const key = ids.join("|");
+
+  useEffect(() => {
+    const sections = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+    if (sections.length === 0) return;
+
+    // A thin band through the vertical centre of the viewport — a section
+    // is "active" once it crosses that band, not merely once any pixel of
+    // it is on screen.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        let best: { id: string; ratio: number } | null = null;
+        for (const entry of entries) {
+          if (entry.isIntersecting && (!best || entry.intersectionRatio > best.ratio)) {
+            best = { id: entry.target.id, ratio: entry.intersectionRatio };
+          }
+        }
+        if (best) setActive(best.id);
+      },
+      { rootMargin: "-45% 0px -45% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] },
+    );
+
+    sections.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+    // `key` is `ids` flattened to a stable string — `ids` itself is a fresh
+    // array reference on every render for a callsite like chapters.map(...).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+
+  return active;
+}
+
+/**
  * Coarse device tier so heavy scenes can scale themselves down.
  *
  * Computed once and cached: the answer can't change during a session, and a

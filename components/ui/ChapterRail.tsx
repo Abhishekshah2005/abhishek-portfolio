@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useSmoothScroll } from "@/components/providers/SmoothScroll";
+import { useActiveSection } from "@/lib/hooks";
 import { chapters } from "@/lib/content";
+
+const CHAPTER_IDS = chapters.map((c) => c.id);
 
 /**
  * A fixed dot-rail on the right edge tracking which chapter you're in —
@@ -10,50 +12,21 @@ import { chapters } from "@/lib/content";
  * on a narrow screen it would just be clutter competing with real content
  * for the same 20px of edge space.
  *
- * Driven by IntersectionObserver rather than ScrollTrigger — this only
- * needs to know "which section is currently centred," a classic scrollspy
- * problem an observer solves without pulling scroll math into it.
+ * `useActiveSection` is the same scrollspy the header's nav uses to
+ * highlight the current chapter, so the two can never disagree about where
+ * you are on the page.
  */
 export function ChapterRail() {
   const { scrollTo } = useSmoothScroll();
-  const [active, setActive] = useState(0);
-
-  useEffect(() => {
-    const sections = chapters
-      .map((c) => document.getElementById(c.id))
-      .filter((el): el is HTMLElement => el !== null);
-    if (sections.length === 0) return;
-
-    // A thin band through the vertical centre of the viewport — a section
-    // is "active" once it crosses that band, not merely once any pixel of
-    // it is on screen.
-    const observer = new IntersectionObserver(
-      (entries) => {
-        let best: { id: string; ratio: number } | null = null;
-        for (const entry of entries) {
-          if (entry.isIntersecting && (!best || entry.intersectionRatio > best.ratio)) {
-            best = { id: entry.target.id, ratio: entry.intersectionRatio };
-          }
-        }
-        if (best) {
-          const idx = chapters.findIndex((c) => c.id === best?.id);
-          if (idx !== -1) setActive(idx);
-        }
-      },
-      { rootMargin: "-45% 0px -45% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] },
-    );
-
-    sections.forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+  const active = useActiveSection(CHAPTER_IDS);
 
   return (
     <nav
       aria-label="Chapters"
       className="fixed top-1/2 right-5 z-40 hidden -translate-y-1/2 flex-col items-end gap-4 md:flex"
     >
-      {chapters.map((chapter, i) => {
-        const isActive = i === active;
+      {chapters.map((chapter) => {
+        const isActive = chapter.id === active;
         return (
           <button
             key={chapter.id}
