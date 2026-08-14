@@ -1,18 +1,20 @@
 /**
  * Every word the site renders lives here.
  *
- * Anything marked `placeholder: true` is scaffolding so the layout can be
- * judged — replace before launch (see CONTENT.md). Nothing here claims a
- * named client or a verified metric.
+ * `projects[]` is real, sourced from Abhishek's actual CV — named products
+ * (OpsRail, Black Tiger) and named client sites, each with a live URL.
+ * Anything still marked `placeholder: true` elsewhere is scaffolding so the
+ * layout can be judged — replace before launch (see CONTENT.md).
  */
 
 export const person = {
   name: "Abhishek Shah",
   short: "Abhishek",
   role: "Finance · Technology · A.I.",
-  location: "London · Dubai · Ahmedabad",
+  location: "Mumbai, India",
   email: "abhishekrathod630@gmail.com",
-  available: "Available for select projects",
+  phone: "+91 90043 30770",
+  available: "Open to UK, UAE & Australia engagements",
 };
 
 export const nav = [
@@ -71,7 +73,7 @@ export const hero = {
  * *asterisks* light up blue instead of cream.
  */
 export const manifesto =
-  "Most businesses hire an accountant who can't build, or a developer who can't read a *P&L*. I never chose. Fifteen years of closing books across *three* countries, standing up *CFO* functions — then writing the *software* and *AI* that made half of that work disappear. The numbers and the machines that produce them, designed *together*.";
+  "Most businesses hire an accountant who can't build, or a developer who can't read a *P&L*. I never chose. Thirteen years of statutory audit and UK accounting, eight of them also *founding* and scaling a BPO — then writing the *software* and *AI* that made half of that work disappear: two live *SaaS* products, shipped myself. The numbers and the machines that produce them, designed *together*.";
 
 export type Project = {
   slug: string;
@@ -79,52 +81,61 @@ export type Project = {
   discipline: string;
   year: string;
   summary: string;
-  /** Poster tint until real imagery exists. */
+  /** Poster tint. */
   tone: string;
   placeholder: boolean;
+  /** Live URL — real projects only; the card links out when this is set. */
+  url?: string;
 };
 
-/** PLACEHOLDER projects — categories of work, not named clients. */
+/**
+ * Real work — two live SaaS products founded and built solo, plus named
+ * client sites, all sourced from Abhishek's CV. Every entry here has a
+ * working URL.
+ */
 export const projects: Project[] = [
   {
-    slug: "close-automation",
-    title: "Month-End, Automated",
-    discipline: "Finance × Automation",
-    year: "—",
+    slug: "opsrail",
+    title: "Order-To-Cash, Built From Scratch",
+    discipline: "Product × SaaS",
+    year: "2025",
     summary:
-      "A multi-entity close that ran on spreadsheets, rebuilt as a scheduled pipeline: bank feeds reconciled, journals posted, variance report written before anyone opened a laptop.",
-    tone: "#ff4f8b",
-    placeholder: true,
-  },
-  {
-    slug: "cfo-dashboard",
-    title: "The Operator's Dashboard",
-    discipline: "Finance × Product",
-    year: "—",
-    summary:
-      "One screen a founder actually checks: cash runway, committed spend, collections risk and the three numbers that move them — pulled live from the ledger.",
-    tone: "#ff5a2b",
-    placeholder: true,
-  },
-  {
-    slug: "ai-back-office",
-    title: "An Agent For The Back Office",
-    discipline: "AI × Operations",
-    year: "—",
-    summary:
-      "Document-in, decision-out. Invoices, receipts and contracts read by an agent, coded correctly, escalated to a human only when confidence drops.",
-    tone: "#7b5cff",
-    placeholder: true,
-  },
-  {
-    slug: "scale-systems",
-    title: "Built To Take The Weight",
-    discipline: "Software × Scaling",
-    year: "—",
-    summary:
-      "CRM, call-centre workflow and reporting stitched into one source of truth so a growing team stopped re-typing the same customer into four tools.",
+      "A vertical operations platform for building-material, steel, electrical and FMCG distributors — quotation automation, credit control with order holds, multi-warehouse inventory, dispatch planning and GST invoicing synced to Tally. The full enquiry-to-payment cycle, not the generic CRM these businesses were forced to bend to fit.",
     tone: "#3fd0ff",
-    placeholder: true,
+    placeholder: false,
+    url: "https://getopsrail.com",
+  },
+  {
+    slug: "black-tiger",
+    title: "A CRM With Boots On The Ground",
+    discipline: "Product × CRM",
+    year: "2025",
+    summary:
+      "A security-workforce CRM covering the operation end to end — guard master, rosters, attendance, incidents and billing inputs — paired with a GPS-verified guard mobile app for check-in/out, patrol tracking and photo incident reports, so the field and the control room work off one live record.",
+    tone: "#7b5cff",
+    placeholder: false,
+    url: "https://black-tiger-gtg2.onrender.com",
+  },
+  {
+    slug: "invicta",
+    title: "Not A BPO, On Purpose",
+    discipline: "Brand × Web",
+    year: "2024",
+    summary:
+      "Brand narrative, service architecture, copy direction and full responsive build for a customer-experience firm positioned deliberately against the BPO category it competes in — plus the market positioning and messaging behind it.",
+    tone: "#ff5a2b",
+    placeholder: false,
+    url: "https://invictaindia.in",
+  },
+  {
+    slug: "brand-sites",
+    title: "Four More Brands, Shipped",
+    discipline: "Web × Brand",
+    year: "2024–25",
+    summary:
+      "Ceramic Cartel (Melbourne premium auto-detailing), BlueChip Circle (institutional finance), Events Addict (luxury Indian weddings) and Voyage Memorable (Dubai destination management) — each with its own information architecture, copy direction, responsive build and SEO metadata, deployed end to end.",
+    tone: "#ff4f8b",
+    placeholder: false,
   },
 ];
 
@@ -204,7 +215,7 @@ export const jurisdictions: Jurisdiction[] = [
 /** The straight-talk block — his words, kept honest. */
 export const credentials = {
   kicker: "The honest bit",
-  body: "I'm not a CA, not ACCA and not FCA — and I say that upfront. I'm an accountant: strong accounting fundamentals and solid audit knowledge, built over years of working alongside chartered accountants. You get the work done properly — and if a job ever needs a chartered signature, I'll be the first to tell you.",
+  body: "I'm not a CA, not ACCA and not FCA — and I say that upfront. What I have is thirteen years in the room: statutory, internal, tax and VAT audits on clients including Tata Motors Finance, LIC of India and Kellogg's India, then eight years running full UK accounting in Xero for my own BPO — bank reconciliation, VAT returns and a 15-day audited P&L cycle, real numbers on a real deadline. You get the work done properly — and if a job ever needs a chartered signature, I'll be the first to tell you.",
 };
 
 export type Service = {
@@ -230,14 +241,14 @@ export const services: Service[] = [
   {
     slug: "fractional-cfo",
     name: "Fractional CFO",
-    tag: "Advisory · projections · runway",
+    tag: "15-day audited P&L cycle",
     description:
-      "Board-ready financial leadership without a full-time hire — cash flow forecasting, fundraising support and the budget-vs-actual reporting investors and lenders actually ask for.",
+      "Full P&L accountability and a 15-day audited management reporting cycle — built running my own multi-entity business for eight years, not learned from a textbook. Board-ready numbers, on a rhythm leadership can actually plan around.",
     points: [
-      "Monthly board packs — cash runway, budget-vs-actual, the numbers investors actually read",
-      "Fundraising support — data room prep, cap table sanity checks, investor Q&A",
-      "Rolling 13-week and 12-month cash flow forecasts",
-      "A direct line to your bank, auditor and lawyers when finance questions come up",
+      "A 15-day audited P&L cycle — twice-monthly management profit and loss, reviewed and signed off, not a quarterly surprise",
+      "Full P&L accountability across multiple entities, built managing my own books for eight years",
+      "Direct oversight of an in-house finance team — process, controls and review standards set and enforced",
+      "Cash, margin and cost-movement visibility leadership can actually act on",
     ],
     idealFor:
       "Founders and operators who need senior financial judgement on tap, not a full-time hire's salary.",
@@ -245,12 +256,12 @@ export const services: Service[] = [
       {
         step: "Diagnostic",
         detail:
-          "A first pass through your books, cap table and reporting — what's solid, what's missing, what's actually urgent.",
+          "A first pass through your books and reporting — what's solid, what's missing, what's actually urgent.",
       },
       {
         step: "Cadence",
         detail:
-          "Monthly close, board pack and a standing call — the rhythm investors and lenders expect to see.",
+          "A 15-day audited P&L cycle — the same rhythm I ran for my own business, twice a month, for eight years.",
       },
       {
         step: "Scale with you",
@@ -262,14 +273,14 @@ export const services: Service[] = [
   {
     slug: "bookkeeping-audit-support",
     name: "Bookkeeping & Audit Support",
-    tag: "Xero · Sage · three countries",
+    tag: "Xero · 13+ years audit",
     description:
-      "Books kept accurate month to month in Xero or Sage across UK, UAE and Indian entities, with audit-ready files and direct support for your external auditor.",
+      "End-to-end UK accounting in Xero, run for real across multiple entities for eight years — plus thirteen years of statutory, internal, tax and VAT audit on clients including Tata Motors Finance and LIC of India.",
     points: [
-      "Monthly bookkeeping in Xero or Sage — UK, UAE and Indian entities, one consistent chart of accounts",
-      "Bank and card reconciliations closed every month, not caught up in a scramble before year-end",
-      "Audit-ready working files, so your external auditor gets what they ask for the first time",
-      "VAT / corporation tax filings scheduled and filed on time, every time",
+      "Day-to-day UK accounting in Xero — sales, purchases, payroll postings and journals, kept continuously audit-ready",
+      "Bank reconciliations across multiple accounts, closed to zero unmatched items every cycle",
+      "VAT returns prepared, reconciled and filed — control accounts checked before every submission",
+      "Statutory, internal, tax, stock and VAT audit experience across corporate and non-corporate clients",
     ],
     idealFor:
       "Businesses that want their books closed monthly, not reconstructed in a panic at year-end.",
@@ -290,46 +301,46 @@ export const services: Service[] = [
   },
   {
     slug: "financial-modelling",
-    name: "Financial Modelling",
-    tag: "P&L · cash flow · what-if",
+    name: "Management Reporting & Modelling",
+    tag: "P&L · cash · a fixed cycle",
     description:
-      "Three-statement models, scenario planning and cash-runway forecasts built to hold up under real investor and lender scrutiny — not just look good in a pitch deck.",
+      "P&L and management reporting built to a fixed, audited cycle — the same twice-monthly rhythm that gave one growing business near-real-time visibility on margin, cost movement and cash for eight straight years.",
     points: [
-      "Three-statement models — P&L, balance sheet, cash flow — properly linked, not a spreadsheet that breaks on one changed number",
-      "Scenario and what-if planning for pricing, hiring and fundraising decisions",
-      "Cash-runway forecasts that hold up under investor and lender diligence",
-      "A model you can actually update yourself after handover",
+      "Twice-monthly management P&L, reviewed and signed off — not a static model nobody opens again",
+      "Year-end finalisation, plus complete schedules and workings prepared for external accountants and auditors",
+      "Multi-entity reporting kept consistent and comparable across books",
+      "Built to be updated by you, not just handed over once and forgotten",
     ],
     idealFor:
-      "Anyone about to raise, borrow, or make a pricing or hiring call they can't afford to get wrong.",
+      "Operators who need reporting they can trust on a fixed schedule, not a one-off model for a pitch deck.",
     process: [
       {
         step: "Structure",
-        detail: "Map the business into the drivers that actually move the numbers — not a generic template.",
+        detail: "Map the business into the numbers that actually move — the same exercise behind eight years of my own reporting cycle.",
       },
       {
         step: "Build",
-        detail: "A linked three-statement model, stress-tested against the scenarios you're actually worried about.",
+        detail: "Management P&L and reporting schedules, built to close on a fixed 15-day cycle.",
       },
       {
         step: "Hand-off",
-        detail: "A walkthrough so you can run it yourself, plus updates when the assumptions change.",
+        detail: "A walkthrough so you can run it yourself, plus updates when the business changes.",
       },
     ],
   },
   {
     slug: "automation-ai-agents",
     name: "Automation & AI Agents",
-    tag: "The repetitive work, gone",
+    tag: "Claude · ChatGPT · Replit",
     description:
-      "The reconciliations, data entry and recurring reports that used to eat a week, handled by workflows and AI agents that just run — and tell you when something looks wrong.",
+      "The same AI-assisted stack that took two live SaaS products from idea to production in weeks, not months — Claude, Claude Cowork, ChatGPT, Replit, Google Flow and Nano Banana, pointed at your repetitive work instead of a demo.",
     points: [
-      "Bank feeds and reconciliations automated end to end",
-      "Recurring reports generated and sent on a schedule — no more manual exports",
-      "AI agents that flag anomalies — a duplicate invoice, an unusual spend — instead of you finding them three months later",
+      "Built on the tools already proven on two live products — Claude, Claude Cowork, ChatGPT, Replit, Google Flow, Nano Banana",
+      "Reconciliations, data entry and recurring reports handled by workflows and agents that just run",
+      "Design-to-production timelines compressed from months to weeks, the same way OpsRail and Black Tiger shipped",
       "Built on the tools you already use — no rip-and-replace",
     ],
-    idealFor: "Teams doing the same manual finance task every week that a workflow could just do.",
+    idealFor: "Teams doing the same manual task every week that a workflow — or an AI-assisted build — could just do.",
     process: [
       {
         step: "Find the repeat work",
@@ -337,7 +348,7 @@ export const services: Service[] = [
       },
       {
         step: "Automate it",
-        detail: "Workflows and AI agents that run on schedule, on top of your existing stack.",
+        detail: "Workflows and AI agents built in the same AI-assisted stack that shipped two live SaaS products.",
       },
       {
         step: "Watch it run",
@@ -348,14 +359,14 @@ export const services: Service[] = [
   {
     slug: "custom-software-integrations",
     name: "Custom Software & Integrations",
-    tag: "SaaS · apps · integrations",
+    tag: "Two SaaS products, shipped solo",
     description:
-      "SaaS products, internal tools and system integrations that connect your accounting stack to the rest of the business, so numbers stop getting re-typed by hand.",
+      "OpsRail and Black Tiger — two commercial SaaS products, founded, designed and built end to end, not commissioned from someone else's team. The same delivery for your internal tool or integration.",
     points: [
+      "Live proof of the work: OpsRail (order-to-cash for distributors) and Black Tiger (security workforce CRM with a GPS guard app), both founded and built solo",
       "Internal tools built for the exact process you have, not the closest off-the-shelf fit",
       "Integrations between your accounting stack, CRM and everything else that touches a number",
-      "Small SaaS products, when the tool that should exist doesn't yet",
-      "Built and maintained by someone who also understands the accounting behind it",
+      "Built and maintained by someone who also understands the accounting and operations behind it",
     ],
     idealFor:
       "Operations that have outgrown spreadsheets but aren't ready for — or don't need — enterprise software.",
@@ -366,7 +377,7 @@ export const services: Service[] = [
       },
       {
         step: "Build",
-        detail: "A tool or integration scoped to that process — shipped, not a six-month platform project.",
+        detail: "A tool or integration scoped to that process — shipped the way OpsRail and Black Tiger were, not a six-month platform project.",
       },
       {
         step: "Support",
@@ -377,14 +388,14 @@ export const services: Service[] = [
   {
     slug: "scaling-operations",
     name: "Scaling Operations",
-    tag: "CRM · call-centre · process",
+    tag: "0 to 17 people, eight years",
     description:
-      "CRM, call-centre setup and process design for teams that have outgrown spreadsheets and tribal knowledge — the operational half of getting bigger without breaking.",
+      "Built a sales and operations floor from zero to fifteen–seventeen people and ran it for eight years — recruitment, training, QA, performance management, multi-brand client relationships, full P&L and compliance across two countries.",
     points: [
-      "CRM setup and clean-up — pipeline, ownership, reporting that actually reflects the business",
-      "Call-centre and support tooling for teams past the point of ad-hoc",
-      "Process documentation, so growth doesn't depend on one person's memory",
-      "The operational backbone that lets finance, sales and support actually talk to each other",
+      "Team building from zero — recruitment, scripting, training, QA and performance management, proven on a 15–17 person floor",
+      "Multi-brand client and partner management sustaining revenue across a portfolio for eight straight years",
+      "CRM and process design — the same operational backbone built into OpsRail and Black Tiger for clients",
+      "Compliance and governance held across two jurisdictions simultaneously, not delegated away",
     ],
     idealFor: "Teams that have outgrown spreadsheets and tribal knowledge and need real process underneath them.",
     process: [
@@ -394,7 +405,7 @@ export const services: Service[] = [
       },
       {
         step: "Design",
-        detail: "Process and tooling that fits how the team actually works, not a generic playbook.",
+        detail: "Process and tooling that fits how the team actually works — built the way I built my own floor, not a generic playbook.",
       },
       {
         step: "Embed",
@@ -428,11 +439,15 @@ export const faqs = [
   },
   {
     q: "Are you a Chartered Accountant — CA, ACCA or FCA?",
-    a: "No, and I lead with that. I'm an accountant with strong accounting and audit fundamentals, built over years working alongside chartered accountants. If a job ever needs a chartered signature, you'll hear it from me before you have to ask.",
+    a: "No, and I lead with that. What I have is thirteen years of statutory, internal, tax and VAT audit — clients including Tata Motors Finance, LIC of India and Kellogg's India — plus eight years running full UK accounting in Xero for my own business. If a job ever needs a chartered signature, you'll hear it from me before you have to ask.",
   },
   {
     q: "Can you handle UAE, UK and US filings for one business at the same time?",
     a: "That's the actual point of working from one desk. A UAE holding company, a UK trading entity and a US LLC can be registered and kept compliant together, by one person who understands how the three interact.",
+  },
+  {
+    q: "You do accounting and build software — how does that actually work?",
+    a: "One person, two skill sets that usually live in different people. Thirteen years of audit and UK accounting told me exactly what a finance function actually needs; the last year went into learning to build it myself, in an AI-assisted stack, rather than briefing a developer and hoping the translation survives. OpsRail and Black Tiger are both live because of that — not a portfolio piece, a business decision that shipped.",
   },
 ] as const;
 
@@ -442,6 +457,7 @@ export const contact = {
   cta: "Start a conversation",
   socials: [
     { label: "Email", href: `mailto:${person.email}`, placeholder: false },
+    { label: "Call", href: `tel:${person.phone.replace(/\s+/g, "")}`, placeholder: false },
     { label: "LinkedIn", href: "#", placeholder: true },
     { label: "GitHub", href: "#", placeholder: true },
     { label: "X", href: "#", placeholder: true },

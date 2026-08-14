@@ -13,7 +13,7 @@ export const SITE_TITLE =
   "Company Registration & Filings — UAE, UK & US";
 
 export const SITE_DESCRIPTION =
-  "Register your company in Dubai, the UK or the US and keep every filing compliant — UAE mainland & free-zone setup, corporate tax & VAT, UK confirmation statements & payroll, US LLC formation & Form 5472 — plus fractional CFO, bookkeeping and financial automation.";
+  "Register your company in Dubai, the UK or the US and keep every filing compliant — UAE mainland & free-zone setup, corporate tax & VAT, UK confirmation statements & payroll, US LLC formation & Form 5472 — plus fractional CFO, bookkeeping and financial automation from thirteen years of audit and UK accounting, and CRM/SaaS products designed and built end to end.";
 
 /**
  * Country codes ISO 3166-1 alpha-2 for the three flags this site serves.
@@ -56,6 +56,7 @@ export function buildServiceGraph() {
     description: SITE_DESCRIPTION,
     url: SITE_URL,
     email: person.email,
+    telephone: person.phone,
     areaServed: AREA_SERVED,
     knowsAbout: [
       "Company formation",
@@ -67,8 +68,12 @@ export function buildServiceGraph() {
       "Form 5472",
       "Fractional CFO services",
       "Bookkeeping",
+      "Statutory and tax audit",
       "Financial modelling",
       "Financial automation",
+      "CRM and SaaS product development",
+      "AI-assisted software development",
+      "BPO operations leadership",
     ],
     founder: {
       "@type": "Person",

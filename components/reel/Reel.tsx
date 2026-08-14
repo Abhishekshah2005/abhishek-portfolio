@@ -388,6 +388,22 @@ function Panel({
             <p className="mt-4 text-[15px] leading-relaxed text-cream-2 transition-all duration-500 ease-[var(--ease-out-expo)] md:translate-y-3 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100">
               {project.summary}
             </p>
+
+            {project.url && (
+              <a
+                href={project.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cursor
+                className="relative z-10 mt-5 inline-flex min-h-11 items-center gap-2 font-mono text-[11px] tracking-[0.18em] uppercase no-underline transition-colors duration-300"
+                style={{ color: project.tone }}
+              >
+                Visit site
+                <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">
+                  ↗
+                </span>
+              </a>
+            )}
           </div>
         </div>
 
