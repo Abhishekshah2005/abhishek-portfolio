@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 import { gsap } from "@/lib/gsap";
 import { useFinePointer, useReducedMotion } from "@/lib/hooks";
 import { useLineDraw, useLineReveal } from "@/components/ui/motion";
@@ -302,10 +303,13 @@ function Panel({
     <article
       ref={frameRef}
       data-panel
-      data-cursor
       className="group relative shrink-0 md:h-[68vh] md:w-[56vw] lg:w-[44vw]"
       style={{ perspective: "1400px" }}
     >
+      {/* The whole poster is one link to its full writeup on /work — the
+          hover tilt and film-strip fan stay on `frameRef`/the transform
+          chain above, unaffected by an <a> sitting in the middle of it. */}
+      <Link href={`/work#${project.slug}`} data-cursor className="block h-full no-underline">
       <div
         ref={stageRef}
         className="relative h-full min-h-[440px] overflow-hidden rounded-3xl border border-[var(--line-soft)] bg-raise will-change-transform"
@@ -389,21 +393,16 @@ function Panel({
               {project.summary}
             </p>
 
-            {project.url && (
-              <a
-                href={project.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-cursor
-                className="relative z-10 mt-5 inline-flex min-h-11 items-center gap-2 font-mono text-[11px] tracking-[0.18em] uppercase no-underline transition-colors duration-300"
-                style={{ color: project.tone }}
-              >
-                Visit site
-                <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1">
-                  ↗
-                </span>
-              </a>
-            )}
+            {/* Not a link of its own — the whole card already is one
+                (see the wrapping <Link> above). This just signals it. */}
+            <span
+              aria-hidden
+              className="relative z-10 mt-5 inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.18em] uppercase transition-transform duration-300 group-hover:translate-x-1"
+              style={{ color: project.tone }}
+            >
+              Full case study
+              <span aria-hidden>↗</span>
+            </span>
           </div>
         </div>
 
@@ -416,6 +415,7 @@ function Panel({
           }}
         />
       </div>
+      </Link>
     </article>
   );
 }

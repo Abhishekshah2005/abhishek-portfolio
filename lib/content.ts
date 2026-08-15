@@ -19,9 +19,9 @@ export const person = {
 
 export const nav = [
   { id: "registrations", label: "Companies" },
-  { id: "work", label: "Work" },
-  // The only nav item that's a real route rather than a same-page anchor —
-  // it goes to the full writeups on /services, not the homepage teaser.
+  // Both of these are real routes, not same-page anchors — they go to the
+  // full writeups on /work and /services, not the homepage teasers.
+  { href: "/work", label: "Work" },
   { href: "/services", label: "Services" },
   { id: "contact", label: "Contact" },
 ] as const;
@@ -78,14 +78,20 @@ export const manifesto =
 export type Project = {
   slug: string;
   title: string;
+  role: string;
   discipline: string;
   year: string;
   summary: string;
+  /** Full write-up bullets for the /work page — the CV detail the teaser
+   *  card's one-paragraph summary compresses down from. */
+  points: string[];
   /** Poster tint. */
   tone: string;
   placeholder: boolean;
   /** Live URL — real projects only; the card links out when this is set. */
   url?: string;
+  /** For a bundled entry covering more than one site — each gets its own link. */
+  sites?: { name: string; url: string }[];
 };
 
 /**
@@ -97,10 +103,20 @@ export const projects: Project[] = [
   {
     slug: "opsrail",
     title: "Order-To-Cash, Built From Scratch",
+    role: "Founder · Product & Build",
     discipline: "Product × SaaS",
     year: "2025",
     summary:
       "A vertical operations platform for building-material, steel, electrical and FMCG distributors — quotation automation, credit control with order holds, multi-warehouse inventory, dispatch planning and GST invoicing synced to Tally. The full enquiry-to-payment cycle, not the generic CRM these businesses were forced to bend to fit.",
+    points: [
+      "Built for building-material, steel, electrical, industrial-supply and FMCG distributors (20–500 employees) — the complete enquiry-to-payment cycle, not a generic CRM bent to fit",
+      "Quotation management with price-list automation and role-based discount ceilings",
+      "Credit control with automatic order holds and approval routing",
+      "Multi-warehouse inventory tracking — total, reserved and available — plus dispatch and load planning with driver assignment and delivery tracking",
+      "GST invoicing with correct CGST/SGST/IGST splits, synced to Tally, and collections tracking against invoice due dates",
+      "Thirteen years of accounting and audit experience translated straight into product logic — credit limits, approval chains and reconciliation-ready outputs built the way a finance team actually needs them",
+      "Hand-onboarded delivery model — territories, price lists and approval chains provisioned per client, live in days rather than months",
+    ],
     tone: "#3fd0ff",
     placeholder: false,
     url: "https://getopsrail.com",
@@ -108,10 +124,20 @@ export const projects: Project[] = [
   {
     slug: "black-tiger",
     title: "A CRM With Boots On The Ground",
+    role: "Founder · Product & Build",
     discipline: "Product × CRM",
     year: "2025",
     summary:
       "A security-workforce CRM covering the operation end to end — guard master, rosters, attendance, incidents and billing inputs — paired with a GPS-verified guard mobile app for check-in/out, patrol tracking and photo incident reports, so the field and the control room work off one live record.",
+    points: [
+      "Covers a security agency's operation end to end — guard master, client sites and posts, duty rosters, attendance, incidents and billing inputs",
+      "Guard mobile app: GPS-verified check-in and check-out at the assigned post, patrol and checkpoint tracking, live location visibility during shift",
+      "Incident reporting with photo and timestamp straight from the phone",
+      "Control-room web console: real-time deployment view of who's on site and who's absent, roster and shift allocation across clients",
+      "Attendance feeds directly into billing and payroll inputs, with a searchable incident log per site",
+      "Authenticated multi-user access with role-based permissions separating admin, supervisor and guard — each role sees only what its job needs",
+      "Deployed and running live",
+    ],
     tone: "#7b5cff",
     placeholder: false,
     url: "https://black-tiger-gtg2.onrender.com",
@@ -119,10 +145,18 @@ export const projects: Project[] = [
   {
     slug: "invicta",
     title: "Not A BPO, On Purpose",
+    role: "Team Manager · Brand & Build",
     discipline: "Brand × Web",
     year: "2024",
     summary:
       "Brand narrative, service architecture, copy direction and full responsive build for a customer-experience firm positioned deliberately against the BPO category it competes in — plus the market positioning and messaging behind it.",
+    points: [
+      "A customer-experience firm positioned deliberately against the BPO category it competes in — \"not a BPO\" as the actual brand line",
+      "Brand narrative and service architecture built from scratch, not adapted from a template",
+      "Copy direction across the full site — every word written to hold that positioning, not just the homepage hero",
+      "Full responsive build, deployed and live",
+      "Market positioning and messaging for the company's wider go-to-market, not just the website",
+    ],
     tone: "#ff5a2b",
     placeholder: false,
     url: "https://invictaindia.in",
@@ -130,12 +164,26 @@ export const projects: Project[] = [
   {
     slug: "brand-sites",
     title: "Four More Brands, Shipped",
+    role: "Founder · Design & Build",
     discipline: "Web × Brand",
     year: "2024–25",
     summary:
       "Ceramic Cartel (Melbourne premium auto-detailing), BlueChip Circle (institutional finance), Events Addict (luxury Indian weddings) and Voyage Memorable (Dubai destination management) — each with its own information architecture, copy direction, responsive build and SEO metadata, deployed end to end.",
+    points: [
+      "Four client brands, each taken end to end — information architecture, copy direction, responsive UI, SEO metadata, deployment and post-launch iteration",
+      "Ceramic Cartel — a Melbourne premium automotive-detailing brand (paint protection film, ceramic and graphene coating) — conversion-focused site for an international client",
+      "BlueChip Circle — an institutional finance brand — positioning, identity language and site build for a credibility-first audience",
+      "Events Addict — luxury Indian wedding and corporate event management — a gallery-led, enquiry-driven site with social and SEO metadata",
+      "Voyage Memorable — a Dubai luxury destination-management company — complete redesign covering services, destinations, traveller segments, founder story, testimonials and enquiry capture",
+    ],
     tone: "#ff4f8b",
     placeholder: false,
+    sites: [
+      { name: "Ceramic Cartel", url: "https://ceramiccartel.com" },
+      { name: "BlueChip Circle", url: "https://bluechipcircle.in" },
+      { name: "Events Addict", url: "https://www.eventsaddict.in" },
+      { name: "Voyage Memorable", url: "https://voyage-memorable-redesign.vercel.app" },
+    ],
   },
 ];
 

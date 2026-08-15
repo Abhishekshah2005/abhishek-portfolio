@@ -7,7 +7,10 @@
  */
 import { contact, faqs, jurisdictions, person, services } from "@/lib/content";
 
-export const SITE_URL = "https://abhishekshah.com";
+// The GitHub Pages default URL — the site's actual deploy target, not a
+// placeholder. Update this (and next.config.ts's basePath) together if a
+// custom domain ever replaces it.
+export const SITE_URL = "https://abhishekshah2005.github.io/abhishek-portfolio";
 
 export const SITE_TITLE =
   "Company Registration & Filings — UAE, UK & US";

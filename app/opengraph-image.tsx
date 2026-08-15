@@ -4,6 +4,8 @@ import { person } from "@/lib/content";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = `${person.name} — UAE, UK & US company registration and filings`;
+// Required for `output: "export"` — see app/sitemap.ts for why.
+export const dynamic = "force-static";
 
 const COAL = "#0a0a0b";
 const CREAM = "#f2f1ec";
